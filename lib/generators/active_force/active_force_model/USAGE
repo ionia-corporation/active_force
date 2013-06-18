@@ -1,0 +1,8 @@
+Description:
+    Generate a model to interact with Sales Force.
+
+Example:
+    rails generate active_force_model Account
+
+    This will create:
+        app/models/account.rb
