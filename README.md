@@ -1,5 +1,4 @@
-# ActiveForce
-
+# ActiveForce [![Code Climate](https://codeclimate.com/github/eloyesp/active_force.png)](https://codeclimate.com/github/eloyesp/active_force)
 TODO: Write a gem description
 
 ## Installation
