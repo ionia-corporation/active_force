@@ -1,3 +1,5 @@
+require 'active_model'
+require 'active_attr'
 require 'active_attr/dirty'
 
 module ActiveForce
