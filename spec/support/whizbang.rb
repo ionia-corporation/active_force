@@ -24,4 +24,26 @@ class Whizbang < ActiveForce::SObject
     questionnaire_completed?:    'HHQ_Questionnaire_Complete__c',
     employer:                    'Employer__c'
   }
+
+  attribute :salutation
+  attribute :first_name
+  attribute :last_name
+  attribute :gender
+  attribute :date_of_birth
+  attribute :status
+  attribute :username
+  attribute :contact_phone
+  attribute :email
+  attribute :referral_source
+  attribute :address
+  attribute :city
+  attribute :state
+  attribute :zip_code
+  attribute :occupation
+  attribute :assigned_by
+  attribute :primary_care_physician
+  attribute :referring_physician
+  attribute :emergency_contact
+  attribute :questionnaire_completed?
+  attribute :employer
 end
