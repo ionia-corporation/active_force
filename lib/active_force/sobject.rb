@@ -9,8 +9,6 @@ module ActiveForce
 
     class_attribute :mappings, :fields, :table_name
 
-    attribute :id
-
     def self.build sobject
       return nil if sobject.nil?
       model = new
@@ -52,5 +50,13 @@ module ActiveForce
       id?
     end
 
+    def self.field field_name, from: field_name.camelize
+      mappings[field_name] = from
+      attribute field_name
+    end
+
+    def self.mappings
+      @mappings ||= {}
+    end
   end
 end
