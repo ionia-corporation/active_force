@@ -16,7 +16,7 @@ describe ActiveForce::SObject do
     end
   end
 
-  describe "field" do
+  describe ".field" do
     it "add a mappings" do
       expect(Whizbang.mappings).to include(
         checkbox: 'Checkbox_Label',
