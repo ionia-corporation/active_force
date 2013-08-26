@@ -1,6 +1,15 @@
 require 'spec_helper'
 
 describe ActiveForce::SObject do
+
+  before do
+    ::Client = double('Client')
+  end
+
+  after do
+    Object.send :remove_const, 'Client'
+  end
+
   describe ".new" do
     it "create with valid values" do
       @SObject = Whizbang.new
@@ -33,4 +42,26 @@ describe ActiveForce::SObject do
       end
     end
   end
+
+  describe '#create' do
+
+    subject do
+      Whizbang.new
+    end
+
+    before do
+      Client.should_receive(:create!).and_return('id')
+    end
+
+    it 'delegates to the Client with create!' do
+      subject.create
+    end
+
+    it 'sets the id' do
+      subject.create
+      expect(subject.id).to eq('id')
+    end
+
+  end
+
 end

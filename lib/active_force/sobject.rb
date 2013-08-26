@@ -27,6 +27,23 @@ module ActiveForce
       SOQL
     end
 
+    def create
+      return false unless valid?
+      hash = {}
+      mappings.map do |field, name_in_sfdc|
+        value = attribute(field.to_s)
+        hash[name_in_sfdc] = value if value.present?
+      end
+      self.id = Client.create! table_name, hash
+      changed_attributes.clear
+    rescue Faraday::Error::ClientError => error
+      Rails.logger.warn do
+        "[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while creating, params: #{hash}, error: #{error.inspect}"
+      end
+      errors[:base] << "Error when creating the #{self.class.model_name}"
+      false
+    end
+
     def update_attributes attributes
       assign_attributes attributes
       if valid?
