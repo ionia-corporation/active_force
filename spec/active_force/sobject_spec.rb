@@ -2,6 +2,20 @@ require 'spec_helper'
 
 describe ActiveForce::SObject do
 
+  context 'subclassed' do
+
+    it 'get the table name from the class name' do
+      class Custom < ActiveForce::SObject
+      end
+
+      expect(Custom.table_name).to eq('Custom__c')
+    end
+
+  end
+end
+
+describe ActiveForce::SObject do
+
   before do
     ::Client = double('Client')
   end

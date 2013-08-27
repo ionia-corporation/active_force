@@ -9,6 +9,10 @@ module ActiveForce
 
     class_attribute :mappings, :fields, :table_name
 
+    def self.table_name
+      @table_name ||= "#{self.name}__c"
+    end
+
     def self.build sobject
       return nil if sobject.nil?
       model = new
