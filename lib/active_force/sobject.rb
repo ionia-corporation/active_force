@@ -7,10 +7,19 @@ module ActiveForce
     include ActiveAttr::Model
     include ActiveAttr::Dirty
 
+    # Types recognised don't get the added "__c"
+    STANDARD_TYPES = %w[ Account Contact Opportunity ]
+
     class_attribute :mappings, :fields, :table_name
 
+    # The table name to used to make queries.
+    # It is derived from the class name adding the "__c" when needed.
     def self.table_name
-      @table_name ||= "#{self.name}__c"
+      @table_name ||= if STANDARD_TYPES.include? self.name
+                        self.name
+                      else
+                        "#{self.name}__c"
+                      end
     end
 
     def self.build sobject

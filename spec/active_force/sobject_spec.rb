@@ -11,6 +11,21 @@ describe ActiveForce::SObject do
       expect(Custom.table_name).to eq('Custom__c')
     end
 
+    it 'with standard SObject type it does not add the __c' do
+      class Account < ActiveForce::SObject
+      end
+
+      expect(Account.table_name).to eq('Account')
+    end
+
+    it 'table name can be enforced in the class' do
+      class EnforcedTableName < ActiveForce::SObject
+        self.table_name = 'Forced__c'
+      end
+
+      expect(EnforcedTableName.table_name).to eq('Forced__c')
+    end
+
   end
 end
 
