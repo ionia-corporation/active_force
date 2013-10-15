@@ -32,6 +32,18 @@ module ActiveForce
       model
     end
 
+    def self.all
+      all = Client.query(<<-SOQL.strip_heredoc).to_a
+        SELECT
+          #{ fields.join(', ') }
+        FROM
+          #{ table_name }
+      SOQL
+      all.map do |mash|
+        build mash
+      end
+    end
+
     def self.find id
       build Client.query(<<-SOQL.strip_heredoc).first
         SELECT #{fields.join(', ')}
