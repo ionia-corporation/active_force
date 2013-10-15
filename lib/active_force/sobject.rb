@@ -52,6 +52,16 @@ module ActiveForce
       SOQL
     end
 
+    def self.create(attributes = nil, &block)
+      if attributes.is_a?(Array)
+        attributes.collect { |attr| create(attr, &block) }
+      else
+        object = new(attributes, &block)
+        object.create
+        object
+      end
+    end
+
     def create
       return false unless valid?
       hash = {}
