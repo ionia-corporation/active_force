@@ -44,7 +44,7 @@ module ActiveForce
       return false unless valid?
       hash = {}
       mappings.map do |field, name_in_sfdc|
-        value = attribute(field.to_s)
+        value = read_value field
         hash[name_in_sfdc] = value if value.present?
       end
       self.id = Client.create! table_name, hash
@@ -88,5 +88,21 @@ module ActiveForce
     def self.mappings
       @mappings ||= {}
     end
+
+    private
+      def read_value field
+        if self.class.attributes[field][:sf_type] == :multi_picklist
+          attribute(field.to_s).reject(&:empty?).join(';')
+        else
+          attribute(field.to_s)
+        end
+      end
+
+      def self.picklist field
+        picks = Client.picklist_values(table_name, mappings[field])
+        picks.map do |value|
+          [value[:label], value[:value]]
+        end
+      end
   end
 end
