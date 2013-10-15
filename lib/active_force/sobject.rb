@@ -75,7 +75,7 @@ module ActiveForce
       Rails.logger.warn do
         "[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while creating, params: #{hash}, error: #{error.inspect}"
       end
-      errors[:base] << "Error when creating the #{self.class.model_name}"
+      errors[:base] << error.message
       false
     end
 
