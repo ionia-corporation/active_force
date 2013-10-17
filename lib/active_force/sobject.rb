@@ -102,9 +102,9 @@ module ActiveForce
       id?
     end
 
-    def self.field field_name, from: field_name.camelize
+    def self.field field_name, from: field_name.camelize, as: :string
       mappings[field_name] = from
-      attribute field_name
+      attribute field_name, sf_type: as
     end
 
     def self.mappings
