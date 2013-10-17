@@ -32,6 +32,18 @@ module ActiveForce
       model
     end
 
+    def self.all
+      all = Client.query(<<-SOQL.strip_heredoc).to_a
+        SELECT
+          #{ fields.join(', ') }
+        FROM
+          #{ table_name }
+      SOQL
+      all.map do |mash|
+        build mash
+      end
+    end
+
     def self.find id
       build Client.query(<<-SOQL.strip_heredoc).first
         SELECT #{fields.join(', ')}
@@ -40,11 +52,21 @@ module ActiveForce
       SOQL
     end
 
+    def self.create(attributes = nil, &block)
+      if attributes.is_a?(Array)
+        attributes.collect { |attr| create(attr, &block) }
+      else
+        object = new(attributes, &block)
+        object.create
+        object
+      end
+    end
+
     def create
       return false unless valid?
       hash = {}
       mappings.map do |field, name_in_sfdc|
-        value = attribute(field.to_s)
+        value = read_value field
         hash[name_in_sfdc] = value if value.present?
       end
       self.id = Client.create! table_name, hash
@@ -53,7 +75,7 @@ module ActiveForce
       Rails.logger.warn do
         "[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while creating, params: #{hash}, error: #{error.inspect}"
       end
-      errors[:base] << "Error when creating the #{self.class.model_name}"
+      errors[:base] << error.message
       false
     end
 
@@ -80,13 +102,29 @@ module ActiveForce
       id?
     end
 
-    def self.field field_name, from: field_name.camelize
+    def self.field field_name, from: field_name.camelize, as: :string
       mappings[field_name] = from
-      attribute field_name
+      attribute field_name, sf_type: as
     end
 
     def self.mappings
       @mappings ||= {}
     end
+
+    private
+      def read_value field
+        if self.class.attributes[field][:sf_type] == :multi_picklist
+          attribute(field.to_s).reject(&:empty?).join(';')
+        else
+          attribute(field.to_s)
+        end
+      end
+
+      def self.picklist field
+        picks = Client.picklist_values(table_name, mappings[field])
+        picks.map do |value|
+          [value[:label], value[:value]]
+        end
+      end
   end
 end
