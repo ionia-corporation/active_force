@@ -52,17 +52,31 @@ module ActiveForce
       SOQL
     end
 
-    def self.create(attributes = nil, &block)
-      if attributes.is_a?(Array)
-        attributes.collect { |attr| create(attr, &block) }
-      else
-        object = new(attributes, &block)
-        object.create
-        object
+    def update_attributes! attributes = {}
+      assign_attributes attributes
+      return false unless valid?
+      sobject_hash = { 'Id' => id }
+      changed.each do |field|
+        sobject_hash[mappings[field.to_sym]] = read_attribute(field)
       end
+      result = Client.update! table_name, sobject_hash
+      changed_attributes.clear
+      result
     end
 
-    def create
+    def update_attributes attributes = {}
+      update_attributes! attributes
+    rescue Faraday::Error::ClientError => error
+      Rails.logger.info do
+        "[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while updating, params: #{hash}, error: #{error.inspect}"
+      end
+      errors[:base] << error.message
+      false
+    end
+
+    alias_method :update, :update_attributes
+
+    def create!
       return false unless valid?
       hash = {}
       mappings.map do |field, name_in_sfdc|
@@ -71,26 +85,23 @@ module ActiveForce
       end
       self.id = Client.create! table_name, hash
       changed_attributes.clear
+    end
+
+    def create
+      create!
     rescue Faraday::Error::ClientError => error
-      Rails.logger.warn do
+      Rails.logger.info do
         "[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while creating, params: #{hash}, error: #{error.inspect}"
       end
       errors[:base] << error.message
       false
     end
 
-    def update_attributes attributes
-      assign_attributes attributes
-      if valid?
-        sobject_hash = { 'Id' => id }
-        changed.each do |field|
-          sobject_hash[mappings[field.to_sym]] = read_attribute(field)
-        end
-        result = Client.update table_name, sobject_hash
-        changed_attributes.clear if result
-        result
+    def save
+      if persisted?
+        update
       else
-        false
+        create
       end
     end
 
