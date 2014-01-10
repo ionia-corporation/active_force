@@ -8,7 +8,7 @@ module ActiveForce
     include ActiveAttr::Dirty
 
     # Types recognised don't get the added "__c"
-    STANDARD_TYPES = %w[ Account Contact Opportunity ]
+    STANDARD_TYPES = %w[ Account Contact Opportunity Campaign]
 
     class_attribute :mappings, :fields, :table_name
 
