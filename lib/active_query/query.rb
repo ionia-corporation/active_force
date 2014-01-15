@@ -1,10 +1,18 @@
 module ActiveQuery
   class Query
-    attr_accessor :table, :fields, :conditions, :size, :table_id
+    attr_reader :table
 
-    def initialize
-      self.conditions = []
-      self.table_id = 'Id'
+    attr_accessor :table_id
+
+    def initialize table
+      @table = table
+      @conditions = []
+      @table_id = 'Id'
+      @query_fields = [@table_id]
+    end
+
+    def fields fields_collection = []
+      @query_fields = @query_fields + fields_collection
     end
 
     def all
@@ -14,9 +22,9 @@ module ActiveQuery
     def to_s
       query = <<-SOQL.gsub(/\s+/, " ").strip  
         SELECT
-          #{ fields.join(', ') }
+          #{ @query_fields.join(', ') }
         FROM
-          #{ table }
+          #{ @table }
         #{ build_where }
         #{ build_limit }
       SOQL
@@ -24,30 +32,30 @@ module ActiveQuery
     end
 
     def where condition
-      self.conditions << condition
+      @conditions << condition
       self
     end
 
     def limit size
-      self.size = size
+      @size = size
       self
     end
 
     def find id
-      where "#{ table_id } = '#{ id }'"
+      where "#{ @table_id } = '#{ id }'"
       limit 1
       self
     end
 
     protected
       def build_where
-        unless conditions.empty?
-          "WHERE #{ conditions.join(' AND ') }"
+        unless @conditions.empty?
+          "WHERE #{ @conditions.join(' AND ') }"
         end
       end
 
       def build_limit
-        "LIMIT #{ size }" if size
+        "LIMIT #{ @size }" if @size
       end
   end
 end

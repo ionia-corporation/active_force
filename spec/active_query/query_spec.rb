@@ -4,9 +4,8 @@ require 'active_query/query'
 describe ActiveQuery::Query do
 
   before do
-    @query = ActiveQuery::Query.new
-    @query.table = 'table_name'
-    @query.fields = ['Id', 'name', 'etc']
+    @query = ActiveQuery::Query.new 'table_name'
+    @query.fields ['name', 'etc']
   end
 
   after do
@@ -19,7 +18,7 @@ describe ActiveQuery::Query do
     end
 
     it "fields should return fields" do
-      @query.all.fields.should be(@query.fields)
+      @query.all.fields.should == @query.fields
     end
   end
 
