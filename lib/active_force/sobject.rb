@@ -1,11 +1,13 @@
 require 'active_model'
 require 'active_attr'
 require 'active_attr/dirty'
+require 'query'
 
 module ActiveForce
   class SObject
     include ActiveAttr::Model
     include ActiveAttr::Dirty
+    include ActiveForce::Query
 
     # Types recognised don't get the added "__c"
     STANDARD_TYPES = %w[ Account Contact Opportunity Campaign]
