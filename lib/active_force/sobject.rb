@@ -32,24 +32,19 @@ module ActiveForce
       model
     end
 
-    def query
+    def self.query
       query = ActiveForce::Query.new(table_name)
       query.fields fields
     end
 
-    def build_query query
-      result = Client.query(query.to_s).to_a.map do |mash|
+    def self.all
+      Client.query(query.all).to_a.map do |mash|
         build mash
       end
-      result.first if result.size == 1
-    end
-
-    def self.all
-      build_query query.all
     end
 
     def self.find id
-      build_query query.find(id)
+      build Client.query(query.find(id).to_s)
     end
 
     def update_attributes! attributes = {}
