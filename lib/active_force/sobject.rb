@@ -38,7 +38,7 @@ module ActiveForce
     end
 
     def build_query query
-      result = Client.query(query.to_s).map do |mash|
+      result = Client.query(query.to_s).to_a.map do |mash|
         build mash
       end
       result.first if result.size == 1
