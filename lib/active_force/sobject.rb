@@ -1,6 +1,7 @@
 require 'active_model'
 require 'active_attr'
 require 'active_attr/dirty'
+require 'active_force/query'
 
 module ActiveForce
   class SObject
