@@ -23,7 +23,12 @@ describe ActiveForce::Query do
   end
 
   describe ".all.to_s" do
-    it "sholud return a query for all records" do
+    it "should return a query for all records" do
+      @query.all.to_s.should == "SELECT Id, name, etc FROM table_name"
+    end
+
+    it "should ignore dupicated attributes in select statment" do
+      @query.fields ['Id', 'name', 'etc']
       @query.all.to_s.should == "SELECT Id, name, etc FROM table_name"
     end
   end
