@@ -1,4 +1,4 @@
-module ActiveQuery
+module ActiveForce
   class Query
     attr_reader :table
 

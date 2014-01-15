@@ -1,10 +1,10 @@
 require 'spec_helper'
-require 'active_query/query'
+require 'active_force/query'
 
-describe ActiveQuery::Query do
+describe ActiveForce::Query do
 
   before do
-    @query = ActiveQuery::Query.new 'table_name'
+    @query = ActiveForce::Query.new 'table_name'
     @query.fields ['name', 'etc']
   end
 
