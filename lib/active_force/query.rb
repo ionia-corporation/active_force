@@ -22,7 +22,7 @@ module ActiveForce
     def to_s
       query = <<-SOQL.gsub(/\s+/, " ").strip  
         SELECT
-          #{ @query_fields.join(', ') }
+          #{ @query_fields.uniq.join(', ') }
         FROM
           #{ @table }
         #{ build_where }
