@@ -38,13 +38,13 @@ module ActiveForce
     end
 
     def self.all
-      Client.query(query.all).to_a.map do |mash|
+      Client.query(query.all.to_s).to_a.map do |mash|
         build mash
       end
     end
 
     def self.find id
-      build Client.query(query.find(id).to_s)
+      build Client.query(query.find(id).to_s).to_a.first
     end
 
     def update_attributes! attributes = {}
