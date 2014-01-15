@@ -36,6 +36,7 @@ module ActiveForce
     def self.query
       query = ActiveForce::Query.new(table_name)
       query.fields fields
+      query
     end
 
     def self.all
