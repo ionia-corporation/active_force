@@ -32,24 +32,19 @@ module ActiveForce
       model
     end
 
+    def self.query
+      query = ActiveForce::Query.new(table_name)
+      query.fields fields
+    end
+
     def self.all
-      all = Client.query(<<-SOQL.strip_heredoc).to_a
-        SELECT
-          #{ fields.join(', ') }
-        FROM
-          #{ table_name }
-      SOQL
-      all.map do |mash|
+      Client.query(query.all).to_a.map do |mash|
         build mash
       end
     end
 
     def self.find id
-      build Client.query(<<-SOQL.strip_heredoc).first
-        SELECT #{fields.join(', ')}
-        FROM #{table_name}
-        WHERE Id = '#{id}'
-      SOQL
+      build Client.query(query.find(id).to_s)
     end
 
     def update_attributes! attributes = {}
