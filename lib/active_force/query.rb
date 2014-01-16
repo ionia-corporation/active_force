@@ -20,13 +20,15 @@ module ActiveForce
     end
 
     def to_s
-      query = <<-SOQL.gsub(/\s+/, " ").strip  
+      query = <<-SOQL.gsub(/\s+/, " ").strip
         SELECT
           #{ @query_fields.uniq.join(', ') }
         FROM
           #{ @table }
         #{ build_where }
+        #{ build_order }
         #{ build_limit }
+        #{ build_offset }
       SOQL
       query
     end
@@ -36,8 +38,18 @@ module ActiveForce
       self
     end
 
+    def order order
+      @order = order
+      self
+    end
+
     def limit size
       @size = size
+      self
+    end
+
+    def offset offset
+      @offset = offset
       self
     end
 
@@ -56,6 +68,14 @@ module ActiveForce
 
       def build_limit
         "LIMIT #{ @size }" if @size
+      end
+
+      def build_order
+        "ORDER BY #{ @order }" if @order
+      end
+
+      def build_offset
+        "OFFSET #{ @offset }" if @offset
       end
   end
 end
