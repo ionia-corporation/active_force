@@ -26,6 +26,13 @@ module ActiveForce
                       end
     end
 
+    def self.has_many relation_name, options = {}
+      super
+      define_method relation_name do
+        self.class.send_query(self.send "#{ relation_name }_query".to_sym)
+      end
+    end
+
     def self.build sobject
       return nil if sobject.nil?
       model = new
@@ -43,13 +50,17 @@ module ActiveForce
     end
 
     def self.all
-      Client.query(query.all.to_s).to_a.map do |mash|
+      send_query query
+    end
+
+    def self.send_query query
+      Client.query(query.to_s).to_a.map do |mash|
         build mash
       end
     end
 
     def self.find id
-      build Client.query(query.find(id).to_s).to_a.first
+      send_query(query.find(id)).first
     end
 
     def update_attributes! attributes = {}
