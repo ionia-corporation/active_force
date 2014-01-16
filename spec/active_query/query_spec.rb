@@ -9,7 +9,6 @@ describe ActiveForce::Query do
   end
 
   after do
-    #Object.send :remove_const, 'Client'
   end
 
   describe ".all" do
@@ -70,6 +69,19 @@ describe ActiveForce::Query do
     it "should add a order condition in the statment with WHERE and LIMIT" do
       @query.where("condition1 = 1").order("name desc").limit(1).to_s.should == 
         "SELECT Id, name, etc FROM table_name WHERE condition1 = 1 ORDER BY name desc LIMIT 1"
+    end
+  end
+
+  describe '.join' do
+
+    before do
+      @join = ActiveForce::Query.new 'join_table_name'
+      @join.fields ['name', 'etc']
+    end
+
+    it 'sould add another select statment on the current select' do
+      @query.join(@join).to_s.should ==
+        'SELECT Id, name, etc, (SELECT Id, name, etc FROM join_table_name) FROM table_name'
     end
   end
 end
