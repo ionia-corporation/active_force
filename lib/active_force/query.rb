@@ -59,6 +59,11 @@ module ActiveForce
       self
     end
 
+    def join object_query
+      fields ["(#{ object_query.to_s })"]
+      self
+    end
+
     protected
       def build_where
         unless @conditions.empty?
