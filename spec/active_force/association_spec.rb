@@ -57,5 +57,15 @@ describe ActiveForce::SObject do
       @post.comments_query.to_s.should ==
         "SELECT Id FROM Comment__c WHERE Post = '1'"
     end
+
+    it 'should allow to add a where condition' do
+      class Post < ActiveForce::SObject
+        has_many :comments, { where: '1 = 1' }
+      end
+      @post = Post.new
+      @post.stub(:id).and_return("1")
+      @post.comments_query.to_s.should ==
+        "SELECT Id FROM Comment__c WHERE 1 = 1 AND Post__c = '1'"
+    end
   end
 end
