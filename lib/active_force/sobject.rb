@@ -60,7 +60,7 @@ module ActiveForce
     end
 
     def self.find id
-      send_query (query.find(id)).first
+      send_query(query.find(id)).first
     end
 
     def update_attributes! attributes = {}
