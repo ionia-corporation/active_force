@@ -2,13 +2,16 @@ require 'active_model'
 require 'active_attr'
 require 'active_attr/dirty'
 require 'active_force/query'
+require 'active_force/association'
 
 module ActiveForce
   class SObject
     include ActiveAttr::Model
     include ActiveAttr::Dirty
+    include ActiveForce::Association
 
-    # Types recognised don't get the added "__c"
+    extend ClassMethods
+
     STANDARD_TYPES = %w[ Account Contact Opportunity Campaign]
 
     class_attribute :mappings, :fields, :table_name
