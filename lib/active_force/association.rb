@@ -10,6 +10,7 @@ module ActiveForce
           foreing_key      = options[:foreing_key] || table_name
           query = ActiveForce::Query.new(association_name)
           query.fields relation_table.fields
+          query.where(options[:where]) if options[:where]
           query.where("#{ foreing_key } = '#{ id }'")
           query
         end
