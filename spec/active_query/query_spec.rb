@@ -50,10 +50,26 @@ describe ActiveForce::Query do
     end
   end
 
+  describe ".offset" do
+    it "should add an offset to a query" do
+      @query.offset(4).to_s.should == "SELECT Id, name, etc FROM table_name OFFSET 4"
+    end
+  end
+
   describe ".find.to_s" do
     it "should return a query for 1 record" do
       @query.find(2).to_s.should == "SELECT Id, name, etc FROM table_name WHERE Id = '2' LIMIT 1"
     end
   end
 
+  describe ".order" do
+    it "should add a order condition in the statment" do
+      @query.order("name desc").to_s.should == "SELECT Id, name, etc FROM table_name ORDER BY name desc"
+    end
+
+    it "should add a order condition in the statment with WHERE and LIMIT" do
+      @query.where("condition1 = 1").order("name desc").limit(1).to_s.should == 
+        "SELECT Id, name, etc FROM table_name WHERE condition1 = 1 ORDER BY name desc LIMIT 1"
+    end
+  end
 end
