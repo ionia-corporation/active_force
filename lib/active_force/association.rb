@@ -4,7 +4,7 @@ module ActiveForce
   module Association
     module ClassMethods
       def has_many relation_name, options = {}
-        model = relation_model relation_name
+        model = options[:model] || relation_model(relation_name)
         association_name = options[:table] || model.table_name || "#{ model }__c"
         foreing_key      = options[:foreing_key] || default_foreing_key(model, self.name) || table_name
 
