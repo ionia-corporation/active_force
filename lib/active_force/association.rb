@@ -12,6 +12,7 @@ module ActiveForce
           query = ActiveForce::Query.new(association_name)
           query.fields model.fields
           query.where(options[:where]) if options[:where]
+          query.order(options[:order]) if options[:order]
           query.where("#{ foreing_key } = '#{ id }'")
           query
         end
