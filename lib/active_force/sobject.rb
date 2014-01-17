@@ -30,7 +30,7 @@ module ActiveForce
       super
       model = relation_model relation_name
       define_method relation_name do
-        self.class.send_query(model.send "#{ relation_name }_query".to_sym)
+        model.send_query(self.send "#{ relation_name }_query".to_sym)
       end
     end
 
