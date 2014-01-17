@@ -18,7 +18,7 @@ module ActiveForce
       end
 
       def relation_model sym
-        sym.to_s.singularize.capitalize.constantize
+        sym.to_s.singularize.camelcase.constantize
       end
 
       def default_foreing_key relation_model, model
