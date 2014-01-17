@@ -5,7 +5,7 @@ describe ActiveForce::SObject do
 
   before do
     class Post < ActiveForce::SObject
-      table_name = "Post__c"
+      self.table_name = "Post__c"
     end
 
     class Comment < ActiveForce::SObject
@@ -66,6 +66,21 @@ describe ActiveForce::SObject do
       @post.stub(:id).and_return("1")
       @post.comments_query.to_s.should ==
         "SELECT Id FROM Comment__c WHERE 1 = 1 AND Post__c = '1'"
+    end
+
+    it 'should use a convention name for the foreing key' do
+      class Comment < ActiveForce::SObject
+        field :post_id,         from: 'PostId'
+      end
+
+      class Post < ActiveForce::SObject
+        has_many :comments
+      end
+
+      @post = Post.new
+      @post.stub(:id).and_return("1")
+      @post.comments_query.to_s.should ==
+        "SELECT Id FROM Comment__c WHERE PostId = '1'"
     end
   end
 end
