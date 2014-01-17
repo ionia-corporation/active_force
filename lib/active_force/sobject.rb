@@ -28,8 +28,9 @@ module ActiveForce
 
     def self.has_many relation_name, options = {}
       super
+      model = relation_model relation_name
       define_method relation_name do
-        self.class.send_query(self.send "#{ relation_name }_query".to_sym)
+        self.class.send_query(model.send "#{ relation_name }_query".to_sym)
       end
     end
 
