@@ -29,8 +29,9 @@ module ActiveForce
 
       def belongs_to relation_name, options = {}
         model = options[:model] || relation_model(relation_name)
+        foreing_key      = options[:foreing_key] || "#{ relation_name }_id".to_sym
         define_method "#{ relation_name }" do
-          model.find(id)
+          model.find(self.send foreing_key)
         end
       end
     end
