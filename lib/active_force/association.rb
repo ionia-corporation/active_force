@@ -29,7 +29,7 @@ module ActiveForce
 
       def belongs_to relation_name, options = {}
         model = options[:model] || relation_model(relation_name)
-        foreing_key      = options[:foreing_key] || default_foreing_key(model, self.name)
+        foreing_key      = options[:foreing_key] || relation_name
         define_method "#{ relation_name }" do
           model.find(self.send foreing_key)
         end
