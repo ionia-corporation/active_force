@@ -26,6 +26,13 @@ module ActiveForce
       def default_foreing_key relation_model, model
         relation_model.mappings["#{model.downcase}_id".to_sym]
       end
+
+      def belongs_to relation_name
+        model = options[:model] || relation_model(relation_name)
+        define_method "#{ relation_name }" do
+          model.find(id)
+        end
+      end
     end
   end
 end
