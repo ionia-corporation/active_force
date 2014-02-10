@@ -48,6 +48,10 @@ module ActiveForce
       self
     end
 
+    def limit_value
+      @size
+    end
+
     def offset offset
       @offset = offset
       self
