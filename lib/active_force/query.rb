@@ -72,6 +72,13 @@ module ActiveForce
       self
     end
 
+    def total_count
+      @size = nil
+      @offset = nil
+      @query_fields = ["COUNT()"]
+      self
+    end
+
     protected
       def build_where
         unless @conditions.empty?

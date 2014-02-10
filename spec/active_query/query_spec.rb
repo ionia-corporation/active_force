@@ -69,6 +69,13 @@ describe ActiveForce::Query do
     end
   end
 
+  describe ".total_count" do
+    it "should return the total count of the query with out limit and offset values" do
+      @query.limit(1).offset(2)
+      @query.total_count.to_s.should == "SELECT COUNT() FROM table_name"
+    end
+  end
+
   describe ".find.to_s" do
     it "should return a query for 1 record" do
       @query.find(2).to_s.should == "SELECT Id, name, etc FROM table_name WHERE Id = '2' LIMIT 1"
