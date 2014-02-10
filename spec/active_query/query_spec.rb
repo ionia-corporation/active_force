@@ -49,6 +49,13 @@ describe ActiveForce::Query do
     end
   end
 
+  describe ".limit_value" do
+    it "should return the limit value" do
+      @query.limit(4)
+      @query.limit_value.should == 4
+    end
+  end
+
   describe ".offset" do
     it "should add an offset to a query" do
       @query.offset(4).to_s.should == "SELECT Id, name, etc FROM table_name OFFSET 4"
