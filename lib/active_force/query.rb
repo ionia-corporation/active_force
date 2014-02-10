@@ -53,6 +53,10 @@ module ActiveForce
       self
     end
 
+    def offset_value
+      @offset
+    end
+
     def find id
       where "#{ @table_id } = '#{ id }'"
       limit 1

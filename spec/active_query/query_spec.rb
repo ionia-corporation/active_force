@@ -55,6 +55,13 @@ describe ActiveForce::Query do
     end
   end
 
+  describe ".offset_value" do
+    it "should return the offset value" do
+      @query.offset(4)
+      @query.offset_value.should == 4
+    end
+  end
+
   describe ".find.to_s" do
     it "should return a query for 1 record" do
       @query.find(2).to_s.should == "SELECT Id, name, etc FROM table_name WHERE Id = '2' LIMIT 1"
