@@ -3,6 +3,7 @@ require 'active_attr'
 require 'active_attr/dirty'
 require 'active_force/query'
 require 'active_force/association'
+require 'yaml'
 
 module ActiveForce
   class SObject
