@@ -1,14 +1,19 @@
 require 'active_model'
 require 'active_attr'
 require 'active_attr/dirty'
+require 'active_force/query'
+require 'active_force/association'
+require 'yaml'
 
 module ActiveForce
   class SObject
     include ActiveAttr::Model
     include ActiveAttr::Dirty
+    include ActiveForce::Association
 
-    # Types recognised don't get the added "__c"
-    STANDARD_TYPES = %w[ Account Contact Opportunity ]
+    extend ClassMethods
+
+    STANDARD_TYPES = %w[ Account Contact Opportunity Campaign]
 
     class_attribute :mappings, :fields, :table_name
 
@@ -22,6 +27,14 @@ module ActiveForce
                       end
     end
 
+    def self.has_many relation_name, options = {}
+      super
+      model = options[:model] || relation_model(relation_name)
+      define_method relation_name do
+        model.send_query(self.send "#{ relation_name }_query".to_sym)
+      end
+    end
+
     def self.build sobject
       return nil if sobject.nil?
       model = new
@@ -32,37 +45,51 @@ module ActiveForce
       model
     end
 
+    def self.query
+      query = ActiveForce::Query.new(table_name)
+      query.fields fields
+      query
+    end
+
     def self.all
-      all = Client.query(<<-SOQL.strip_heredoc).to_a
-        SELECT
-          #{ fields.join(', ') }
-        FROM
-          #{ table_name }
-      SOQL
-      all.map do |mash|
+      send_query query
+    end
+
+    def self.send_query query
+      Client.query(query.to_s).to_a.map do |mash|
         build mash
       end
     end
 
     def self.find id
-      build Client.query(<<-SOQL.strip_heredoc).first
-        SELECT #{fields.join(', ')}
-        FROM #{table_name}
-        WHERE Id = '#{id}'
-      SOQL
+      send_query(query.find(id)).first
     end
 
-    def self.create(attributes = nil, &block)
-      if attributes.is_a?(Array)
-        attributes.collect { |attr| create(attr, &block) }
-      else
-        object = new(attributes, &block)
-        object.create
-        object
+    def update_attributes! attributes = {}
+      assign_attributes attributes
+      return false unless valid?
+      sobject_hash = { 'Id' => id }
+      changed.each do |field|
+        sobject_hash[mappings[field.to_sym]] = read_attribute(field)
       end
+      result = Client.update! table_name, sobject_hash
+      changed_attributes.clear
+      result
     end
 
-    def create
+    def update_attributes attributes = {}
+      update_attributes! attributes
+    rescue Faraday::Error::ClientError => error
+      Rails.logger.info do
+        "[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while updating, params: #{hash}, error: #{error.inspect}"
+      end
+      errors[:base] << error.message
+      false
+    end
+
+    alias_method :update, :update_attributes
+
+    def create!
       return false unless valid?
       hash = {}
       mappings.map do |field, name_in_sfdc|
@@ -71,26 +98,23 @@ module ActiveForce
       end
       self.id = Client.create! table_name, hash
       changed_attributes.clear
+    end
+
+    def create
+      create!
     rescue Faraday::Error::ClientError => error
-      Rails.logger.warn do
+      Rails.logger.info do
         "[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while creating, params: #{hash}, error: #{error.inspect}"
       end
       errors[:base] << error.message
       false
     end
 
-    def update_attributes attributes
-      assign_attributes attributes
-      if valid?
-        sobject_hash = { 'Id' => id }
-        changed.each do |field|
-          sobject_hash[mappings[field.to_sym]] = read_attribute(field)
-        end
-        result = Client.update table_name, sobject_hash
-        changed_attributes.clear if result
-        result
+    def save
+      if persisted?
+        update
       else
-        false
+        create
       end
     end
 

@@ -1,3 +1,3 @@
 module ActiveForce
-  VERSION = "0.0.7.alfa"
+  VERSION = "0.1.1"
 end
