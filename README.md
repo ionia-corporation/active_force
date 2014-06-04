@@ -23,8 +23,12 @@ Or install it yourself as:
     $ gem install active_force
     
 Rails:
-    $ #Add this to initializers/restforce.rb
-    $::Client = Restforce.new
+
+```ruby
+#Add this to initializers/restforce.rb
+Restforce.log = true if Rails.env.development?
+::Client = Restforce.new
+```
 
 ## Usage
 
