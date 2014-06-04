@@ -21,6 +21,10 @@ And then execute:
 Or install it yourself as:
 
     $ gem install active_force
+    
+Rails:
+    $ #Add this to initializers/restforce.rb
+    $::Client = Restforce.new
 
 ## Usage
 
