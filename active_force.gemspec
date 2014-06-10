@@ -6,8 +6,8 @@ require 'active_force/version'
 Gem::Specification.new do |spec|
   spec.name          = "active_force"
   spec.version       = ActiveForce::VERSION
-  spec.authors       = ["Eloy Espinaco"]
-  spec.email         = ["eloyesp@gmail.com"]
+  spec.authors       = ["Eloy Espinaco", "Pablo Oldani"]
+  spec.email         = "eloyesp@gmail.com"
   spec.description   = %q{Use SalesForce as an ActiveModel}
   spec.summary       = %q{Help you implement models persisting on Sales Force within Rails using RESTForce}
   spec.homepage      = ""
@@ -17,6 +17,8 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
+
+  spec.required_ruby_version = '~> 2.0'
 
   spec.add_dependency 'active_attr', '~> 0.8'
   spec.add_dependency 'restforce',   '~> 1.4'
