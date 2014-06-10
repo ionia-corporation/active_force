@@ -48,9 +48,9 @@ describe ActiveForce::SObject do
         "SELECT Id FROM Comment WHERE Post__c = '1'"
     end
 
-    it 'should allow to change the foreing key' do
+    it 'should allow to change the foreign key' do
       class Post < ActiveForce::SObject
-        has_many :comments, { foreing_key: 'Post' }
+        has_many :comments, { foreign_key: 'Post' }
       end
       @post = Post.new
       @post.stub(:id).and_return("1")
@@ -68,7 +68,7 @@ describe ActiveForce::SObject do
         "SELECT Id FROM Comment__c WHERE 1 = 1 AND Post__c = '1'"
     end
 
-    it 'should use a convention name for the foreing key' do
+    it 'should use a convention name for the foreign key' do
       class Comment < ActiveForce::SObject
         field :post_id,         from: 'PostId'
       end
