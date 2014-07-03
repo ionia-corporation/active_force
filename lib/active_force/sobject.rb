@@ -51,6 +51,14 @@ module ActiveForce
       query
     end
 
+    def self.first
+      send_query query.first
+    end
+
+    def self.last
+      send_query query.last
+    end
+
     def self.all
       send_query query
     end
