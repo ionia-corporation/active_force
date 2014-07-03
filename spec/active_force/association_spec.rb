@@ -55,7 +55,7 @@ describe ActiveForce::SObject do
       @post = Post.new
       @post.stub(:id).and_return("1")
       @post.comments_query.to_s.should ==
-        "SELECT Id FROM Comment__c WHERE Post__c = '1'"
+        "SELECT Id FROM Comment__c WHERE Post = '1'"
     end
 
     it 'should allow to add a where condition' do
