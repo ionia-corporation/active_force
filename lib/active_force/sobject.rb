@@ -52,11 +52,11 @@ module ActiveForce
     end
 
     def self.first
-      send_query query.first
+      send_query(query.first).first
     end
 
     def self.last
-      send_query query.last
+      send_query(query.last).first
     end
 
     def self.all
