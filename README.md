@@ -1,7 +1,7 @@
 [![Gem Version](http://img.shields.io/gem/v/active_force.svg)](http://badge.fury.io/rb/active_force)
-[![Build Status](http://img.shields.io/travis/eloyesp/active_force.svg)](https://travis-ci.org/eloyesp/active_force)
-[![Code Climate](http://img.shields.io/codeclimate/github/eloyesp/active_force.svg)](https://codeclimate.com/github/eloyesp/active_force)
-[![Dependency Status](http://img.shields.io/gemnasium/eloyesp/active_force.svg)](https://gemnasium.com/eloyesp/active_force)
+[![Build Status](http://img.shields.io/travis/ionia-corporation/active_force.svg)](https://travis-ci.org/ionia-corporation/active_force)
+[![Code Climate](http://img.shields.io/codeclimate/github/ionia-corporation/active_force.svg)](https://codeclimate.com/github/ionia-corporation/active_force)
+[![Dependency Status](http://img.shields.io/gemnasium/ionia-corporation/active_force.svg)](https://gemnasium.com/ionia-corporation/active_force)
 
 # ActiveForce
 
