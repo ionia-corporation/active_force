@@ -70,6 +70,10 @@ module ActiveForce
       limit 1
     end
 
+    def last
+      order("Id DESC").limit(1)
+    end
+
     def join object_query
       fields ["(#{ object_query.to_s })"]
       self

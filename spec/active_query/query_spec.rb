@@ -105,4 +105,11 @@ describe ActiveForce::Query do
         'SELECT Id, name, etc FROM table_name LIMIT 1'
     end
   end
+
+  describe '.last' do
+    it 'should return the query for the last record' do
+      @query.last.to_s.should ==
+        'SELECT Id, name, etc FROM table_name ORDER BY Id DESC LIMIT 1'
+    end
+  end
 end
