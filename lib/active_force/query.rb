@@ -64,7 +64,6 @@ module ActiveForce
     def find id
       where "#{ @table_id } = '#{ id }'"
       limit 1
-      self
     end
 
     def first
