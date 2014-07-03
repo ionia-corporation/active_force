@@ -98,4 +98,11 @@ describe ActiveForce::Query do
         'SELECT Id, name, etc, (SELECT Id, name, etc FROM join_table_name) FROM table_name'
     end
   end
+
+  describe '.first' do
+    it 'should return the query for the first record' do
+      @query.first.to_s.should ==
+        'SELECT Id, name, etc FROM table_name LIMIT 1'
+    end
+  end
 end
