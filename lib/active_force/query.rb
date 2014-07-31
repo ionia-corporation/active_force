@@ -79,6 +79,11 @@ module ActiveForce
       self
     end
 
+    def count
+      @query_fields = ["count(Id)"]
+      self
+    end
+
     protected
       def build_where
         unless @conditions.empty?
