@@ -11,6 +11,12 @@ describe ActiveForce::SObject do
     class Comment < ActiveForce::SObject
       self.table_name = "Comment__c"
     end
+
+    def post
+      post = Post.new
+      post.stub(:id).and_return("1")
+      post
+    end
   end
 
   describe "has_many_query" do
@@ -19,18 +25,15 @@ describe ActiveForce::SObject do
       class Post < ActiveForce::SObject
         has_many :comments
       end
-
-      @post = Post.new
-      @post.stub(:id).and_return("1")
     end
 
     it "should return a Query object" do
-      @post.comments_query.class.should be ActiveForce::Query
+      post.comments_query.class.should be ActiveForce::Query
     end
 
     describe 'to_s' do
       it "should retrun a OSQL statment" do
-       @post.comments_query.to_s.should ==
+       post.comments_query.to_s.should ==
          "SELECT Id FROM Comment__c WHERE Post__c = '1'"
       end
     end
@@ -42,9 +45,7 @@ describe ActiveForce::SObject do
       class Post < ActiveForce::SObject
         has_many :comments, { table: 'Comment' }
       end
-      @post = Post.new
-      @post.stub(:id).and_return("1")
-      @post.comments_query.to_s.should ==
+      post.comments_query.to_s.should ==
         "SELECT Id FROM Comment WHERE Post__c = '1'"
     end
 
@@ -52,9 +53,7 @@ describe ActiveForce::SObject do
       class Post < ActiveForce::SObject
         has_many :comments, { foreign_key: 'Post' }
       end
-      @post = Post.new
-      @post.stub(:id).and_return("1")
-      @post.comments_query.to_s.should ==
+      post.comments_query.to_s.should ==
         "SELECT Id FROM Comment__c WHERE Post = '1'"
     end
 
@@ -62,9 +61,7 @@ describe ActiveForce::SObject do
       class Post < ActiveForce::SObject
         has_many :comments, { where: '1 = 1' }
       end
-      @post = Post.new
-      @post.stub(:id).and_return("1")
-      @post.comments_query.to_s.should ==
+      post.comments_query.to_s.should ==
         "SELECT Id FROM Comment__c WHERE 1 = 1 AND Post__c = '1'"
     end
 
@@ -77,9 +74,7 @@ describe ActiveForce::SObject do
         has_many :comments
       end
 
-      @post = Post.new
-      @post.stub(:id).and_return("1")
-      @post.comments_query.to_s.should ==
+      post.comments_query.to_s.should ==
         "SELECT Id FROM Comment__c WHERE PostId = '1'"
     end
   end
