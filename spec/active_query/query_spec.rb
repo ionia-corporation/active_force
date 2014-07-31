@@ -81,7 +81,7 @@ describe ActiveForce::Query do
     end
 
     it "should add a order condition in the statment with WHERE and LIMIT" do
-      @query.where("condition1 = 1").order("name desc").limit(1).to_s.should == 
+      @query.where("condition1 = 1").order("name desc").limit(1).to_s.should ==
         "SELECT Id, name, etc FROM table_name WHERE condition1 = 1 ORDER BY name desc LIMIT 1"
     end
   end
@@ -93,7 +93,7 @@ describe ActiveForce::Query do
       @join.fields ['name', 'etc']
     end
 
-    it 'sould add another select statment on the current select' do
+    it 'should add another select statment on the current select' do
       @query.join(@join).to_s.should ==
         'SELECT Id, name, etc, (SELECT Id, name, etc FROM join_table_name) FROM table_name'
     end
@@ -110,6 +110,13 @@ describe ActiveForce::Query do
     it 'should return the query for the last record' do
       @query.last.to_s.should ==
         'SELECT Id, name, etc FROM table_name ORDER BY Id DESC LIMIT 1'
+    end
+  end
+
+  describe ".count" do
+    it "should return the query for getting the row count" do
+      @query.count.to_s.should ==
+        'SELECT count(Id) FROM table_name'
     end
   end
 end
