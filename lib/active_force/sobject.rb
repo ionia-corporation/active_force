@@ -11,7 +11,7 @@ module ActiveForce
     include ActiveAttr::Dirty
     include ActiveForce::Association
 
-    extend ClassMethods
+    extend ActiveForce::Association::ClassMethods
 
     STANDARD_TYPES = %w[ Account Contact Opportunity Campaign]
 
