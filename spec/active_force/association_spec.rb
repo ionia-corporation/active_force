@@ -3,6 +3,12 @@ require 'active_force/association'
 
 describe ActiveForce::SObject do
 
+  let :post do
+      post = Post.new
+      post.stub(:id).and_return("1")
+      post
+    end
+
   before do
     class Post < ActiveForce::SObject
       self.table_name = "Post__c"
@@ -12,11 +18,6 @@ describe ActiveForce::SObject do
       self.table_name = "Comment__c"
     end
 
-    def post
-      post = Post.new
-      post.stub(:id).and_return("1")
-      post
-    end
   end
 
   describe "has_many_query" do
