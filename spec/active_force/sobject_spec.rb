@@ -64,4 +64,18 @@ describe ActiveForce::SObject do
 
   end
 
+  describe "#count" do
+    let(:count_response){ [Restforce::Mash.new(expr0: 1)] }
+
+    it "responds to count" do
+      Whizbang.should respond_to(:count)
+    end
+
+    it "sends the query to the client" do
+      Client.should_receive(:query).and_return(count_response)
+      expect(Whizbang.count).to eq(1)
+    end
+
+  end
+
 end
