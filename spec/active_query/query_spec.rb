@@ -118,5 +118,10 @@ describe ActiveForce::Query do
       @query.count.to_s.should ==
         'SELECT count(Id) FROM table_name'
     end
+
+    it "should work with a condition" do
+      @query.where("name = 'cool'").count.to_s.should ==
+        "SELECT count(Id) FROM table_name WHERE name = 'cool'"
+    end
   end
 end
