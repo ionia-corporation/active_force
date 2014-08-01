@@ -78,4 +78,10 @@ describe ActiveForce::SObject do
 
   end
 
+  describe "#find_by" do
+    it "responds to find_by" do
+      Whizbang.should respond_to(:find_by)
+    end
+  end
+
 end
