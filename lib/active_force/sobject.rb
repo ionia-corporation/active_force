@@ -63,6 +63,10 @@ module ActiveForce
       send_query query
     end
 
+    def self.count
+      Client.query(query.count).first.expr0
+    end
+
     def self.send_query query
       Client.query(query.to_s).to_a.map do |mash|
         build mash
