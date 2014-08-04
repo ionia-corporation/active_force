@@ -82,6 +82,11 @@ describe ActiveForce::SObject do
     it "responds to find_by" do
       Whizbang.should respond_to(:find_by)
     end
+
+    it "should query the client" do
+      Client.should_receive(:query)
+      Whizbang.find_by id: 123, text: "foo"
+    end
   end
 
 end
