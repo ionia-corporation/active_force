@@ -3,6 +3,7 @@ require 'active_attr'
 require 'active_attr/dirty'
 require 'active_force/query'
 require 'active_force/association'
+require 'active_force/finders'
 require 'yaml'
 
 module ActiveForce
@@ -10,8 +11,7 @@ module ActiveForce
     include ActiveAttr::Model
     include ActiveAttr::Dirty
     include ActiveForce::Association
-
-    extend ActiveForce::Association::ClassMethods
+    include ActiveForce::Finders
 
     STANDARD_TYPES = %w[ Account Contact Opportunity Campaign]
 
@@ -36,7 +36,7 @@ module ActiveForce
     end
 
     def self.build sobject
-      return nil if sobject.nil?
+      return unless sobject
       model = new
       mappings.each do |attr, sf_field|
         model[attr] = sobject[sf_field]
