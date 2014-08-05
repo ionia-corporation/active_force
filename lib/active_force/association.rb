@@ -35,5 +35,10 @@ module ActiveForce
         end
       end
     end
+
+    def self.included mod
+      mod.extend ClassMethods
+    end
+
   end
 end
