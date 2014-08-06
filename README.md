@@ -2,6 +2,8 @@
 [![Build Status](http://img.shields.io/travis/ionia-corporation/active_force.svg)](https://travis-ci.org/ionia-corporation/active_force)
 [![Code Climate](http://img.shields.io/codeclimate/github/ionia-corporation/active_force.svg)](https://codeclimate.com/github/ionia-corporation/active_force)
 [![Dependency Status](http://img.shields.io/gemnasium/ionia-corporation/active_force.svg)](https://gemnasium.com/ionia-corporation/active_force)
+[![Test Coverage](https://codeclimate.com/github/ionia-corporation/active_force/badges/coverage.svg)](https://codeclimate.com/github/ionia-corporation/active_force)
+
 
 # ActiveForce
 
