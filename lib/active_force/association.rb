@@ -1,22 +1,12 @@
 require 'active_force/query'
+require 'active_force/association/has_many_association'
 
 module ActiveForce
   module Association
     module ClassMethods
-      def has_many relation_name, options = {}
-        model = options[:model] || relation_model(relation_name)
-        association_name = options[:table] || model.table_name || "#{ model }__c"
-        foreign_key      = options[:foreign_key] || default_foreign_key(model, self.name) || table_name
 
-        define_method "#{ relation_name }_query" do
-          query = ActiveForce::Query.new(association_name)
-          query.fields model.fields
-          query.where(options[:where]) if options[:where]
-          query.order(options[:order]) if options[:order]
-          query.limit(options[:limit]) if options[:limit]
-          query.where("#{ foreign_key } = '#{ id }'")
-          query
-        end
+      def has_many relation_name, options = {}
+        HasManyAssociation.new self, relation_name, options
       end
 
       def relation_model sym
@@ -34,6 +24,7 @@ module ActiveForce
           model.find(self.send foreign_key)
         end
       end
+
     end
 
     def self.included mod
