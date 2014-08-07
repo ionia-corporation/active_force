@@ -83,8 +83,8 @@ describe ActiveForce::SObject do
       Whizbang.should respond_to(:find_by)
     end
 
-    it "should query the client" do
-      Client.should_receive(:query)
+    it "should query the client, with the SFDC field names and correctly enclosed values" do
+      Client.should_receive(:query).with("SELECT Id FROM Whizbang__c WHERE Id = 123 AND Text_Label = 'foo'")
       Whizbang.find_by id: 123, text: "foo"
     end
   end
