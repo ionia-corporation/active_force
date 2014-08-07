@@ -43,25 +43,19 @@ describe ActiveForce::SObject do
   describe 'has_many(options)' do
 
     it 'should allow to send a different query table name' do
-      class Post < ActiveForce::SObject
-        has_many :comments, { table: 'Comment' }
-      end
+      Post.has_many :comments, { table: 'Comment' }
       post.comments_query.to_s.should ==
         "SELECT Id FROM Comment WHERE Post__c = '1'"
     end
 
     it 'should allow to change the foreign key' do
-      class Post < ActiveForce::SObject
-        has_many :comments, { foreign_key: 'Post' }
-      end
+      Post.has_many :comments, { foreign_key: 'Post' }
       post.comments_query.to_s.should ==
         "SELECT Id FROM Comment__c WHERE Post = '1'"
     end
 
     it 'should allow to add a where condition' do
-      class Post < ActiveForce::SObject
-        has_many :comments, { where: '1 = 1' }
-      end
+      Post.has_many :comments, { where: '1 = 1' }
       post.comments_query.to_s.should ==
         "SELECT Id FROM Comment__c WHERE 1 = 1 AND Post__c = '1'"
     end
