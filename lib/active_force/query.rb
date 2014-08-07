@@ -84,6 +84,12 @@ module ActiveForce
       self
     end
 
+    def options args
+      where(args[:where])
+      limit(args[:limit])
+      order(args[:order])
+    end
+
     protected
       def build_where
         unless @conditions.empty?

@@ -124,4 +124,26 @@ describe ActiveForce::Query do
         "SELECT count(Id) FROM table_name WHERE name = 'cool'"
     end
   end
+
+  describe '.options' do
+    it 'should add a where if the option has a where condition' do
+      @query.options(where: 'var = 1').to_s.should ==
+        "SELECT Id, name, etc FROM table_name WHERE var = 1"
+    end
+
+    it 'should add a limit if the option has a limit condition' do
+      @query.options(limit: 1).to_s.should ==
+        "SELECT Id, name, etc FROM table_name LIMIT 1"
+    end
+
+    it 'should add a order if the option has a order condition' do
+      @query.options(order: 'name desc').to_s.should ==
+        "SELECT Id, name, etc FROM table_name ORDER BY name desc"
+    end
+
+    it 'should work with multiples options' do
+      @query.options(where: 'var = 1', order: 'name desc', limit: 1).to_s.should ==
+        "SELECT Id, name, etc FROM table_name WHERE var = 1 ORDER BY name desc LIMIT 1"
+    end
+  end
 end
