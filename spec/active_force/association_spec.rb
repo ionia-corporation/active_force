@@ -29,6 +29,7 @@ describe ActiveForce::SObject do
       self.table_name = "Comment__c"
     end
 
+    ActiveForce::SObject.stub(:sfdc_client).and_return client
   end
 
   describe "has_many_query" do
