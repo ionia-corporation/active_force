@@ -18,8 +18,13 @@ module ActiveForce
         end
       end
 
+      # encloses the value in quotes if it's a string
       def enclose_value value
-
+        if value.is_a? String
+          "'#{value}'"
+        else
+          value.to_s
+        end
       end
 
     end
