@@ -18,9 +18,9 @@ module ActiveForce
         @parent.send :define_method, query_method_name do
           query = Query.new association_name
           query.fields relation_model.fields
-          query.where options[:where] if options[:where]
-          query.order options[:order] if options[:order]
-          query.limit options[:limit] if options[:limit]
+          query.where options[:where]
+          query.order options[:order]
+          query.limit options[:limit]
           query.where "#{ foreign_key } = '#{ self.id }'"
           query
         end

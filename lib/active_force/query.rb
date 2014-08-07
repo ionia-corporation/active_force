@@ -34,17 +34,17 @@ module ActiveForce
     end
 
     def where condition
-      @conditions << condition
+      @conditions << condition if condition
       self
     end
 
     def order order
-      @order = order
+      @order = order if order
       self
     end
 
     def limit size
-      @size = size
+      @size = size if size
       self
     end
 
