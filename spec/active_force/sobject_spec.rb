@@ -64,4 +64,29 @@ describe ActiveForce::SObject do
 
   end
 
+  describe "#count" do
+    let(:count_response){ [Restforce::Mash.new(expr0: 1)] }
+
+    it "responds to count" do
+      Whizbang.should respond_to(:count)
+    end
+
+    it "sends the query to the client" do
+      Client.should_receive(:query).and_return(count_response)
+      expect(Whizbang.count).to eq(1)
+    end
+
+  end
+
+  describe "#find_by" do
+    it "responds to find_by" do
+      Whizbang.should respond_to(:find_by)
+    end
+
+    it "should query the client, with the SFDC field names and correctly enclosed values" do
+      Client.should_receive(:query).with("SELECT Id FROM Whizbang__c WHERE Id = 123 AND Text_Label = 'foo'")
+      Whizbang.find_by id: 123, text: "foo"
+    end
+  end
+
 end

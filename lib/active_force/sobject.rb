@@ -3,6 +3,7 @@ require 'active_attr'
 require 'active_attr/dirty'
 require 'active_force/query'
 require 'active_force/association'
+require 'active_force/finders'
 require 'yaml'
 
 module ActiveForce
@@ -10,8 +11,7 @@ module ActiveForce
     include ActiveAttr::Model
     include ActiveAttr::Dirty
     include ActiveForce::Association
-
-    extend ActiveForce::Association::ClassMethods
+    include ActiveForce::Finders
 
     STANDARD_TYPES = %w[ Account Contact Opportunity Campaign]
 
@@ -27,16 +27,8 @@ module ActiveForce
                       end
     end
 
-    def self.has_many relation_name, options = {}
-      super
-      model = options[:model] || relation_model(relation_name)
-      define_method relation_name do
-        model.send_query(self.send "#{ relation_name }_query".to_sym)
-      end
-    end
-
     def self.build sobject
-      return nil if sobject.nil?
+      return unless sobject
       model = new
       mappings.each do |attr, sf_field|
         model[attr] = sobject[sf_field]
@@ -63,8 +55,12 @@ module ActiveForce
       send_query query
     end
 
+    def self.count
+      sfdc_client.query(query.count).first.expr0
+    end
+
     def self.send_query query
-      Client.query(query.to_s).to_a.map do |mash|
+      sfdc_client.query(query.to_s).to_a.map do |mash|
         build mash
       end
     end
@@ -80,7 +76,7 @@ module ActiveForce
       changed.each do |field|
         sobject_hash[mappings[field.to_sym]] = read_attribute(field)
       end
-      result = Client.update! table_name, sobject_hash
+      result = sfdc_client.update! table_name, sobject_hash
       changed_attributes.clear
       result
     end
@@ -104,7 +100,7 @@ module ActiveForce
         value = read_value field
         hash[name_in_sfdc] = value if value.present?
       end
-      self.id = Client.create! table_name, hash
+      self.id = sfdc_client.create! table_name, hash
       changed_attributes.clear
     end
 
@@ -153,10 +149,18 @@ module ActiveForce
       end
 
       def self.picklist field
-        picks = Client.picklist_values(table_name, mappings[field])
+        picks = sfdc_client.picklist_values(table_name, mappings[field])
         picks.map do |value|
           [value[:label], value[:value]]
         end
+      end
+
+      def self.sfdc_client
+        Client
+      end
+
+      def sfdc_client
+        self.class.sfdc_client
       end
   end
 end
