@@ -40,6 +40,10 @@ describe ActiveForce::SObject do
       end
     end
 
+    it "should respond to relation method" do
+      expect(post).to respond_to(:comments)
+    end
+
     it "should return a Query object" do
       post.comments_query.class.should be ActiveForce::Query
     end
