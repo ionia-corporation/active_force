@@ -77,16 +77,30 @@ describe ActiveForce::SObject do
     end
 
     it 'should use a convention name for the foreign key' do
-      class Comment < ActiveForce::SObject
-        field :post_id,         from: 'PostId'
-      end
-
-      class Post < ActiveForce::SObject
-        has_many :comments
-      end
-
+      Comment.field :post_id, from: 'PostId'
+      Post.has_many :comments
       post.comments_query.to_s.should ==
         "SELECT Id FROM Comment__c WHERE PostId = '1'"
     end
+  end
+
+  describe "belongs_to" do
+
+    before do
+      Comment.belongs_to :post
+      client.stub(:query).and_return Restforce::Mash.new(id: 1)
+    end
+
+    it "should get the resource it belongs to" do
+      expect(comment.post).to be_instance_of(Post)
+    end
+
+    it "should allow to pass a foreign key as options" do
+      Comment.belongs_to :post, foreign_key: :fancy_post_id
+      comment.stub(:fancy_post_id).and_return "1"
+      client.should_receive(:query).with("SELECT Id FROM Post__c WHERE Id = '1' LIMIT 1")
+      comment.post
+    end
+
   end
 end
