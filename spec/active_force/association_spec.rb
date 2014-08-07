@@ -4,10 +4,21 @@ require 'active_force/association'
 describe ActiveForce::SObject do
 
   let :post do
-      post = Post.new
-      post.stub(:id).and_return("1")
-      post
-    end
+    post = Post.new
+    post.stub(:id).and_return "1"
+    post
+  end
+
+  let :comment do
+    comment = Comment.new
+    comment.stub(:id).and_return "1"
+    comment.stub(:post_id).and_return "1"
+    comment
+  end
+
+  let :client do
+    double("sfdc_client")
+  end
 
   before do
     class Post < ActiveForce::SObject
