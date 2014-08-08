@@ -2,13 +2,16 @@ module ActiveForce
   class Query
     attr_reader :table
 
-    attr_accessor :table_id
-
     def initialize table
-      @table = table
+      from table
       @conditions = []
       @table_id = 'Id'
       @query_fields = [@table_id]
+    end
+
+    def from table
+      @table = table if table
+      self
     end
 
     def fields fields_collection = []
@@ -20,7 +23,7 @@ module ActiveForce
     end
 
     def to_s
-      query = <<-SOQL.gsub(/\s+/, " ").strip
+      <<-SOQL.gsub(/\s+/, " ").strip
         SELECT
           #{ @query_fields.uniq.join(', ') }
         FROM
@@ -30,21 +33,20 @@ module ActiveForce
         #{ build_limit }
         #{ build_offset }
       SOQL
-      query
     end
 
     def where condition
-      @conditions << condition
+      @conditions << condition if condition
       self
     end
 
     def order order
-      @order = order
+      @order = order if order
       self
     end
 
     def limit size
-      @size = size
+      @size = size if size
       self
     end
 
@@ -84,11 +86,16 @@ module ActiveForce
       self
     end
 
+    def options args
+      from args[:table]
+      where args[:where]
+      limit args[:limit]
+      order args[:order]
+    end
+
     protected
       def build_where
-        unless @conditions.empty?
-          "WHERE #{ @conditions.join(' AND ') }"
-        end
+        "WHERE #{ @conditions.join(' AND ') }" unless @conditions.empty?
       end
 
       def build_limit

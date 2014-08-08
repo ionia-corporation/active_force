@@ -11,33 +11,25 @@ module ActiveForce
       end
 
       def define_query_method
-        association_name = self.association_name
-        relation_model = self.relation_model
-        foreign_key = self.foreign_key
+        association = self
         options = @options
         @parent.send :define_method, query_method_name do
-          query = Query.new association_name
-          query.fields relation_model.fields
-          query.where options[:where] if options[:where]
-          query.order options[:order] if options[:order]
-          query.limit options[:limit] if options[:limit]
-          query.where "#{ foreign_key } = '#{ self.id }'"
-          query
+          query = association.relation_model.query
+          query.options options
+          query.where "#{ association.foreign_key } = '#{ self.id }'"
         end
       end
 
       def define_relation_method
-        relation_model = self.relation_model
-        query_method_name = self.query_method_name
+        association = self
         @parent.send :define_method, @relation_name do
-          relation_model.send_query send(query_method_name)
+          association.relation_model.send_query send(association.query_method_name)
         end
       end
 
       def query_method_name
         "#{ @relation_name }_query"
       end
-
 
       def association_name
         @options[:table] || relation_model.table_name || "#{ relation_model }__c"
