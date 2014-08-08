@@ -3,15 +3,10 @@ module ActiveForce
     attr_reader :table
 
     def initialize table
-      from table
+      @table = table
       @conditions = []
       @table_id = 'Id'
       @query_fields = [@table_id]
-    end
-
-    def from table
-      @table = table if table
-      self
     end
 
     def fields fields_collection = []
@@ -87,7 +82,6 @@ module ActiveForce
     end
 
     def options args
-      from args[:table]
       where args[:where]
       limit args[:limit]
       order args[:order]

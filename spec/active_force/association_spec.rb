@@ -59,9 +59,9 @@ describe ActiveForce::SObject do
   describe 'has_many(options)' do
 
     it 'should allow to send a different query table name' do
-      Post.has_many :comments, { table: 'Comment' }
+      Post.has_many :ugly_comments, { model: Comment }
       post.comments_query.to_s.should ==
-        "SELECT Id FROM Comment WHERE Post__c = '1'"
+        "SELECT Id FROM Comment__c WHERE Post__c = '1'"
     end
 
     it 'should allow to change the foreign key' do
