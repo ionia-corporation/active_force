@@ -1,7 +1,7 @@
 require 'active_model'
 require 'active_attr'
 require 'active_attr/dirty'
-require 'active_force/query'
+require 'active_force/active_query'
 require 'active_force/association'
 require 'active_force/finders'
 require 'yaml'
@@ -38,7 +38,7 @@ module ActiveForce
     end
 
     def self.query
-      query = ActiveForce::Query.new(table_name)
+      query = ActiveForce::ActiveQuery.new self
       query.fields fields
       query
     end
