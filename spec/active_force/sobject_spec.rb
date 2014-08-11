@@ -72,7 +72,7 @@ describe ActiveForce::SObject do
     end
 
     it "sends the query to the client" do
-      Client.should_receive(:query).and_return(count_response)
+      expect(Client).to receive(:query).and_return(count_response)
       expect(Whizbang.count).to eq(1)
     end
 
