@@ -4,11 +4,11 @@ module ActiveForce
   class ActiveQuery < Query
     attr_reader :sobject
 
-    delegate :sfdc_client, :build, to: :sobject
+    delegate :sfdc_client, :build, :table_name, to: :sobject
 
     def initialize sobject
       @sobject = sobject
-      super(sobject.table_name)
+      super table_name
     end
 
     def to_a
