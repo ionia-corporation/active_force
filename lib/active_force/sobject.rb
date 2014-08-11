@@ -17,6 +17,10 @@ module ActiveForce
 
     class_attribute :mappings, :fields, :table_name
 
+    class << self
+      delegate :where, :to => :query
+    end
+
     # The table name to used to make queries.
     # It is derived from the class name adding the "__c" when needed.
     def self.table_name
