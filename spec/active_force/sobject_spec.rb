@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe ActiveForce::SObject do
+  let(:sobject_hash) { YAML.load(fixture('sobject/single_sobject_hash')) }
 
   before do
     ::Client = double('Client')
@@ -18,7 +19,6 @@ describe ActiveForce::SObject do
   end
 
   describe ".build" do
-    let(:sobject_hash) { YAML.load(fixture('sobject/single_sobject_hash')) }
 
     it "build a valid sobject from a JSON" do
       expect(Whizbang.build sobject_hash).to be_an_instance_of Whizbang
