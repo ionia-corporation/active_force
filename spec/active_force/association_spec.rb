@@ -44,44 +44,46 @@ describe ActiveForce::SObject do
       expect(post).to respond_to(:comments)
     end
 
-    it "should return a Query object" do
-      post.comments_query.class.should be ActiveForce::Query
+    it "should return a ActiveQuery object" do
+      expect(post.comments).to be_a ActiveForce::ActiveQuery
     end
 
     describe 'to_s' do
       it "should retrun a OSQL statment" do
-       post.comments_query.to_s.should ==
+       post.comments.to_s.should ==
          "SELECT Id FROM Comment__c WHERE Post__c = '1'"
       end
     end
+
   end
 
   describe 'has_many(options)' do
 
     it 'should allow to send a different query table name' do
       Post.has_many :ugly_comments, { model: Comment }
-      post.comments_query.to_s.should ==
+      post.comments.to_s.should ==
         "SELECT Id FROM Comment__c WHERE Post__c = '1'"
     end
 
     it 'should allow to change the foreign key' do
       Post.has_many :comments, { foreign_key: 'Post' }
-      post.comments_query.to_s.should ==
+      post.comments.to_s.should ==
         "SELECT Id FROM Comment__c WHERE Post = '1'"
     end
 
     it 'should allow to add a where condition' do
       Post.has_many :comments, { where: '1 = 1' }
-      post.comments_query.to_s.should ==
+      post.comments.to_s.should ==
         "SELECT Id FROM Comment__c WHERE 1 = 1 AND Post__c = '1'"
     end
 
     it 'should use a convention name for the foreign key' do
       Comment.field :post_id, from: 'PostId'
       Post.has_many :comments
-      post.comments_query.to_s.should ==
+      post.comments.to_s.should ==
         "SELECT Id FROM Comment__c WHERE PostId = '1'"
     end
+
   end
 
   describe "belongs_to" do
