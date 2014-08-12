@@ -10,7 +10,7 @@ module ActiveForce
     end
 
     def fields fields_collection = []
-      @query_fields = @query_fields + fields_collection.to_a
+      @query_fields += fields_collection.to_a
     end
 
     def all
@@ -88,20 +88,20 @@ module ActiveForce
     end
 
     protected
-      def build_where
-        "WHERE #{ @conditions.join(' AND ') }" unless @conditions.empty?
-      end
+    def build_where
+      "WHERE #{ @conditions.join(' AND ') }" unless @conditions.empty?
+    end
 
-      def build_limit
-        "LIMIT #{ @size }" if @size
-      end
+    def build_limit
+      "LIMIT #{ @size }" if @size
+    end
 
-      def build_order
-        "ORDER BY #{ @order }" if @order
-      end
+    def build_order
+      "ORDER BY #{ @order }" if @order
+    end
 
-      def build_offset
-        "OFFSET #{ @offset }" if @offset
-      end
+    def build_offset
+      "OFFSET #{ @offset }" if @offset
+    end
   end
 end
