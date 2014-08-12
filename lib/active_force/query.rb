@@ -10,7 +10,7 @@ module ActiveForce
     end
 
     def fields fields_collection = []
-      @query_fields = @query_fields + fields_collection.to_a
+      @query_fields += fields_collection.to_a
     end
 
     def all

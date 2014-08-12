@@ -12,6 +12,7 @@ module ActiveForce
     def initialize sobject
       @sobject = sobject
       super table_name
+      fields sobject.fields
     end
 
     def to_a
