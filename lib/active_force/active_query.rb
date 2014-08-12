@@ -1,10 +1,13 @@
 require 'active_force/query'
+require 'active_force/finders'
 
 module ActiveForce
   class ActiveQuery < Query
+    include ActiveForce::Finders
+
     attr_reader :sobject
 
-    delegate :sfdc_client, :build, :table_name, to: :sobject
+    delegate :sfdc_client, :build, :table_name, :mappings, to: :sobject
 
     def initialize sobject
       @sobject = sobject

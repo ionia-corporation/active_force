@@ -3,7 +3,6 @@ require 'active_attr'
 require 'active_attr/dirty'
 require 'active_force/active_query'
 require 'active_force/association'
-require 'active_force/finders'
 require 'yaml'
 
 module ActiveForce
@@ -11,7 +10,6 @@ module ActiveForce
     include ActiveAttr::Model
     include ActiveAttr::Dirty
     include ActiveForce::Association
-    include ActiveForce::Finders
 
     STANDARD_TYPES = %w[ Account Contact Opportunity Campaign]
 
@@ -27,7 +25,7 @@ module ActiveForce
       @table_name ||= if STANDARD_TYPES.include? self.name
                         self.name
                       else
-                        "#{self.name}__c"
+                        "#{ self.name }__c"
                       end
     end
 
