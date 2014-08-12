@@ -20,7 +20,7 @@ module ActiveForce
     def to_s
       <<-SOQL.gsub(/\s+/, " ").strip
         SELECT
-          #{ @query_fields.uniq.join(', ') }
+          #{ build_select }
         FROM
           #{ @table }
         #{ build_where }
@@ -88,6 +88,10 @@ module ActiveForce
     end
 
     protected
+      def build_select
+        @query_fields.uniq.join(', ')
+      end
+
       def build_where
         "WHERE #{ @conditions.join(' AND ') }" unless @conditions.empty?
       end
