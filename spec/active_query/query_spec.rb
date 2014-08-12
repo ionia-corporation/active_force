@@ -26,7 +26,7 @@ describe ActiveForce::Query do
       @query.all.to_s.should == "SELECT Id, name, etc FROM table_name"
     end
 
-    it "should ignore dupicated attributes in select statment" do
+    it "should ignore duplicated attributes in select statment" do
       @query.fields ['Id', 'name', 'etc']
       @query.all.to_s.should == "SELECT Id, name, etc FROM table_name"
     end
@@ -37,8 +37,13 @@ describe ActiveForce::Query do
       @query.where("name like '%a%'").to_s.should == "SELECT Id, name, etc FROM table_name WHERE name like '%a%'"
     end
 
-    it "should add multiples conditions to a query" do
+    it "should chain multiple where conditions" do
       @query.where("condition1 = 1").where("condition2 = 2").to_s.should ==
+        "SELECT Id, name, etc FROM table_name WHERE condition1 = 1 AND condition2 = 2"
+    end
+
+    it "should add multiple where conditions in a single where method" do
+      @query.where("condition1 = 1 AND condition2 = 2").to_s.should ==
         "SELECT Id, name, etc FROM table_name WHERE condition1 = 1 AND condition2 = 2"
     end
   end
@@ -70,7 +75,7 @@ describe ActiveForce::Query do
   end
 
   describe ".find.to_s" do
-    it "should return a query for 1 record" do
+    it "should return a query where id equals the find argument" do
       @query.find(2).to_s.should == "SELECT Id, name, etc FROM table_name WHERE Id = '2' LIMIT 1"
     end
   end
@@ -93,7 +98,7 @@ describe ActiveForce::Query do
       @join.fields ['name', 'etc']
     end
 
-    it 'should add another select statment on the current select' do
+    it 'sould add another select statment as one of the current select elements' do
       @query.join(@join).to_s.should ==
         'SELECT Id, name, etc, (SELECT Id, name, etc FROM join_table_name) FROM table_name'
     end
