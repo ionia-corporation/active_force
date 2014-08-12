@@ -18,7 +18,7 @@ module ActiveForce
     class_attribute :mappings, :fields, :table_name
 
     class << self
-      delegate :where, :to => :query
+      delegate :where, :first, :last, :all, :find, :find_by, :count, :to => :query
     end
 
     # The table name to used to make queries.
@@ -42,35 +42,7 @@ module ActiveForce
     end
 
     def self.query
-      query = ActiveForce::ActiveQuery.new self
-      query.fields fields
-      query
-    end
-
-    def self.first
-      send_query(query.first).first
-    end
-
-    def self.last
-      send_query(query.last).first
-    end
-
-    def self.all
-      send_query query
-    end
-
-    def self.count
-      sfdc_client.query(query.count).first.expr0
-    end
-
-    def self.send_query query
-      sfdc_client.query(query.to_s).to_a.map do |mash|
-        build mash
-      end
-    end
-
-    def self.find id
-      send_query(query.find(id)).first
+      ActiveForce::ActiveQuery.new self
     end
 
     def update_attributes! attributes = {}
