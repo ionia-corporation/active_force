@@ -16,14 +16,13 @@ module ActiveForce
     end
 
     def to_a
-      sfdc_client.query(to_s).to_a.map do |mash|
+      results.to_a.map do |mash|
         build mash
       end
     end
 
     def count
-      super
-      sfdc_client.query.first.expr0
+      results.first.expr0
     end
 
     def all
@@ -51,6 +50,10 @@ module ActiveForce
       else
         value.to_s
       end
+    end
+
+    def results
+      sfdc_client.query(to_s)
     end
   end
 end
