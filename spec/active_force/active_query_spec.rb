@@ -5,7 +5,7 @@ describe ActiveForce::ActiveQuery do
   let(:sobject){
     sobject = double("sobject")
     sobject.stub(:table_name).and_return "table_name"
-    sobject.stub(:fields).and_return {}
+    sobject.stub(:fields).and_return []
     sobject
   }
 
