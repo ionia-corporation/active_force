@@ -33,7 +33,7 @@ module ActiveForce
       return unless sf_table_description
       sobject = new
       mappings.each do |attr, sf_field|
-        sobject[attr] = sobject[sf_field]
+        sobject[attr] = sf_table_description[sf_field]
       end
       sobject.changed_attributes.clear
       sobject
