@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe ActiveForce::SObject do
+  let(:sobject_hash) { YAML.load(fixture('sobject/single_sobject_hash')) }
 
   before do
     ::Client = double('Client')
@@ -18,7 +19,6 @@ describe ActiveForce::SObject do
   end
 
   describe ".build" do
-    let(:sobject_hash) { YAML.load(fixture('sobject/single_sobject_hash')) }
 
     it "build a valid sobject from a JSON" do
       expect(Whizbang.build sobject_hash).to be_an_instance_of Whizbang
@@ -72,11 +72,18 @@ describe ActiveForce::SObject do
     end
 
     it "sends the query to the client" do
-      Client.should_receive(:query).and_return(count_response)
+      expect(Client).to receive(:query).and_return(count_response)
       expect(Whizbang.count).to eq(1)
     end
 
   end
+
+  # describe "first" do
+  #   it "should return the first value" do
+  #     binding.pry
+  #     expect(Whizbang.first).to eq(1)
+  #   end
+  # end
 
   describe "#find_by" do
     it "responds to find_by" do
@@ -84,7 +91,7 @@ describe ActiveForce::SObject do
     end
 
     it "should query the client, with the SFDC field names and correctly enclosed values" do
-      Client.should_receive(:query).with("SELECT Id FROM Whizbang__c WHERE Id = 123 AND Text_Label = 'foo'")
+      Client.should_receive(:query).with("SELECT Id FROM Whizbang__c WHERE Id = 123 AND Text_Label = 'foo' LIMIT 1")
       Whizbang.find_by id: 123, text: "foo"
     end
   end

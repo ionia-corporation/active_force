@@ -23,7 +23,7 @@ And then execute:
 Or install it yourself as:
 
     $ gem install active_force
-    
+
 Rails:
 
 ```ruby
@@ -38,22 +38,33 @@ Restforce.log = true if Rails.env.development?
 
 ```ruby
 class Page < ActiveForce::SObject
-  
+
 end
 ```
 
 ### Add Attributes
 ```ruby
 class Page < ActiveForce::SObject
-  #field, attribute name. from: 'Name in Salesforce database'
+  #field, :attribute_name, from: 'Name_In_Salesforce_Database'
   field :id,                from: 'Id'
-  field :name,              from: 'Medication__c'    
+  field :name,              from: 'Medication__c'
   self.fields     = mappings.values
   #set SalesForce table name.
   self.table_name = 'Patient_Medication__c'
 end
 ```
-### Relation ships
+### Validations
+You can use any validation that active record has (except for validates_associated), just by adding them to your class:
+
+```ruby
+validates :name, :login, :email, presence: true
+validates :text, length: { minimum: 2 }
+validates :text, format: { with: /\A[a-zA-Z]+\z/, message: "only allows letters" }
+validates :size, inclusion: { in: %w(small medium large),
+    message: "%{value} is not a valid size" }
+```
+
+### Relationships
 
 #### Has Many
 
@@ -73,7 +84,7 @@ you could send a option parameter in the declaration.
 class Account < ActiveForce::SObject
   has_many :medications,
     where: "(Date_Discontinued__c > #{ Date.today.strftime("%Y-%m-%d") } or Date_Discontinued__c = NULL)"
-    
+
   has_many :today_log_entrys,
     model: DailyLogEntry,
     where: "Date__c = #{ Time.now.in_time_zone.strftime("%Y-%m-%d") }"

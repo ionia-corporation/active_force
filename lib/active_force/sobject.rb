@@ -1,9 +1,8 @@
 require 'active_model'
 require 'active_attr'
 require 'active_attr/dirty'
-require 'active_force/query'
+require 'active_force/active_query'
 require 'active_force/association'
-require 'active_force/finders'
 require 'yaml'
 
 module ActiveForce
@@ -11,11 +10,14 @@ module ActiveForce
     include ActiveAttr::Model
     include ActiveAttr::Dirty
     include ActiveForce::Association
-    include ActiveForce::Finders
 
     STANDARD_TYPES = %w[ Account Contact Opportunity Campaign]
 
     class_attribute :mappings, :fields, :table_name
+
+    class << self
+      delegate :where, :first, :last, :all, :find, :find_by, :count, :to => :query
+    end
 
     # The table name to used to make queries.
     # It is derived from the class name adding the "__c" when needed.
@@ -23,50 +25,22 @@ module ActiveForce
       @table_name ||= if STANDARD_TYPES.include? self.name
                         self.name
                       else
-                        "#{self.name}__c"
+                        "#{ self.name }__c"
                       end
     end
 
-    def self.build sobject
-      return unless sobject
-      model = new
+    def self.build sf_table_description
+      return unless sf_table_description
+      sobject = new
       mappings.each do |attr, sf_field|
-        model[attr] = sobject[sf_field]
+        sobject[attr] = sf_table_description[sf_field]
       end
-      model.changed_attributes.clear
-      model
+      sobject.changed_attributes.clear
+      sobject
     end
 
     def self.query
-      query = ActiveForce::Query.new(table_name)
-      query.fields fields
-      query
-    end
-
-    def self.first
-      send_query(query.first).first
-    end
-
-    def self.last
-      send_query(query.last).first
-    end
-
-    def self.all
-      send_query query
-    end
-
-    def self.count
-      sfdc_client.query(query.count).first.expr0
-    end
-
-    def self.send_query query
-      sfdc_client.query(query.to_s).to_a.map do |mash|
-        build mash
-      end
-    end
-
-    def self.find id
-      send_query(query.find(id)).first
+      ActiveForce::ActiveQuery.new self
     end
 
     def update_attributes! attributes = {}
