@@ -22,11 +22,7 @@ module ActiveForce
     # The table name to used to make queries.
     # It is derived from the class name adding the "__c" when needed.
     def self.table_name
-      @table_name ||= if STANDARD_TYPES.include? self.name
-                        self.name
-                      else
-                        "#{ self.name }__c"
-                      end
+      @table_name ||= custom_table_name || "#{ self.name }__c"
     end
 
     def self.build sf_table_description
@@ -113,7 +109,13 @@ module ActiveForce
       @mappings ||= {}
     end
 
+
     private
+
+    def self.custom_table_name
+      self.name if STANDARD_TYPES.include? self.name
+    end
+
       def read_value field
         if self.class.attributes[field][:sf_type] == :multi_picklist
           attribute(field.to_s).reject(&:empty?).join(';')

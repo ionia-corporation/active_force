@@ -6,7 +6,7 @@ require 'active_force/version'
 Gem::Specification.new do |spec|
   spec.name          = "active_force"
   spec.version       = ActiveForce::VERSION
-  spec.authors       = ["Eloy Espinaco", "Pablo Oldani"]
+  spec.authors       = ["Eloy Espinaco", "Pablo Oldani", "Armando Andini", "José Piccioni"]
   spec.email         = "eloyesp@gmail.com"
   spec.description   = %q{Use SalesForce as an ActiveModel}
   spec.summary       = %q{Help you implement models persisting on Sales Force within Rails using RESTForce}

@@ -1,9 +1,7 @@
 require 'active_force/query'
-require 'active_force/finders'
 
 module ActiveForce
   class ActiveQuery < Query
-    include ActiveForce::Finders
 
     attr_reader :sobject
 
@@ -16,13 +14,14 @@ module ActiveForce
     end
 
     def to_a
-      results.to_a.map do |mash|
+      result.to_a.map do |mash|
         build mash
       end
     end
 
     def count
-      results.first.expr0
+      super
+      sfdc_client.query(to_s).first.expr0
     end
 
     def all
@@ -42,6 +41,10 @@ module ActiveForce
       self
     end
 
+    def find_by conditions
+      where(conditions).limit 1
+    end
+
     private
 
     def enclose_value value
@@ -52,8 +55,8 @@ module ActiveForce
       end
     end
 
-    def results
-      sfdc_client.query(to_s)
+    def result
+      sfdc_client.query(self.to_s)
     end
   end
 end
