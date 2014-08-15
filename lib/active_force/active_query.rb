@@ -1,11 +1,13 @@
 require 'active_force/query'
+require 'forwardable'
 
 module ActiveForce
   class ActiveQuery < Query
+    extend Forwardable
 
     attr_reader :sobject
 
-    delegate :sfdc_client, :build, :table_name, :mappings, to: :sobject
+    def_delegators  :sobject, :sfdc_client, :build, :table_name, :mappings
 
     def initialize sobject
       @sobject = sobject
