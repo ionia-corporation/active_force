@@ -25,14 +25,14 @@ module ActiveForce
       @table_name ||= custom_table_name || "#{ self.name }__c"
     end
 
-    def self.build sobject
-      return unless sobject
-      model = new
+    def self.build sf_table_description
+      return unless sf_table_description
+      sobject = new
       mappings.each do |attr, sf_field|
-        model[attr] = sobject[sf_field]
+        sobject[attr] = sf_table_description[sf_field]
       end
-      model.changed_attributes.clear
-      model
+      sobject.changed_attributes.clear
+      sobject
     end
 
     def self.query
