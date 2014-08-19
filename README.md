@@ -48,7 +48,6 @@ class Page < ActiveForce::SObject
   #field, :attribute_name, from: 'Name_In_Salesforce_Database'
   field :id,                from: 'Id'
   field :name,              from: 'Medication__c'
-  self.fields     = mappings.values
   #set SalesForce table name.
   self.table_name = 'Patient_Medication__c'
 end
