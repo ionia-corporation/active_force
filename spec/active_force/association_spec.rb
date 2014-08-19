@@ -81,7 +81,7 @@ describe ActiveForce::SObject do
       Comment.field :post_id, from: 'PostId'
       Post.has_many :comments
       post.comments.to_s.should ==
-        "SELECT Id FROM Comment__c WHERE PostId = '1'"
+        "SELECT Id, PostId FROM Comment__c WHERE PostId = '1'"
     end
 
   end
