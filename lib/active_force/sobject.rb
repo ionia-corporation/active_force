@@ -13,7 +13,7 @@ module ActiveForce
 
     STANDARD_TYPES = %w[ Account Contact Opportunity Campaign]
 
-    class_attribute :mappings, :fields, :table_name
+    class_attribute :mappings, :table_name
 
     class << self
       delegate :where, :first, :last, :all, :find, :find_by, :count, :to => :query
@@ -23,6 +23,10 @@ module ActiveForce
     # It is derived from the class name adding the "__c" when needed.
     def self.table_name
       @table_name ||= custom_table_name || "#{ self.name }__c"
+    end
+
+    def self.fields
+      mappings.values
     end
 
     def self.build sf_table_description
