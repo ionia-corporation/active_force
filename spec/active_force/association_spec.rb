@@ -26,6 +26,7 @@ describe ActiveForce::SObject do
     end
 
     class Comment < ActiveForce::SObject
+      field :post_id, from: "PostId"
       self.table_name = "Comment__c"
     end
 
@@ -51,35 +52,37 @@ describe ActiveForce::SObject do
     describe 'to_s' do
       it "should retrun a OSQL statment" do
        post.comments.to_s.should ==
-         "SELECT Id FROM Comment__c WHERE Post__c = '1'"
+         "SELECT Id, PostId FROM Comment__c WHERE PostId = '1'"
       end
     end
 
   end
 
   describe 'has_many(options)' do
+    before do
+      Post.has_many :comments
+    end
 
     it 'should allow to send a different query table name' do
       Post.has_many :ugly_comments, { model: Comment }
-      post.comments.to_s.should ==
-        "SELECT Id FROM Comment__c WHERE Post__c = '1'"
+      post.ugly_comments.to_s.should ==
+        "SELECT Id, PostId FROM Comment__c WHERE PostId = '1'"
     end
 
     it 'should allow to change the foreign key' do
-      Post.has_many :comments, { foreign_key: 'Post' }
+      Post.has_many :comments, { foreign_key: :post }
+      Comment.field :post, from: 'PostId'
       post.comments.to_s.should ==
-        "SELECT Id FROM Comment__c WHERE Post = '1'"
+        "SELECT Id, PostId FROM Comment__c WHERE PostId = '1'"
     end
 
     it 'should allow to add a where condition' do
       Post.has_many :comments, { where: '1 = 1' }
       post.comments.to_s.should ==
-        "SELECT Id FROM Comment__c WHERE 1 = 1 AND Post__c = '1'"
+        "SELECT Id, PostId FROM Comment__c WHERE 1 = 1 AND PostId = '1'"
     end
 
     it 'should use a convention name for the foreign key' do
-      Comment.field :post_id, from: 'PostId'
-      Post.has_many :comments
       post.comments.to_s.should ==
         "SELECT Id, PostId FROM Comment__c WHERE PostId = '1'"
     end
@@ -89,18 +92,21 @@ describe ActiveForce::SObject do
   describe "belongs_to" do
 
     before do
-      Comment.belongs_to :post
       client.stub(:query).and_return Restforce::Mash.new(id: 1)
     end
 
     it "should get the resource it belongs to" do
+      Comment.belongs_to :post
       expect(comment.post).to be_instance_of(Post)
     end
 
     it "should allow to pass a foreign key as options" do
-      Comment.belongs_to :post, foreign_key: :fancy_post_id
-      comment.stub(:fancy_post_id).and_return "1"
-      client.should_receive(:query).with("SELECT Id FROM Post__c WHERE Id = '1' LIMIT 1")
+      class Comment < ActiveForce::SObject
+	field :fancy_post_id, from: 'PostId'
+	belongs_to :post, foreign_key: :fancy_post_id
+      end
+      comment.stub(:fancy_post_id).and_return "2"
+      client.should_receive(:query).with("SELECT Id FROM Post__c WHERE Id = '2' LIMIT 1")
       comment.post
     end
 
