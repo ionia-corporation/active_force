@@ -46,8 +46,6 @@ describe ActiveForce::ActiveQuery do
       @active_query.where field: "hello"
       expect(@active_query.to_s).to end_with("Field__c = 'hello'")
     end
-      
-
   end
 
   describe "#find_by" do
@@ -55,6 +53,20 @@ describe ActiveForce::ActiveQuery do
       expect(client).to receive :query
       @active_query.find_by field: 123
       expect(@active_query.to_s).to eq "SELECT Id FROM table_name WHERE Field__c = 123 LIMIT 1"
+    end
+  end
+
+  describe "responding as an enumerable" do
+    before do
+      expect(@active_query).to receive(:to_a).and_return([])
+    end
+
+    it "should call to_a when receiving each" do
+      @active_query.each {}
+    end
+
+    it "should call to_a when receiving map" do
+      @active_query.map {}
     end
   end
 end
