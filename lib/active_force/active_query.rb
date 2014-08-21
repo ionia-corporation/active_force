@@ -22,13 +22,11 @@ module ActiveForce
       end
     end
 
+    alias_method :all, :to_a
+
     def count
       super
       sfdc_client.query(to_s).first.expr0
-    end
-
-    def all
-      to_a
     end
 
     def limit limit
