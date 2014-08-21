@@ -151,7 +151,7 @@ module ActiveForce
       end
 
       def self.sfdc_client
-        Client
+        @client ||= Restforce.new
       end
 
       def sfdc_client
