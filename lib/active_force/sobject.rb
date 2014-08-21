@@ -17,6 +17,18 @@ module ActiveForce
 
     class << self
       delegate :where, :first, :last, :all, :find, :find_by, :count, :to => :query
+
+      private
+
+      ###
+      # Transforms +attribute+ to the conventional Salesforce API name.
+      #
+      # Example:
+      #   > default_api_name :some_attribute
+      #   => "Some_Attribute__c"
+      def default_api_name(attribute)
+        String(attribute).split('_').map(&:capitalize).join('_') << '__c'
+      end
     end
 
     # The table name to used to make queries.
@@ -104,7 +116,7 @@ module ActiveForce
       id?
     end
 
-    def self.field field_name, from: field_name.camelize, as: :string
+    def self.field field_name, from: default_api_name(field_name), as: :string
       mappings[field_name] = from
       attribute field_name, sf_type: as
     end
