@@ -88,6 +88,7 @@ module ActiveForce
       end
       self.id = sfdc_client.create! table_name, hash
       changed_attributes.clear
+      self
     end
 
     def create
@@ -98,6 +99,10 @@ module ActiveForce
       end
       errors[:base] << error.message
       false
+    end
+
+    def self.create args
+      new(args).create
     end
 
     def save

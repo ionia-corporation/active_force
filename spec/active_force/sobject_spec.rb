@@ -68,6 +68,18 @@ describe ActiveForce::SObject do
 
   end
 
+  describe 'self.create' do
+
+    before do
+      Client.should_receive(:create!).and_return('id')
+    end
+
+    it 'should create a new instance' do
+      expect(Whizbang.create({ text: 'some text' })).to be_a Whizbang
+    end
+
+  end
+
   describe "#count" do
     let(:count_response){ [Restforce::Mash.new(expr0: 1)] }
 
