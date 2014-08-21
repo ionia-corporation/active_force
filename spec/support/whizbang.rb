@@ -6,5 +6,6 @@ class Whizbang < ActiveForce::SObject
   field :date,                 from: 'Date_Label'
   field :datetime,             from: 'DateTime_Label'
   field :picklist_multiselect, from: 'Picklist_Multiselect_Label'
+  field :estimated_close_date
 
 end

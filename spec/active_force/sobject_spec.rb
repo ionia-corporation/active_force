@@ -41,6 +41,10 @@ describe ActiveForce::SObject do
         expect(Whizbang.attribute_names).to include(name)
       end
     end
+
+    it "uses Salesforce API naming conventions by default" do
+      expect(Whizbang.mappings[:estimated_close_date]).to eq 'Estimated_Close_Date__c'
+    end
   end
 
   describe '#create' do
