@@ -2,13 +2,10 @@ require 'spec_helper'
 
 describe ActiveForce::SObject do
   let(:sobject_hash) { YAML.load(fixture('sobject/single_sobject_hash')) }
+  let(:client) { double 'Client' }
 
   before do
-    ::Client = double('Client')
-  end
-
-  after do
-    Object.send :remove_const, 'Client'
+    ActiveForce::SObject.stub(:sfdc_client).and_return client
   end
 
   describe ".new" do
@@ -54,7 +51,7 @@ describe ActiveForce::SObject do
     end
 
     before do
-      Client.should_receive(:create!).and_return('id')
+      client.should_receive(:create!).and_return('id')
     end
 
     it 'delegates to the Client with create!' do
@@ -88,7 +85,7 @@ describe ActiveForce::SObject do
     end
 
     it "sends the query to the client" do
-      expect(Client).to receive(:query).and_return(count_response)
+      expect(client).to receive(:query).and_return(count_response)
       expect(Whizbang.count).to eq(1)
     end
 
@@ -103,7 +100,7 @@ describe ActiveForce::SObject do
 
   describe "#find_by" do
     it "should query the client, with the SFDC field names and correctly enclosed values" do
-      Client.should_receive(:query).with("SELECT #{Whizbang.fields.join ', '} FROM Whizbang__c WHERE Id = 123 AND Text_Label = 'foo' LIMIT 1")
+      client.should_receive(:query).with("SELECT #{Whizbang.fields.join ', '} FROM Whizbang__c WHERE Id = 123 AND Text_Label = 'foo' LIMIT 1")
       Whizbang.find_by id: 123, text: "foo"
     end
   end
