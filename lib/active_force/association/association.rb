@@ -15,15 +15,16 @@ module ActiveForce
         @options[:model] || @relation_name.to_s.singularize.camelcase.constantize
       end
 
+      def foreign_key
+        @options[:foreign_key] || default_foreign_key
+      end
+
       private
 
       def build
         define_relation_method
       end
 
-      def default_sfdc_foreign_key
-        relation_model.mappings["#{ @parent.name.downcase }_id".to_sym]
-      end
     end
 
   end
