@@ -68,7 +68,7 @@ describe ActiveForce::SObject do
   describe 'self.create' do
 
     before do
-      Client.should_receive(:create!).and_return('id')
+      client.should_receive(:create!).and_return('id')
     end
 
     it 'should create a new instance' do
