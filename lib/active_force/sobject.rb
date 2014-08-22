@@ -61,7 +61,7 @@ module ActiveForce
     def update_attributes! attributes = {}
       assign_attributes attributes
       return false unless valid?
-      sfdc_client.update! table_name, updated_values_for_sfdb
+      sfdc_client.update! table_name, attributes_for_sfdb_update
       changed_attributes.clear
       self
     end
@@ -76,12 +76,7 @@ module ActiveForce
 
     def create!
       return false unless valid?
-      hash = {}
-      mappings.map do |field, name_in_sfdc|
-        value = read_value field
-        hash[name_in_sfdc] = value if value.present?
-      end
-      self.id = sfdc_client.create! table_name, hash
+      self.id = sfdc_client.create! table_name, attributes_for_sfdb_create
       changed_attributes.clear
       self
     end
@@ -133,16 +128,16 @@ module ActiveForce
       false
     end
 
-    def updated_values_for_sfdb
-      mappings_for_update.update({}){ |key, value| read_attribute value }
+    def attributes_for_sfdb_create
+      mappings.invert.update({}){ |key, value| read_attribute value }
     end
 
-    def mappings_for_update
-      @mappings_for_update ||= changed_mappings.invert.merge('Id' => id)
+    def attributes_for_sfdb_update
+      changed_mappings.invert.update({}){ |key, value| read_attribute value }.merge('Id' => id)
     end
 
     def changed_mappings
-      mappings.select{ |key, value| changed.include? key.to_s}
+      mappings.select { |key, value| changed.include? key.to_s}
     end
 
     def self.custom_table_name
