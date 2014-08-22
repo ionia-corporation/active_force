@@ -129,15 +129,15 @@ module ActiveForce
     end
 
     def attributes_for_sfdb_create
-      mappings.invert.update({}){ |key, value| read_attribute value }
+      mappings.invert.update({}){ |sf_field, attr| read_attribute attr }
     end
 
     def attributes_for_sfdb_update
-      changed_mappings.invert.update({}){ |key, value| read_attribute value }.merge('Id' => id)
+      changed_mappings.invert.update({}){ |sf_field, attr| read_attribute attr }.merge('Id' => id)
     end
 
     def changed_mappings
-      mappings.select { |key, value| changed.include? key.to_s}
+      mappings.select { |attr, sf_field| changed.include? attr.to_s}
     end
 
     def self.custom_table_name
