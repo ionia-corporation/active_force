@@ -88,7 +88,7 @@ module ActiveForce
     end
 
     def self.create args
-      new(args).create
+      new(args).save
     end
 
     def save
