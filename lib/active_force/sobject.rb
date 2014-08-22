@@ -136,9 +136,10 @@ module ActiveForce
     end
 
     def attributes_for_sfdb_update
-      changed_mappings.map do |attr, sf_field|
+      attrs = changed_mappings.map do |attr, sf_field|
         [sf_field, read_attribute(attr)]
-      end.to_h
+      end
+      attrs.to_h.merge('Id' => id)
     end
 
     def changed_mappings
