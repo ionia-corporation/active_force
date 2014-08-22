@@ -44,22 +44,6 @@ describe ActiveForce::SObject do
     end
   end
 
-  describe '#update' do
-
-    subject do
-      Whizbang.new
-    end
-
-    before do
-      client.should_receive(:update!).and_return('id')
-    end
-
-    it 'delegates to the Client with create!' do
-      expect(subject.update({ text: 'some text' })).to be_a Whizbang
-    end
-
-  end
-
   describe '#create' do
 
     subject do

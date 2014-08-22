@@ -61,9 +61,13 @@ module ActiveForce
     def update_attributes! attributes = {}
       assign_attributes attributes
       return false unless valid?
-      sfdc_client.update! table_name, updated_values_for_sfdb
+      sobject_hash = { 'Id' => id }
+      changed.each do |field|
+        sobject_hash[mappings[field.to_sym]] = read_attribute(field)
+      end
+      result = sfdc_client.update! table_name, sobject_hash
       changed_attributes.clear
-      self
+      result
     end
 
     def update_attributes attributes = {}
@@ -132,18 +136,6 @@ module ActiveForce
     end
 
     private
-
-    def updated_values_for_sfdb
-      mappings_for_update.update({}){ |key, value| read_attribute value }
-    end
-
-    def mappings_for_update
-      @mappings_for_update ||= changed_mappings.invert.merge('Id' => id)
-    end
-
-    def changed_mappings
-      mappings.select{ |key, value| changed.include? key.to_s}
-    end
 
     def self.custom_table_name
       self.name if STANDARD_TYPES.include? self.name
