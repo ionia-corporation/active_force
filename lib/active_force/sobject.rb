@@ -120,9 +120,11 @@ module ActiveForce
       id?
     end
 
-    def self.field field_name, from: default_api_name(field_name), as: :string
-      mappings[field_name] = from
-      attribute field_name, sf_type: as
+    def self.field field_name, args = {}
+      args[:from] ||= default_api_name(field_name)
+      args[:as]   ||= :string
+      mappings[field_name] = args[:from]
+      attribute field_name, sf_type: args[:as]
     end
 
     def self.mappings
