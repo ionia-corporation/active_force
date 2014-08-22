@@ -17,9 +17,7 @@ module ActiveForce
     end
 
     def to_a
-      result.to_a.map do |mash|
-        build mash
-      end
+      result.to_a.map { |mash| build mash }
     end
 
     alias_method :all, :to_a
