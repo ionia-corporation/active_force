@@ -107,13 +107,6 @@ describe ActiveForce::SObject do
 
   end
 
-  # describe "first" do
-  #   it "should return the first value" do
-  #     binding.pry
-  #     expect(Whizbang.first).to eq(1)
-  #   end
-  # end
-
   describe "#find_by" do
     it "should query the client, with the SFDC field names and correctly enclosed values" do
       client.should_receive(:query).with("SELECT #{Whizbang.fields.join ', '} FROM Whizbang__c WHERE Id = 123 AND Text_Label = 'foo' LIMIT 1")
