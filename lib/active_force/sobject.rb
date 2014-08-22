@@ -44,6 +44,10 @@ module ActiveForce
       mappings.values
     end
 
+    def self.query
+      ActiveForce::ActiveQuery.new self
+    end
+
     def self.build sf_table_description
       return unless sf_table_description
       sobject = new
@@ -52,10 +56,6 @@ module ActiveForce
       end
       sobject.changed_attributes.clear
       sobject
-    end
-
-    def self.query
-      ActiveForce::ActiveQuery.new self
     end
 
     def update_attributes! attributes = {}
