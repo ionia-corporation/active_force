@@ -154,7 +154,7 @@ module ActiveForce
     end
 
     def sf_field_type field
-      self.class.attributes[field]
+      self.class.attributes[field][:sf_tpye]
     end
 
     def self.picklist field
