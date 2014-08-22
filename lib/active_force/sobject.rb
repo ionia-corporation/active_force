@@ -69,7 +69,7 @@ module ActiveForce
     def update_attributes attributes = {}
       update_attributes! attributes
     rescue Faraday::Error::ClientError => error
-      logger "[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while updating, params: #{hash}, error: #{error.inspect}"
+      logger 'updating'
     end
 
     alias_method :update, :update_attributes
@@ -89,7 +89,7 @@ module ActiveForce
     def create
       create!
     rescue Faraday::Error::ClientError => error
-      logger "[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while creating, params: #{hash}, error: #{error.inspect}"
+      logger 'creating'
     end
 
     def self.create args
@@ -125,8 +125,10 @@ module ActiveForce
 
     private
 
-    def looger message
-      Rails.logger.info { message }
+    def looger action
+      Rails.logger.info do
+        "[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while #{ action }, params: #{hash}, error: #{error.inspect}"
+      end
       errors[:base] << error.message
       false
     end
