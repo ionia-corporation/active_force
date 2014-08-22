@@ -129,7 +129,6 @@ module ActiveForce
       @mappings ||= {}
     end
 
-
     private
 
     def updated_values_for_sfdb
@@ -148,27 +147,27 @@ module ActiveForce
       self.name if STANDARD_TYPES.include? self.name
     end
 
-      def read_value field
-        if self.class.attributes[field][:sf_type] == :multi_picklist
-          attribute(field.to_s).reject(&:empty?).join(';')
-        else
-          attribute(field.to_s)
-        end
+    def read_value field
+      if self.class.attributes[field][:sf_type] == :multi_picklist
+        attribute(field.to_s).reject(&:empty?).join(';')
+      else
+        attribute(field.to_s)
       end
+    end
 
-      def self.picklist field
-        picks = sfdc_client.picklist_values(table_name, mappings[field])
-        picks.map do |value|
-          [value[:label], value[:value]]
-        end
+    def self.picklist field
+      picks = sfdc_client.picklist_values(table_name, mappings[field])
+      picks.map do |value|
+        [value[:label], value[:value]]
       end
+    end
 
-      def self.sfdc_client
-        @client ||= Restforce.new
-      end
+    def self.sfdc_client
+      @client ||= Restforce.new
+    end
 
-      def sfdc_client
-        self.class.sfdc_client
-      end
+    def sfdc_client
+      self.class.sfdc_client
+    end
   end
 end
