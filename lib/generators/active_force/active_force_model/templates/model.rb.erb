@@ -2,21 +2,10 @@ require 'active_force/sobject'
 
 class <%= class_name %> < ActiveForce::SObject
 
-  MAPPINGS = {
-<% attributes.each do |attribute| -%>
-    <%= attribute.local_name %>: '<%= attribute.remote_name %>',
+<% @attributes.each do |attribute| -%>
+    field :<%= attribute.local_name %>, from: '<%= attribute.remote_name %>',
 <% end -%>
-    id:               'Id'
-  }
-  FIELDS = MAPPINGS.values
-  RELATED_LIST_FIELDS = FIELDS
 
-  self.mappings   = MAPPINGS
-  self.fields     = FIELDS
   self.table_name = '<%= class_name %>'
-
-<% attributes.each do |attribute| -%>
-  attribute :<%= attribute.local_name %>
-<% end -%>
 
 end
