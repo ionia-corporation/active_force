@@ -9,10 +9,11 @@ describe ActiveForce::SObject do
   end
 
   describe ".new" do
-    it "create with valid values" do
-      @SObject = Whizbang.new
-      expect(@SObject).to be_an_instance_of Whizbang
+
+    it 'should assigns values when are passed by parameters' do
+      expect(Whizbang.new({ text: 'some text' }).text).to eq 'some text'
     end
+
   end
 
   describe ".build" do
