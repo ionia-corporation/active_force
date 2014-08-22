@@ -148,11 +148,16 @@ module ActiveForce
     end
 
     def read_value field
-      if self.class.attributes[field][:sf_type] == :multi_picklist
+      case sf_field_type field
+      when :multi_picklist
         attribute(field.to_s).reject(&:empty?).join(';')
       else
         attribute(field.to_s)
       end
+    end
+
+    def sf_field_type field
+      self.class.attributes[field]
     end
 
     def self.picklist field
