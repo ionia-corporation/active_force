@@ -107,7 +107,7 @@ module ActiveForce
 
     def save!
       if persisted?
-        update!
+        update_attributes!
       else
         create!
       end
