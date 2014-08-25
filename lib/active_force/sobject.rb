@@ -5,6 +5,8 @@ require 'active_force/active_query'
 require 'active_force/association'
 require 'yaml'
 require 'forwardable'
+require 'logger'
+
 
 module ActiveForce
   class SObject
@@ -44,6 +46,10 @@ module ActiveForce
       mappings.values
     end
 
+    def self.query
+      ActiveForce::ActiveQuery.new self
+    end
+
     def self.build sf_table_description
       return unless sf_table_description
       sobject = new
@@ -54,42 +60,25 @@ module ActiveForce
       sobject
     end
 
-    def self.query
-      ActiveForce::ActiveQuery.new self
-    end
-
     def update_attributes! attributes = {}
       assign_attributes attributes
       return false unless valid?
-      sobject_hash = { 'Id' => id }
-      changed.each do |field|
-        sobject_hash[mappings[field.to_sym]] = read_attribute(field)
-      end
-      result = sfdc_client.update! table_name, sobject_hash
+      sfdc_client.update! table_name, attributes_for_sfdb_update
       changed_attributes.clear
-      result
+      self
     end
 
     def update_attributes attributes = {}
       update_attributes! attributes
     rescue Faraday::Error::ClientError => error
-      Rails.logger.info do
-        "[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while updating, params: #{hash}, error: #{error.inspect}"
-      end
-      errors[:base] << error.message
-      false
+      logger __method__
     end
 
     alias_method :update, :update_attributes
 
     def create!
       return false unless valid?
-      hash = {}
-      mappings.map do |field, name_in_sfdc|
-        value = read_value field
-        hash[name_in_sfdc] = value if value.present?
-      end
-      self.id = sfdc_client.create! table_name, hash
+      self.id = sfdc_client.create! table_name, attributes_for_sfdb_create
       changed_attributes.clear
       self
     end
@@ -97,15 +86,15 @@ module ActiveForce
     def create
       create!
     rescue Faraday::Error::ClientError => error
-      Rails.logger.info do
-        "[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while creating, params: #{hash}, error: #{error.inspect}"
-      end
-      errors[:base] << error.message
-      false
+      logger __method__
     end
 
     def self.create args
-      new(args).create
+      new(args).save
+    end
+
+    def self.create! args
+      new(args).save!
     end
 
     def save
@@ -113,6 +102,14 @@ module ActiveForce
         update
       else
         create
+      end
+    end
+
+    def save!
+      if persisted?
+        update!
+      else
+        create!
       end
     end
 
@@ -124,43 +121,76 @@ module ActiveForce
       id?
     end
 
-    def self.field field_name, from: default_api_name(field_name), as: :string
-      mappings[field_name] = from
-      attribute field_name, sf_type: as
+    def self.field field_name, args = {}
+      args[:from] ||= default_api_name(field_name)
+      args[:as]   ||= :string
+      mappings[field_name] = args[:from]
+      attribute field_name, sf_type: args[:as]
     end
 
     def self.mappings
       @mappings ||= {}
     end
 
-
     private
+
+    def print_logger __method__
+      logger = Logger.new(STDOUT)
+      logger.info("[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while #{ action }, params: #{hash}, error: #{error.inspect}")
+      errors[:base] << error.message
+      false
+    end
+
+    def attributes_for_sfdb_create
+      attrs = mappings.map do |attr, sf_field|
+        value = read_attribute(attr)
+        [sf_field, value] if value
+      end
+      Hash.new(attrs.compact)
+    end
+
+    def attributes_for_sfdb_update
+      attrs = changed_mappings.map do |attr, sf_field|
+        [sf_field, read_attribute(attr)]
+      end
+      attrs
+      Hash.new(attrs).merge('Id' => id)
+    end
+
+    def changed_mappings
+      mappings.select { |attr, sf_field| changed.include? attr.to_s}
+    end
 
     def self.custom_table_name
       self.name if STANDARD_TYPES.include? self.name
     end
 
-      def read_value field
-        if self.class.attributes[field][:sf_type] == :multi_picklist
-          attribute(field.to_s).reject(&:empty?).join(';')
-        else
-          attribute(field.to_s)
-        end
+    def read_value field
+      case sf_field_type field
+      when :multi_picklist
+        attribute(field.to_s).reject(&:empty?).join(';')
+      else
+        attribute(field.to_s)
       end
+    end
 
-      def self.picklist field
-        picks = sfdc_client.picklist_values(table_name, mappings[field])
-        picks.map do |value|
-          [value[:label], value[:value]]
-        end
-      end
+    def sf_field_type field
+      self.class.attributes[field][:sf_tpye]
+    end
 
-      def self.sfdc_client
-        @client ||= Restforce.new
+    def self.picklist field
+      picks = sfdc_client.picklist_values(table_name, mappings[field])
+      picks.map do |value|
+        [value[:label], value[:value]]
       end
+    end
 
-      def sfdc_client
-        self.class.sfdc_client
-      end
+    def self.sfdc_client
+      @client ||= Restforce.new
+    end
+
+    def sfdc_client
+      self.class.sfdc_client
+    end
   end
 end

@@ -9,10 +9,11 @@ describe ActiveForce::SObject do
   end
 
   describe ".new" do
-    it "create with valid values" do
-      @SObject = Whizbang.new
-      expect(@SObject).to be_an_instance_of Whizbang
+
+    it 'should assigns values when are passed by parameters' do
+      expect(Whizbang.new({ text: 'some text' }).text).to eq 'some text'
     end
+
   end
 
   describe ".build" do
@@ -42,6 +43,22 @@ describe ActiveForce::SObject do
     it "uses Salesforce API naming conventions by default" do
       expect(Whizbang.mappings[:estimated_close_date]).to eq 'Estimated_Close_Date__c'
     end
+  end
+
+  describe '#update' do
+
+    subject do
+      Whizbang.new
+    end
+
+    before do
+      client.should_receive(:update!).and_return('id')
+    end
+
+    it 'delegates to the Client with create!' do
+      expect(subject.update({ text: 'some text' })).to be_a Whizbang
+    end
+
   end
 
   describe '#create' do
@@ -90,13 +107,6 @@ describe ActiveForce::SObject do
     end
 
   end
-
-  # describe "first" do
-  #   it "should return the first value" do
-  #     binding.pry
-  #     expect(Whizbang.first).to eq(1)
-  #   end
-  # end
 
   describe "#find_by" do
     it "should query the client, with the SFDC field names and correctly enclosed values" do
