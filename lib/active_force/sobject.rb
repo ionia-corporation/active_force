@@ -149,7 +149,7 @@ module ActiveForce
         value = read_attribute(attr)
         [sf_field, value] if value
       end
-      attrs.compact.to_h
+      Hash.new(attrs.compact)
     end
 
 
@@ -157,7 +157,7 @@ module ActiveForce
       attrs = changed_mappings.map do |attr, sf_field|
         [sf_field, read_attribute(attr)]
       end
-      attrs.to_h.merge('Id' => id)
+      Hash.new(attrs).merge('Id' => id)
     end
 
     def changed_mappings
