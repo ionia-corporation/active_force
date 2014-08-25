@@ -71,7 +71,7 @@ module ActiveForce
     def update_attributes attributes = {}
       update_attributes! attributes
     rescue Faraday::Error::ClientError => error
-      logger __method__
+      logger_output __method__
     end
 
     alias_method :update, :update_attributes
@@ -86,7 +86,7 @@ module ActiveForce
     def create
       create!
     rescue Faraday::Error::ClientError => error
-      logger __method__
+      logger_output __method__
     end
 
     def self.create args
@@ -107,7 +107,7 @@ module ActiveForce
 
     def save!
       if persisted?
-        update!
+        update_attributes!
       else
         create!
       end
@@ -134,7 +134,7 @@ module ActiveForce
 
     private
 
-    def print_logger __method__
+    def logger_output action
       logger = Logger.new(STDOUT)
       logger.info("[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while #{ action }, params: #{hash}, error: #{error.inspect}")
       errors[:base] << error.message
@@ -146,15 +146,15 @@ module ActiveForce
         value = read_attribute(attr)
         [sf_field, value] if value
       end
-      Hash.new(attrs.compact)
+      attrs.compact.to_h
     end
+
 
     def attributes_for_sfdb_update
       attrs = changed_mappings.map do |attr, sf_field|
         [sf_field, read_attribute(attr)]
       end
-      attrs
-      Hash.new(attrs).merge('Id' => id)
+      attrs.to_h.merge('Id' => id)
     end
 
     def changed_mappings
