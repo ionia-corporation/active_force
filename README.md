@@ -7,8 +7,11 @@
 
 # ActiveForce
 
-A ruby gem to interact with SalesForce as if it were Active Record. It
-uses Restforce to interact with the API, so it is fast and stable.
+A ruby gem to interact with [SalesForce][1] as if it were Active Record. It
+uses [Restforce][2] to interact with the API, so it is fast and stable.
+
+ [1]: http://www.salesforce.com
+ [2]: https://github.com/ejholmes/restforce
 
 ## Installation
 
@@ -43,6 +46,7 @@ end
 ```
 
 ### Add Attributes
+
 ```ruby
 class Page < ActiveForce::SObject
   #field, :attribute_name, from: 'Name_In_Salesforce_Database'
@@ -52,7 +56,9 @@ class Page < ActiveForce::SObject
   self.table_name = 'Patient_Medication__c'
 end
 ```
+
 ### Validations
+
 You can use any validation that active record has (except for validates_associated), just by adding them to your class:
 
 ```ruby
@@ -95,6 +101,7 @@ end
 ```
 
 #### Belongs to
+
 ```ruby
 class Account < ActiveForce::SObject
 end
