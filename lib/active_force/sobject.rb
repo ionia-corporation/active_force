@@ -71,7 +71,7 @@ module ActiveForce
     def update_attributes attributes = {}
       update_attributes! attributes
     rescue Faraday::Error::ClientError => error
-      logger __method__
+      logger_output __method__
     end
 
     alias_method :update, :update_attributes
@@ -86,7 +86,7 @@ module ActiveForce
     def create
       create!
     rescue Faraday::Error::ClientError => error
-      logger __method__
+      logger_output __method__
     end
 
     def self.create args
@@ -134,7 +134,7 @@ module ActiveForce
 
     private
 
-    def print_logger __method__
+    def logger_output action
       logger = Logger.new(STDOUT)
       logger.info("[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while #{ action }, params: #{hash}, error: #{error.inspect}")
       errors[:base] << error.message
