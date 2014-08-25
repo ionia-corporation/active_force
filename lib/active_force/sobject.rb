@@ -33,13 +33,16 @@ module ActiveForce
       def default_api_name(attribute)
         String(attribute).split('_').map(&:capitalize).join('_') << '__c'
       end
+
+      def custom_table_name
+        self.name if STANDARD_TYPES.include? self.name
+      end
     end
 
     # The table name to used to make queries.
     # It is derived from the class name adding the "__c" when needed.
-
     def self.table_name
-      @table_name ||= custom_table_name || "#{ self.name }__c"
+      @table_name ||= custom_table_name || "#{ self.name.split('::').last }__c"
     end
 
     def self.fields
@@ -159,10 +162,6 @@ module ActiveForce
 
     def changed_mappings
       mappings.select { |attr, sf_field| changed.include? attr.to_s}
-    end
-
-    def self.custom_table_name
-      self.name if STANDARD_TYPES.include? self.name
     end
 
     def read_value field
