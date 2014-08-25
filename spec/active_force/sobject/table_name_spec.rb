@@ -25,5 +25,13 @@ describe ActiveForce::SObject do
       expect(EnforcedTableName.table_name).to eq('Forced__c')
     end
 
+    it "doesn't include a namespace" do
+      module Foo
+        class Bar < ActiveForce::SObject
+        end
+      end
+
+      expect(Foo::Bar.table_name).to eq('Bar__c')
+    end
   end
 end
