@@ -5,7 +5,7 @@ describe ActiveForce::SObject do
   let(:client) { double 'Client' }
 
   before do
-    ActiveForce::SObject.stub(:sfdc_client).and_return client
+    allow(ActiveForce::SObject).to receive(:sfdc_client).and_return client
   end
 
   describe ".new" do
@@ -52,7 +52,7 @@ describe ActiveForce::SObject do
     end
 
     before do
-      client.should_receive(:update!).and_return('id')
+      expect(client).to receive(:update!).and_return('id')
     end
 
     it 'delegates to the Client with create!' do
@@ -68,7 +68,7 @@ describe ActiveForce::SObject do
     end
 
     before do
-      client.should_receive(:create!).and_return('id')
+      expect(client).to receive(:create!).and_return('id')
     end
 
     it 'delegates to the Client with create!' do
@@ -85,7 +85,7 @@ describe ActiveForce::SObject do
   describe 'self.create' do
 
     before do
-      client.should_receive(:create!).and_return('id')
+      expect(client).to receive(:create!).and_return('id')
     end
 
     it 'should create a new instance' do
@@ -98,7 +98,7 @@ describe ActiveForce::SObject do
     let(:count_response){ [Restforce::Mash.new(expr0: 1)] }
 
     it "responds to count" do
-      Whizbang.should respond_to(:count)
+      expect(Whizbang).to respond_to(:count)
     end
 
     it "sends the query to the client" do
@@ -110,7 +110,7 @@ describe ActiveForce::SObject do
 
   describe "#find_by" do
     it "should query the client, with the SFDC field names and correctly enclosed values" do
-      client.should_receive(:query).with("SELECT #{Whizbang.fields.join ', '} FROM Whizbang__c WHERE Id = 123 AND Text_Label = 'foo' LIMIT 1")
+      expect(client).to receive(:query).with("SELECT #{Whizbang.fields.join ', '} FROM Whizbang__c WHERE Id = 123 AND Text_Label = 'foo' LIMIT 1")
       Whizbang.find_by id: 123, text: "foo"
     end
   end
