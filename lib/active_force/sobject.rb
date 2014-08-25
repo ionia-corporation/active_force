@@ -93,11 +93,23 @@ module ActiveForce
       new(args).save
     end
 
+    def self.create! args
+      new(args).save!
+    end
+
     def save
       if persisted?
         update
       else
         create
+      end
+    end
+
+    def save!
+      if persisted?
+        update!
+      else
+        create!
       end
     end
 
