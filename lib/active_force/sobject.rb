@@ -129,17 +129,19 @@ module ActiveForce
     end
 
     def attributes_for_sfdb_create
-      mappings.map do |attr, sf_field|
+      attrs = mappings.map do |attr, sf_field|
         value = read_attribute(attr)
         [sf_field, value] if value
-      end.compact.to_h
+      end
+      Hash.new(attrs.compact)
     end
 
     def attributes_for_sfdb_update
       attrs = changed_mappings.map do |attr, sf_field|
         [sf_field, read_attribute(attr)]
       end
-      attrs.to_h.merge('Id' => id)
+      attrs
+      Hash.new(attrs).merge('Id' => id)
     end
 
     def changed_mappings
