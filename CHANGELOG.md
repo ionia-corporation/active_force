@@ -2,6 +2,8 @@
 
 ## Not released
 
+## 0.5.0
+
 * Provide a default id field for all SObject subclassees ([Dan Olson][], [#30][])
 * Fix Ruby 2.0 compatibility issue ([Dan Olson][], [Pablo Oldani][], [#28][])
 * Normalize rspec syntax to remove deprecation warnings ([Dan Olson][], [#26][])
