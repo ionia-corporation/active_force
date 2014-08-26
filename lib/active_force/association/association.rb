@@ -19,6 +19,10 @@ module ActiveForce
         @options[:foreign_key] || default_foreign_key
       end
 
+      def relation_instance_name
+        "@cached_#{ @relation_name }"
+      end
+
       private
 
       def build

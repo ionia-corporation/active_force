@@ -93,10 +93,10 @@ describe ActiveForce::SObject do
 
     before do
       allow(client).to receive(:query).and_return [Restforce::Mash.new(id: 1)]
+      Comment.belongs_to :post
     end
 
     it "should get the resource it belongs to" do
-      Comment.belongs_to :post
       expect(comment.post).to be_instance_of(Post)
     end
 
@@ -110,5 +110,10 @@ describe ActiveForce::SObject do
       comment.post
     end
 
+    it 'makes only one API call when accessing the associated object' do
+      expect(client).to receive(:query).once
+      comment.post
+      comment.post
+    end
   end
 end
