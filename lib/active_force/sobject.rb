@@ -17,7 +17,6 @@ module ActiveForce
 
     class_attribute :mappings, :table_name
 
-
     class << self
       extend Forwardable
       def_delegators :query, :where, :first, :last, :all, :find, :find_by, :count
@@ -36,6 +35,13 @@ module ActiveForce
 
       def custom_table_name
         self.name if STANDARD_TYPES.include? self.name
+      end
+
+      ###
+      # Provide each subclass with a default id field. Can be overridden
+      # in the subclass if needed
+      def inherited(subclass)
+        subclass.field :id, from: 'Id'
       end
     end
 

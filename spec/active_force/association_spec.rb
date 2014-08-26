@@ -92,7 +92,7 @@ describe ActiveForce::SObject do
   describe "belongs_to" do
 
     before do
-      allow(client).to receive(:query).and_return Restforce::Mash.new(id: 1)
+      allow(client).to receive(:query).and_return [Restforce::Mash.new(id: 1)]
     end
 
     it "should get the resource it belongs to" do
@@ -102,8 +102,8 @@ describe ActiveForce::SObject do
 
     it "should allow to pass a foreign key as options" do
       class Comment < ActiveForce::SObject
-	field :fancy_post_id, from: 'PostId'
-	belongs_to :post, foreign_key: :fancy_post_id
+      	field :fancy_post_id, from: 'PostId'
+      	belongs_to :post, foreign_key: :fancy_post_id
       end
       allow(comment).to receive(:fancy_post_id).and_return "2"
       expect(client).to receive(:query).with("SELECT Id FROM Post__c WHERE Id = '2' LIMIT 1")

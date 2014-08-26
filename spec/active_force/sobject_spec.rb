@@ -43,6 +43,18 @@ describe ActiveForce::SObject do
     it "uses Salesforce API naming conventions by default" do
       expect(Whizbang.mappings[:estimated_close_date]).to eq 'Estimated_Close_Date__c'
     end
+
+    describe 'having an id' do
+      it 'has one by default' do
+        expect(Territory.new).to respond_to(:id)
+        expect(Territory.mappings[:id]).to eq 'Id'
+      end
+
+      it 'can be overridden' do
+        expect(Quota.new).to respond_to(:id)
+        expect(Quota.mappings[:id]).to eq 'Bar_Id__c'
+      end
+    end
   end
 
   describe '#update' do
@@ -114,5 +126,4 @@ describe ActiveForce::SObject do
       Whizbang.find_by id: 123, text: "foo"
     end
   end
-
 end
