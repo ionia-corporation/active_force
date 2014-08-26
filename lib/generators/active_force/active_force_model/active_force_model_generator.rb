@@ -5,10 +5,12 @@ module ActiveForce
 
     def create_model_file
 
-      sf_field_names = list_field_names file_name.capitalize
-      @attributes = create_attributes sf_field_names
+      @table_name = file_name.capitalize
+      @class_name = file_name.include?("__c") ? file_name.capitalize[0..-4] : file_name.capitalize
 
-      template "model.rb.erb", "app/models/#{file_name}.rb"
+      sf_field_names = list_field_names @table_name
+      @attributes = create_attributes sf_field_names
+      template "model.rb.erb", "app/models/#{@class_name.downcase}.rb"
     end
 
     protected

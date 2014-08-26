@@ -1,11 +1,11 @@
 require 'active_force/sobject'
 
-class <%= class_name %> < ActiveForce::SObject
+class <%= @class_name %> < ActiveForce::SObject
 
 <% @attributes.each do |attribute| -%>
-    field :<%= attribute.local_name %>, from: '<%= attribute.remote_name %>',
+    field :<%= attribute.local_name %>, from: '<%= attribute.remote_name %>'
 <% end -%>
 
-  self.table_name = '<%= class_name %>'
+  self.table_name = '<%= @table_name %>'
 
 end
