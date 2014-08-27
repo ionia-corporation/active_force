@@ -1,30 +1,28 @@
 module ActiveForce
   class ActiveForceModelGenerator < Rails::Generators::NamedBase
+    desc 'This generator loads the table fields from SFDC and generates the fields for the SObject with a more ruby names'
 
     source_root File.expand_path('../templates', __FILE__)
 
     def create_model_file
-
       @table_name = file_name.capitalize
-      @class_name = file_name.include?("__c") ? file_name.capitalize[0..-4] : file_name.capitalize
-
-      sf_field_names = list_field_names @table_name
-      @attributes = create_attributes sf_field_names
+      @class_name = file_name.gsub '__c', ''
+      @attributes = create_attributes 
       template "model.rb.erb", "app/models/#{@class_name.downcase}.rb"
     end
 
     protected
 
-    Attribute = Struct.new(:local_name, :remote_name)
+    Attribute = Struct.new :local_name, :remote_name
 
-    def create_attributes sf_field_names
-      sf_field_names.map do |field|
-        Attribute.new( sf_name_to_symbol(field) ,field)
+    def create_attributes 
+      sfdc_field_names.map do |field|
+        Attribute.new sf_name_to_symbol(field) ,field
       end
     end
 
-    def list_field_names table_name
-      Client.describe(table_name).fields.map do |field|
+    def sfdc_field_names 
+      ActiveForce::SObject.sfdc_client.describe(@table_name).fields.map do |field|
         field.name
       end
     end
