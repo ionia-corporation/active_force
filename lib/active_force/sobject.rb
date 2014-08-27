@@ -13,7 +13,6 @@ module ActiveForce
     include ActiveAttr::Model
     include ActiveAttr::Dirty
     include ActiveForce::Association
-    include StandardTypes
 
     class_attribute :mappings, :table_name
 
