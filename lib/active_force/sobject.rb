@@ -33,8 +33,8 @@ module ActiveForce
         String(attribute).split('_').map(&:capitalize).join('_') << '__c'
       end
 
-      def custom_table_name
-        self.name if StandardTypes::STANDARD_TYPES.include? self.name
+      def custom_table_name?(name)
+        !StandardTypes::STANDARD_TYPES.include?(name)
       end
 
       ###
@@ -48,7 +48,14 @@ module ActiveForce
     # The table name to used to make queries.
     # It is derived from the class name adding the "__c" when needed.
     def self.table_name
-      @table_name ||= custom_table_name || "#{ self.name.split('::').last }__c"
+      @table_name ||= begin
+        name_without_namespace = self.name.split('::').last
+        if custom_table_name?(name_without_namespace)
+          "#{name_without_namespace}__c"
+        else
+          name_without_namespace
+        end
+      end
     end
 
     def self.fields
