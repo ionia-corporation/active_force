@@ -37,6 +37,15 @@ module ActiveForce
         !StandardTypes::STANDARD_TYPES.include?(name)
       end
 
+      def pick_table_name
+        name_without_namespace = self.name.split('::').last
+        if custom_table_name?(name_without_namespace)
+          "#{name_without_namespace}__c"
+        else
+          name_without_namespace
+        end
+      end
+
       ###
       # Provide each subclass with a default id field. Can be overridden
       # in the subclass if needed
@@ -48,14 +57,7 @@ module ActiveForce
     # The table name to used to make queries.
     # It is derived from the class name adding the "__c" when needed.
     def self.table_name
-      @table_name ||= begin
-        name_without_namespace = self.name.split('::').last
-        if custom_table_name?(name_without_namespace)
-          "#{name_without_namespace}__c"
-        else
-          name_without_namespace
-        end
-      end
+      @table_name ||= pick_table_name
     end
 
     def self.fields
