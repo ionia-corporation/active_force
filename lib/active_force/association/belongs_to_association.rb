@@ -6,12 +6,7 @@ module ActiveForce
       private
 
       def default_foreign_key
-        name = if relation_model.custom_table_name?
-          relation_model.name
-        else
-          relation_model.table_name
-        end
-        "#{name.downcase}_id".to_sym
+        infer_foreign_key_from_model relation_model
       end
 
       def define_relation_method
