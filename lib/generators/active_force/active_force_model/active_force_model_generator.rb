@@ -6,7 +6,7 @@ module ActiveForce
 
     def create_model_file
       @table_name = file_name.capitalize
-      @class_name = file_name.gsub '__c', ''
+      @class_name = @table_name.gsub '__c', ''
       @attributes = create_attributes 
       template "model.rb.erb", "app/models/#{@class_name.downcase}.rb"
     end
