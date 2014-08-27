@@ -4,16 +4,11 @@ require 'active_force/association'
 describe ActiveForce::SObject do
 
   let :post do
-    post = Post.new
-    allow(post).to receive(:id).and_return "1"
-    post
+    Post.new(id: "1")
   end
 
   let :comment do
-    comment = Comment.new
-    allow(comment).to receive(:id).and_return "1"
-    allow(comment).to receive(:post_id).and_return "1"
-    comment
+    Comment.new(id: "1")
   end
 
   let :client do
@@ -56,6 +51,33 @@ describe ActiveForce::SObject do
       end
     end
 
+    context 'when the SObject is namespaced' do
+      let(:account){ Foo::Account.new(id: '1') }
+
+      before do
+        module Foo
+          class Opportunity < ActiveForce::SObject
+            field :account_id, from: 'AccountId'
+          end
+
+          class Account < ActiveForce::SObject
+            has_many :opportunities, model: Foo::Opportunity
+          end
+        end
+      end
+
+      it 'correctly infers the foreign key and forms the correct query' do
+        soql = "SELECT Id, AccountId FROM Opportunity WHERE AccountId = '1'"
+        expect(account.opportunities.to_s).to eq soql
+      end
+
+      it 'uses an explicit foreign key if it is supplied' do
+        Foo::Opportunity.field :partner_account_id, from: 'Partner_Account_Id__c'
+        Foo::Account.has_many :opportunities, foreign_key: :partner_account_id, model: Foo::Opportunity
+        soql = "SELECT Id, AccountId, Partner_Account_Id__c FROM Opportunity WHERE Partner_Account_Id__c = '1'"
+        expect(account.opportunities.to_s).to eq soql
+      end
+    end
   end
 
   describe 'has_many(options)' do
@@ -110,5 +132,44 @@ describe ActiveForce::SObject do
       comment.post
     end
 
+    context 'when the SObject is namespaced' do
+      let(:attachment){ Foo::Attachment.new(id: '1', lead_id: '2') }
+      before do
+        module Foo
+          class Lead < ActiveForce::SObject; end
+
+          class Attachment < ActiveForce::SObject
+            field :lead_id, from: 'Lead_Id__c'
+            belongs_to :lead, model: Foo::Lead
+          end
+        end
+      end
+
+      it 'generates the correct query' do
+        expect(client).to receive(:query).with("SELECT Id FROM Lead WHERE Id = '2' LIMIT 1")
+        attachment.lead
+      end
+
+      it 'instantiates the correct object' do
+        expect(attachment.lead).to be_instance_of(Foo::Lead)
+      end
+
+      context 'when given a foreign key' do
+        let(:attachment){ Foo::Attachment.new(id: '1', fancy_lead_id: '2') }
+        before do
+          module Foo
+            class Attachment < ActiveForce::SObject
+              field :fancy_lead_id, from: 'LeadId'
+              belongs_to :lead, model: Foo::Lead, foreign_key: :fancy_lead_id
+            end
+          end
+        end
+
+        it 'generates the correct query' do
+          expect(client).to receive(:query).with("SELECT Id FROM Lead WHERE Id = '2' LIMIT 1")
+          attachment.lead
+        end
+      end
+    end
   end
 end

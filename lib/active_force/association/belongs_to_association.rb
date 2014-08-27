@@ -6,7 +6,7 @@ module ActiveForce
       private
 
       def default_foreign_key
-        "#{ relation_model.name.downcase }_id".to_sym
+        infer_foreign_key_from_model relation_model
       end
 
       def define_relation_method
