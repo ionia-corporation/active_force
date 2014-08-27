@@ -21,6 +21,10 @@ module ActiveForce
       extend Forwardable
       def_delegators :query, :where, :first, :last, :all, :find, :find_by, :count
 
+      def custom_table_name?
+        !StandardTypes::STANDARD_TYPES.include?(name_without_namespace)
+      end
+
       private
 
       ###
@@ -33,17 +37,16 @@ module ActiveForce
         String(attribute).split('_').map(&:capitalize).join('_') << '__c'
       end
 
-      def custom_table_name?(name)
-        !StandardTypes::STANDARD_TYPES.include?(name)
-      end
-
       def pick_table_name
-        name_without_namespace = self.name.split('::').last
-        if custom_table_name?(name_without_namespace)
+        if custom_table_name?
           "#{name_without_namespace}__c"
         else
           name_without_namespace
         end
+      end
+
+      def name_without_namespace
+        name.split('::').last
       end
 
       ###

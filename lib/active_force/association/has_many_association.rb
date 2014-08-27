@@ -5,7 +5,8 @@ module ActiveForce
       private
 
       def default_foreign_key
-        "#{ @parent.name.downcase }_id".to_sym
+        name = @parent.custom_table_name? ? @parent.name : @parent.table_name
+        "#{name.downcase}_id".to_sym
       end
 
       def define_relation_method
