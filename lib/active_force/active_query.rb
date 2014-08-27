@@ -47,8 +47,11 @@ module ActiveForce
     private
 
     def enclose_value value
-      if value.is_a? String
+      case value
+      when String
         "'#{value}'"
+      when NilClass
+        'NULL'
       else
         value.to_s
       end

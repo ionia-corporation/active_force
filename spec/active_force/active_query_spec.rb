@@ -47,6 +47,11 @@ describe ActiveForce::ActiveQuery do
       active_query.where field: "hello"
       expect(active_query.to_s).to end_with("Field__c = 'hello'")
     end
+
+    it "puts NULL when a field is set as nil" do
+      active_query.where field: nil
+      expect(active_query.to_s).to end_with("Field__c = NULL")
+    end
   end
 
   describe "#find_by" do
