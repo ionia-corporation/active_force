@@ -2,6 +2,8 @@
 
 ## Not released
 
+* Fix when passing nil value in a :where condition. ([Armando Andini][])
+
 ## 0.5.0
 
 * Provide a default id field for all SObject subclassees ([Dan Olson][], [#30][])
