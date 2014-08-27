@@ -6,14 +6,14 @@ require 'active_force/association'
 require 'yaml'
 require 'forwardable'
 require 'logger'
-
+require 'active_force/standard_types'
 
 module ActiveForce
   class SObject
     include ActiveAttr::Model
     include ActiveAttr::Dirty
     include ActiveForce::Association
-    STANDARD_TYPES = %w[ Account Contact Opportunity Campaign]
+    include StandardTypes
 
     class_attribute :mappings, :table_name
 
@@ -34,7 +34,7 @@ module ActiveForce
       end
 
       def custom_table_name
-        self.name if STANDARD_TYPES.include? self.name
+        self.name if StandardTypes::STANDARD_TYPES.include? self.name
       end
 
       ###
