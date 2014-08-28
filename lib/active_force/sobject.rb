@@ -29,29 +29,18 @@ module ActiveForce
 
       private
 
-      ###
-      # Transforms +attribute+ to the conventional Salesforce API name.
-      #
-      # Example:
-      #   > default_api_name :some_attribute
-      #   => "Some_Attribute__c"
       def default_api_name(attribute)
         String(attribute).split('_').map(&:capitalize).join('_') << '__c'
       end
 
       def pick_table_name
-        if custom_table_name?
-          "#{name_without_namespace}__c"
-        else
-          name_without_namespace
-        end
+        custom_table_name? ? "#{name_without_namespace}__c" : name_without_namespace
       end
 
       def name_without_namespace
         name.split('::').last
       end
 
-      ###
       # Provide each subclass with a default id field. Can be overridden
       # in the subclass if needed
       def inherited(subclass)
@@ -126,11 +115,7 @@ module ActiveForce
 
     def save
       run_callbacks :save do
-        if persisted?
-          update
-        else
-          create
-        end
+        persisted? ? update : create
       end
     end
 
@@ -175,7 +160,6 @@ module ActiveForce
       end
       Hash.new(attrs.compact)
     end
-
 
     def attributes_for_sfdb_update
       attrs = changed_mappings.map do |attr, sf_field|
