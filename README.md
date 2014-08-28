@@ -112,6 +112,25 @@ class Page < ActiveForce::SObject
 end
 ```
 
+### Callbacks
+
+```ruby
+class Whizbang
+
+  field :updated_from
+
+  # use ActiveModel callbacks
+  before_save :set_as_updated_from_rails
+
+  private
+
+  def set_as_updated_from_rails
+    self.updated_from = 'Rails'
+  end
+
+end
+```
+
 ## Contributing
 
 1. Fork it
