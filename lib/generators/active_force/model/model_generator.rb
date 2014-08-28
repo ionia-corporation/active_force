@@ -1,5 +1,5 @@
 module ActiveForce
-  class ActiveForceModelGenerator < Rails::Generators::NamedBase
+  class ModelGenerator < Rails::Generators::NamedBase
     desc 'This generator loads the table fields from SFDC and generates the fields for the SObject with a more ruby names'
 
     source_root File.expand_path('../templates', __FILE__)
