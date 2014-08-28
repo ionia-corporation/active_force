@@ -15,6 +15,7 @@ module ActiveForce
     include ActiveForce::Association
     extend ActiveModel::Callbacks
 
+
     define_model_callbacks :save, :create, :update
 
     class_attribute :mappings, :table_name
@@ -22,30 +23,6 @@ module ActiveForce
     class << self
       extend Forwardable
       def_delegators :query, :where, :first, :last, :all, :find, :find_by, :count
-
-      def custom_table_name?
-        !StandardTypes::STANDARD_TYPES.include?(name_without_namespace)
-      end
-
-      private
-
-      def default_api_name(attribute)
-        String(attribute).split('_').map(&:capitalize).join('_') << '__c'
-      end
-
-      def pick_table_name
-        custom_table_name? ? "#{name_without_namespace}__c" : name_without_namespace
-      end
-
-      def name_without_namespace
-        name.split('::').last
-      end
-
-      # Provide each subclass with a default id field. Can be overridden
-      # in the subclass if needed
-      def inherited(subclass)
-        subclass.field :id, from: 'Id'
-      end
     end
 
     # The table name to used to make queries.
@@ -54,8 +31,23 @@ module ActiveForce
       @table_name ||= pick_table_name
     end
 
+    def self.mappings
+      @mappings ||= {}
+    end
+
+    def self.field field_name, args = {}
+      args[:from] ||= default_api_name(field_name)
+      args[:as]   ||= :string
+      mappings[field_name] = args[:from]
+      attribute field_name, sf_type: args[:as]
+    end
+
     def self.fields
       mappings.values
+    end
+
+    def self.custom_table_name?
+      !StandardTypes::STANDARD_TYPES.include?(name_without_namespace)
     end
 
     def self.query
@@ -133,18 +125,25 @@ module ActiveForce
       id?
     end
 
-    def self.field field_name, args = {}
-      args[:from] ||= default_api_name(field_name)
-      args[:as]   ||= :string
-      mappings[field_name] = args[:from]
-      attribute field_name, sf_type: args[:as]
-    end
-
-    def self.mappings
-      @mappings ||= {}
-    end
-
     private
+
+    def self.default_api_name(attribute)
+      String(attribute).split('_').map(&:capitalize).join('_') << '__c'
+    end
+
+    def self.pick_table_name
+      custom_table_name? ? "#{name_without_namespace}__c" : name_without_namespace
+    end
+
+    def self.name_without_namespace
+      name.split('::').last
+    end
+
+    # Provide each subclass with a default id field. Can be overridden
+    # in the subclass if needed
+    def self.inherited(subclass)
+      subclass.field :id, from: 'Id'
+    end
 
     def logger_output action
       logger = Logger.new(STDOUT)
@@ -182,7 +181,7 @@ module ActiveForce
     end
 
     def sf_field_type field
-      self.class.attributes[field][:sf_tpye]
+      self.class.attributes[field][:sf_type]
     end
 
     def self.picklist field
