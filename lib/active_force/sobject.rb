@@ -13,6 +13,9 @@ module ActiveForce
     include ActiveAttr::Model
     include ActiveAttr::Dirty
     include ActiveForce::Association
+    extend ActiveModel::Callbacks
+
+    define_model_callbacks :save, :create, :update
 
     class_attribute :mappings, :table_name
 
@@ -89,7 +92,9 @@ module ActiveForce
     end
 
     def update_attributes attributes = {}
-      update_attributes! attributes
+      run_callbacks :update do
+        update_attributes! attributes
+      end
     rescue Faraday::Error::ClientError => error
       logger_output __method__
     end
@@ -104,7 +109,9 @@ module ActiveForce
     end
 
     def create
-      create!
+      run_callbacks :create do
+        create!
+      end
     rescue Faraday::Error::ClientError => error
       logger_output __method__
     end
@@ -118,19 +125,19 @@ module ActiveForce
     end
 
     def save
-      if persisted?
-        update
-      else
-        create
+      run_callbacks :save do
+        if persisted?
+          update
+        else
+          create
+        end
       end
     end
 
     def save!
-      if persisted?
-        update_attributes!
-      else
-        create!
-      end
+      save
+    rescue Faraday::Error::ClientError => error
+      logger_output __method__
     end
 
     def to_param
@@ -209,4 +216,5 @@ module ActiveForce
       self.class.sfdc_client
     end
   end
+
 end
