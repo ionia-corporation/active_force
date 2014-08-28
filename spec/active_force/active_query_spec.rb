@@ -2,18 +2,15 @@ require 'spec_helper'
 require 'active_force/active_query'
 
 describe ActiveForce::ActiveQuery do
-  let(:sobject){
-    sobject = double("sobject")
-    allow(sobject).to receive(:table_name).and_return "table_name"
-    allow(sobject).to receive(:fields).and_return []
-    allow(sobject).to receive(:mappings).and_return({field: "Field__c"})
-    sobject
-  }
-
-  let(:client){
-    double("client")
-  }
-
+  let(:sobject) do
+    double("sobject", {
+      table_name: "table_name",
+      fields: [],
+      mappings: mappings
+    })
+  end
+  let(:mappings){ { field: "Field__c" } }
+  let(:client){ double("client") }
   let(:active_query){ ActiveForce::ActiveQuery.new(sobject) }
 
   before do
@@ -46,6 +43,69 @@ describe ActiveForce::ActiveQuery do
     it "encloses the value in quotes if it's a string" do
       active_query.where field: "hello"
       expect(active_query.to_s).to end_with("Field__c = 'hello'")
+    end
+
+    it "puts NULL when a field is set as nil" do
+      active_query.where field: nil
+      expect(active_query.to_s).to end_with("Field__c = NULL")
+    end
+
+    describe 'bind parameters' do
+      let(:mappings) do
+        super().merge({
+          other_field: 'Other_Field__c',
+          name: 'Name'
+        })
+      end
+
+      it 'accepts bind parameters' do
+        active_query.where('Field__c = ?', 123)
+        expect(active_query.to_s).to eq("SELECT Id FROM table_name WHERE Field__c = 123")
+      end
+
+      it 'accepts nil bind parameters' do
+        active_query.where('Field__c = ?', nil)
+        expect(active_query.to_s).to eq("SELECT Id FROM table_name WHERE Field__c = NULL")
+      end
+
+      it 'accepts multiple bind parameters' do
+        active_query.where('Field__c = ? AND Other_Field__c = ? AND Name = ?', 123, 321, 'Bob')
+        expect(active_query.to_s).to eq("SELECT Id FROM table_name WHERE Field__c = 123 AND Other_Field__c = 321 AND Name = 'Bob'")
+      end
+
+      it 'complains when there given an incorrect number of bind parameters' do
+        expect{
+          active_query.where('Field__c = ? AND Other_Field__c = ? AND Name = ?', 123, 321)
+        }.to raise_error(ActiveForce::PreparedStatementInvalid, 'wrong number of bind variables (2 for 3)')
+      end
+
+      context 'named bind parameters' do
+        it 'accepts bind parameters' do
+          active_query.where('Field__c = :field', field: 123)
+          expect(active_query.to_s).to eq("SELECT Id FROM table_name WHERE Field__c = 123")
+        end
+
+        it 'accepts nil bind parameters' do
+          active_query.where('Field__c = :field', field: nil)
+          expect(active_query.to_s).to eq("SELECT Id FROM table_name WHERE Field__c = NULL")
+        end
+
+        it 'accepts multiple bind parameters' do
+          active_query.where('Field__c = :field AND Other_Field__c = :other_field AND Name = :name', field: 123, other_field: 321, name: 'Bob')
+          expect(active_query.to_s).to eq("SELECT Id FROM table_name WHERE Field__c = 123 AND Other_Field__c = 321 AND Name = 'Bob'")
+        end
+
+        it 'accepts multiple bind parameters orderless' do
+          active_query.where('Field__c = :field AND Other_Field__c = :other_field AND Name = :name', name: 'Bob', other_field: 321, field: 123)
+          expect(active_query.to_s).to eq("SELECT Id FROM table_name WHERE Field__c = 123 AND Other_Field__c = 321 AND Name = 'Bob'")
+        end
+
+        it 'complains when there given an incorrect number of bind parameters' do
+          expect{
+            active_query.where('Field__c = :field AND Other_Field__c = :other_field AND Name = :name', field: 123, other_field: 321)
+          }.to raise_error(ActiveForce::PreparedStatementInvalid, 'missing value for :name in Field__c = :field AND Other_Field__c = :other_field AND Name = :name')
+        end
+      end
     end
   end
 

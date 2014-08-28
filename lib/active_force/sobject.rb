@@ -6,20 +6,26 @@ require 'active_force/association'
 require 'yaml'
 require 'forwardable'
 require 'logger'
-
+require 'active_force/standard_types'
 
 module ActiveForce
   class SObject
     include ActiveAttr::Model
     include ActiveAttr::Dirty
     include ActiveForce::Association
-    STANDARD_TYPES = %w[ Account Contact Opportunity Campaign]
+    extend ActiveModel::Callbacks
+
+    define_model_callbacks :save, :create, :update
 
     class_attribute :mappings, :table_name
 
     class << self
       extend Forwardable
       def_delegators :query, :where, :first, :last, :all, :find, :find_by, :count
+
+      def custom_table_name?
+        !StandardTypes::STANDARD_TYPES.include?(name_without_namespace)
+      end
 
       private
 
@@ -33,8 +39,16 @@ module ActiveForce
         String(attribute).split('_').map(&:capitalize).join('_') << '__c'
       end
 
-      def custom_table_name
-        self.name if STANDARD_TYPES.include? self.name
+      def pick_table_name
+        if custom_table_name?
+          "#{name_without_namespace}__c"
+        else
+          name_without_namespace
+        end
+      end
+
+      def name_without_namespace
+        name.split('::').last
       end
 
       ###
@@ -48,7 +62,7 @@ module ActiveForce
     # The table name to used to make queries.
     # It is derived from the class name adding the "__c" when needed.
     def self.table_name
-      @table_name ||= custom_table_name || "#{ self.name.split('::').last }__c"
+      @table_name ||= pick_table_name
     end
 
     def self.fields
@@ -78,7 +92,9 @@ module ActiveForce
     end
 
     def update_attributes attributes = {}
-      update_attributes! attributes
+      run_callbacks :update do
+        update_attributes! attributes
+      end
     rescue Faraday::Error::ClientError => error
       logger_output __method__
     end
@@ -93,7 +109,9 @@ module ActiveForce
     end
 
     def create
-      create!
+      run_callbacks :create do
+        create!
+      end
     rescue Faraday::Error::ClientError => error
       logger_output __method__
     end
@@ -107,19 +125,19 @@ module ActiveForce
     end
 
     def save
-      if persisted?
-        update
-      else
-        create
+      run_callbacks :save do
+        if persisted?
+          update
+        else
+          create
+        end
       end
     end
 
     def save!
-      if persisted?
-        update_attributes!
-      else
-        create!
-      end
+      save
+    rescue Faraday::Error::ClientError => error
+      logger_output __method__
     end
 
     def to_param
@@ -198,4 +216,5 @@ module ActiveForce
       self.class.sfdc_client
     end
   end
+
 end

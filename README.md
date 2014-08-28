@@ -112,10 +112,31 @@ class Page < ActiveForce::SObject
 end
 ```
 
+#### Callbacks
+
+```ruby
+class Whizbang
+
+  field :updated_from
+
+  # use ActiveModel callbacks
+  before_save :set_as_updated_from_rails
+
+  private
+
+  def set_as_updated_from_rails
+    self.updated_from = 'Rails'
+  end
+
+end
+```
+
 ## Contributing
 
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+5. Create new Pull Request so we can talk about it.
+6. Once accepted, please add an entry in the CHANGELOG and rebase your changes
+   to squash typos or corrections.
