@@ -34,6 +34,13 @@ describe ActiveForce::ActiveQuery do
     end
   end
 
+  describe "select only some field using mappings" do
+    it "should return a query only with selected field" do
+      active_query.select(:field)
+      expect(active_query.to_s).to eq("SELECT Field__c FROM table_name")
+    end
+  end
+
   describe "condition mapping" do
     it "maps conditions for a .where" do
       active_query.where(field: 123)

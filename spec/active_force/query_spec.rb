@@ -11,6 +11,16 @@ describe ActiveForce::Query do
   after do
   end
 
+  describe '.select' do
+    it 'only use columns sended it on the select method' do
+      expect(@query.select('name').all.to_s).to eq "SELECT name FROM table_name"
+    end
+
+    it 'only use columns sended it on the select method' do
+      expect(@query.select(['id','name']).all.to_s).to eq "SELECT id, name FROM table_name"
+    end
+  end
+
   describe ".all" do
     it "table should return table name" do
       expect(@query.all.table).to eq(@query.table)

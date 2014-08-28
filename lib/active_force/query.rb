@@ -30,6 +30,11 @@ module ActiveForce
       SOQL
     end
 
+    def select *column
+      @query_fields = column
+      self
+    end
+
     def where condition
       @conditions << condition if condition
       self

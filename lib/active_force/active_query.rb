@@ -39,6 +39,10 @@ module ActiveForce
       self
     end
 
+    def select args
+      super mappings.values
+    end
+
     def find_by conditions
       where(conditions).limit 1
     end
