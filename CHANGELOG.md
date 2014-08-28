@@ -2,6 +2,8 @@
 
 ## Not released
 
+* Add callback functionality ([Pablo Oldani][], [#20][])
+* Support bind parameters. ([Dan Olson][], [#29][])
 * Fix when passing nil value in a :where condition. ([Armando Andini][])
 
 ## 0.5.0
