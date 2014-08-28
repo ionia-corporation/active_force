@@ -2,6 +2,7 @@ require 'active_force/query'
 require 'forwardable'
 
 module ActiveForce
+  class PreparedStatementInvalid < ArgumentError; end
   class ActiveQuery < Query
     extend Forwardable
 
@@ -32,11 +33,9 @@ module ActiveForce
       limit == 1 ? to_a.first : self
     end
 
-    def where conditions
-      return super unless conditions.is_a? Hash
-      conditions.each do |key, value|
-        super "#{ mappings[key] } = #{ enclose_value value }"
-      end
+    def where args=nil, *rest
+      return self if args.nil?
+      super build_condition args, rest
       self
     end
 
@@ -45,6 +44,58 @@ module ActiveForce
     end
 
     private
+
+    def build_condition(args, other=[])
+      case args
+      when String, Array
+        build_condition_from_array other.empty? ? args : ([args] + other)
+      when Hash
+        build_conditions_from_hash args
+      else
+        args
+      end
+    end
+
+    def build_condition_from_array(ary)
+      statement, *bind_parameters = ary
+      return statement if bind_parameters.empty?
+      if bind_parameters.first.is_a? Hash
+        replace_named_bind_parameters statement, bind_parameters.first
+      else
+        replace_bind_parameters statement, bind_parameters
+      end
+    end
+
+    def replace_named_bind_parameters(statement, bind_parameters)
+      statement.gsub(/(:?):([a-zA-Z]\w*)/) do
+        key = $2.to_sym
+        if bind_parameters.has_key? key
+          enclose_value bind_parameters[key]
+        else
+          raise PreparedStatementInvalid, "missing value for :#{key} in #{statement}"
+        end
+      end
+    end
+
+    def replace_bind_parameters(statement, values)
+      raise_if_bind_arity_mismatch statement.count('?'), values.size
+      bound = values.dup
+      statement.gsub('?') do
+        enclose_value bound.shift
+      end
+    end
+
+    def raise_if_bind_arity_mismatch(expected_var_count, actual_var_count)
+      if expected_var_count != actual_var_count
+        raise PreparedStatementInvalid, "wrong number of bind variables (#{actual_var_count} for #{expected_var_count})"
+      end
+    end
+
+    def build_conditions_from_hash(hash)
+      hash.map do |key, value|
+        "#{mappings[key]} = #{enclose_value value}"
+      end
+    end
 
     def enclose_value value
       case value
