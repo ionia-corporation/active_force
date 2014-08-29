@@ -163,6 +163,7 @@ module ActiveForce
       association_cache.clear
       reloaded = self.class.find(id)
       self.attributes = reloaded.attributes
+      changed_attributes.clear
       self
     end
 

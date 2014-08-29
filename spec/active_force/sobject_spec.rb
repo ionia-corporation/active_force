@@ -156,6 +156,7 @@ describe ActiveForce::SObject do
       expect(territory.name).to eq 'Walter'
       territory.reload
       expect(territory.name).to eq 'Jeff'
+      expect(territory.changed_attributes).to be_empty
     end
 
     it 'returns the same object' do
