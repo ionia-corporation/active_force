@@ -30,8 +30,8 @@ module ActiveForce
       SOQL
     end
 
-    def select *column
-      @query_fields = column
+    def select *columns
+      @query_fields = columns
       self
     end
 
