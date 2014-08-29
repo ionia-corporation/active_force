@@ -159,7 +159,19 @@ module ActiveForce
       @mappings ||= {}
     end
 
+    def reload
+      association_cache.clear
+      reloaded = self.class.find(id)
+      self.attributes = reloaded.attributes
+      changed_attributes.clear
+      self
+    end
+
     private
+
+    def association_cache
+      @association_cache ||= {}
+    end
 
     def logger_output action
       logger = Logger.new(STDOUT)
