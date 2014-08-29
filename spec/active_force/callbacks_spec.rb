@@ -11,7 +11,7 @@ describe ActiveForce::SObject do
   describe "save" do
 
     it 'call action callback when save a record' do
-      class Whizbang
+      class Whizbanged < ActiveForce::SObject
 
         field :updated_from
         field :dirty_attribute
@@ -31,12 +31,12 @@ describe ActiveForce::SObject do
 
       end
 
-      whizbang = Whizbang.new
-      whizbang.save
-      expect(whizbang.updated_from).to eq 'Rails'
-      expect(whizbang.dirty_attribute).to eq true
-      expect(whizbang.changed.include? 'dirty_attribute').to eq true
-      expect(whizbang.changed.include? 'updated_from').to eq false
+      whizbanged = Whizbanged.new
+      whizbanged.save
+      expect(whizbanged.updated_from).to eq 'Rails'
+      expect(whizbanged.dirty_attribute).to eq true
+      expect(whizbanged.changed.include? 'dirty_attribute').to eq true
+      expect(whizbanged.changed.include? 'updated_from').to eq false
     end
   end
 end
