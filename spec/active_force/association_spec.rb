@@ -12,7 +12,7 @@ describe ActiveForce::SObject do
   end
 
   let :client do
-    double("sfdc_client")
+    double("sfdc_client", query: [Restforce::Mash.new(id: 1)])
   end
 
   before do
@@ -29,7 +29,6 @@ describe ActiveForce::SObject do
   end
 
   describe "has_many_query" do
-
     before do
       class Post < ActiveForce::SObject
         has_many :comments
@@ -44,10 +43,16 @@ describe ActiveForce::SObject do
       expect(post.comments).to be_a ActiveForce::ActiveQuery
     end
 
+    it 'makes only one API call to fetch the associated object' do
+      expect(client).to receive(:query).once
+      post.comments.to_a
+      post.comments.to_a
+    end
+
     describe 'to_s' do
-      it "should retrun a SOQL statment" do
+      it "should return a SOQL statment" do
         soql = "SELECT Id, PostId FROM Comment__c WHERE PostId = '1'"
-       expect(post.comments.to_s).to eq soql
+        expect(post.comments.to_s).to eq soql
       end
     end
 
@@ -92,8 +97,8 @@ describe ActiveForce::SObject do
     end
 
     it 'should allow to change the foreign key' do
-      Post.has_many :comments, { foreign_key: :post }
-      Comment.field :post, from: 'PostId'
+      Post.has_many :comments, { foreign_key: :poster }
+      Comment.field :poster, from: 'PostId'
       soql = "SELECT Id, PostId FROM Comment__c WHERE PostId = '1'"
       expect(post.comments.to_s).to eq soql
     end
@@ -112,13 +117,11 @@ describe ActiveForce::SObject do
   end
 
   describe "belongs_to" do
-
     before do
-      allow(client).to receive(:query).and_return [Restforce::Mash.new(id: 1)]
+      Comment.belongs_to :post
     end
 
     it "should get the resource it belongs to" do
-      Comment.belongs_to :post
       expect(comment.post).to be_instance_of(Post)
     end
 
@@ -129,6 +132,12 @@ describe ActiveForce::SObject do
       end
       allow(comment).to receive(:fancy_post_id).and_return "2"
       expect(client).to receive(:query).with("SELECT Id FROM Post__c WHERE Id = '2' LIMIT 1")
+      comment.post
+    end
+
+    it 'makes only one API call to fetch the associated object' do
+      expect(client).to receive(:query).once
+      comment.post
       comment.post
     end
 

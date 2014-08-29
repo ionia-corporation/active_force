@@ -161,6 +161,10 @@ module ActiveForce
 
     private
 
+    def association_cache
+      @association_cache ||= {}
+    end
+
     def logger_output action
       logger = Logger.new(STDOUT)
       logger.info("[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while #{ action }, params: #{hash}, error: #{error.inspect}")

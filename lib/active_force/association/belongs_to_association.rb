@@ -11,8 +11,11 @@ module ActiveForce
 
       def define_relation_method
         association = self
-        @parent.send :define_method, @relation_name do
-          association.relation_model.find(send association.foreign_key)
+        _method = @relation_name
+        @parent.send :define_method, _method do
+          association_cache.fetch(_method) do
+            association_cache[_method] = association.relation_model.find(send association.foreign_key)
+          end
         end
       end
     end
