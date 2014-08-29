@@ -60,11 +60,15 @@ describe ActiveForce::SObject do
   describe '#update' do
 
     subject do
-      Whizbang.new
+      Whizbang.new(id: '1')
     end
 
     before do
-      expect(client).to receive(:update!).and_return('id')
+      expected_args = [
+        Whizbang.table_name,
+        {'Text_Label' => 'some text', 'Id' => '1'}
+      ]
+      expect(client).to receive(:update!).with(*expected_args).and_return('id')
     end
 
     it 'delegates to the Client with create!' do
@@ -97,7 +101,7 @@ describe ActiveForce::SObject do
   describe 'self.create' do
 
     before do
-      expect(client).to receive(:create!).and_return('id')
+      expect(client).to receive(:create!).with(Whizbang.table_name, 'Text_Label' => 'some text').and_return('id')
     end
 
     it 'should create a new instance' do
