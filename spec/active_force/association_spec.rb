@@ -2,13 +2,17 @@ require 'spec_helper'
 require 'active_force/association'
 
 describe ActiveForce::SObject do
-
   let :post do
-    Post.new(id: "1")
+    post = Post.new
+    allow(post).to receive(:id).and_return "1"
+    post
   end
 
   let :comment do
-    Comment.new(id: "1")
+    comment = Comment.new
+    allow(comment).to receive(:id).and_return "1"
+    allow(comment).to receive(:post_id).and_return "1"
+    comment
   end
 
   let :client do
