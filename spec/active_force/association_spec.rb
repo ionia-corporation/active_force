@@ -8,7 +8,7 @@ describe ActiveForce::SObject do
   end
 
   let :comment do
-    Comment.new(id: "1")
+    Comment.new(id: "1", post_id: "1")
   end
 
   let :client do
@@ -142,9 +142,11 @@ describe ActiveForce::SObject do
     end
 
     it 'accepts assignment of an existing object as an association' do
-      expect(client).to_not receive :query
-      comment.post = post
-      expect(comment.post).to eql post
+      expect(client).to_not receive(:query)
+      other_post = Post.new(id: "2")
+      comment.post = other_post
+      expect(comment.post_id).to eq other_post.id
+      expect(comment.post).to eq other_post
     end
 
     context 'when the SObject is namespaced' do

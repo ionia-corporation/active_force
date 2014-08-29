@@ -17,6 +17,7 @@ module ActiveForce
         end
 
         @parent.send :define_method, "#{_method}=" do |other|
+          send "#{ association.foreign_key }=", other.id
           association_cache[_method] = other
         end
       end
