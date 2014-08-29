@@ -55,6 +55,32 @@ describe ActiveForce::SObject do
         expect(Quota.mappings[:id]).to eq 'Bar_Id__c'
       end
     end
+
+    context 'as: :multi_picklist' do
+      before do
+        class IceCream < ActiveForce::SObject
+          field :flavors, as: :multi_picklist
+        end
+        sundae.flavors = %w(chocolate vanilla strawberry)
+      end
+
+      context 'on create' do
+        let(:sundae) { IceCream.new }
+        it 'formats the picklist values' do
+          expect(client).to receive(:create!).with('IceCream__c', {'Flavors__c' => 'chocolate;vanilla;strawberry'})
+          sundae.save
+        end
+      end
+
+      context 'on update' do
+        let(:sundae) { IceCream.new(id: '1') }
+        it 'formats the picklist values' do
+          expect(client).to receive(:update!).with('IceCream__c', {'Flavors__c' => 'chocolate;vanilla;strawberry', 'Id' => '1'})
+          sundae.save
+        end
+      end
+
+    end
   end
 
   describe '#update' do
