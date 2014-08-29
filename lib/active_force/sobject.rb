@@ -182,7 +182,7 @@ module ActiveForce
 
     def attributes_for_sfdb_create
       attrs = mappings.map do |attr, sf_field|
-        value = read_attribute(attr)
+        value = read_value(attr)
         [sf_field, value] if value
       end
       Hash[attrs.compact]
@@ -191,7 +191,7 @@ module ActiveForce
 
     def attributes_for_sfdb_update
       attrs = changed_mappings.map do |attr, sf_field|
-        [sf_field, read_attribute(attr)]
+        [sf_field, read_value(attr)]
       end
       Hash[attrs].merge('Id' => id)
     end
@@ -210,7 +210,7 @@ module ActiveForce
     end
 
     def sf_field_type field
-      self.class.attributes[field][:sf_tpye]
+      self.class.attributes[field][:sf_type]
     end
 
     def self.picklist field
