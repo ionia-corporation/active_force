@@ -17,6 +17,10 @@ module ActiveForce
             association_cache[_method] = association.relation_model.find(send association.foreign_key)
           end
         end
+
+        @parent.send :define_method, "#{_method}=" do |other|
+          association_cache[_method] = other
+        end
       end
     end
 
