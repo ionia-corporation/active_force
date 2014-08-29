@@ -141,6 +141,12 @@ describe ActiveForce::SObject do
       comment.post
     end
 
+    it 'accepts assignment of an existing object as an association' do
+      expect(client).to_not receive :query
+      comment.post = post
+      expect(comment.post).to eql post
+    end
+
     context 'when the SObject is namespaced' do
       let(:attachment){ Foo::Attachment.new(id: '1', lead_id: '2') }
       before do
