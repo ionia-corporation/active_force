@@ -10,10 +10,13 @@ module ActiveForce
 
       def define_relation_method
         association = self
-        @parent.send :define_method, @relation_name do
-          query = association.relation_model.query
-          query.options association.options
-          query.where association.foreign_key => self.id
+        _method = @relation_name
+        @parent.send :define_method, _method do
+          association_cache.fetch(_method) do
+            query = association.relation_model.query
+            query.options association.options
+            association_cache[_method] = query.where association.foreign_key => self.id
+          end
         end
       end
     end

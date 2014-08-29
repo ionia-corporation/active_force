@@ -126,4 +126,42 @@ describe ActiveForce::SObject do
       Whizbang.find_by id: 123, text: "foo"
     end
   end
+
+  describe '#reload' do
+    let(:client) do
+      double("sfdc_client", query: [Restforce::Mash.new(Id: 1, Name: 'Jeff')])
+    end
+    let(:quota){ Quota.new(id: '1') }
+    let(:territory){ Territory.new(id: '1', quota_id: '1') }
+
+    before do
+      Territory.belongs_to :quota, model: Quota
+      Territory.field :quota_id, from: 'Quota_Id'
+      allow(ActiveForce::SObject).to receive(:sfdc_client).and_return client
+    end
+
+    it 'clears cached associations' do
+      soql = "SELECT Id, Bar_Id__c FROM Quota__c WHERE Id = '1' LIMIT 1"
+      expect(client).to receive(:query).twice.with soql
+      allow(Territory).to receive(:find){ territory }
+      territory.quota
+      territory.quota
+      territory.reload
+      territory.quota
+    end
+
+    it "refreshes the object's attributes" do
+      Territory.field :name, from: 'Name'
+      territory.name = 'Walter'
+      expect(territory.name).to eq 'Walter'
+      territory.reload
+      expect(territory.name).to eq 'Jeff'
+    end
+
+    it 'returns the same object' do
+      allow(Territory).to receive(:find){ Territory.new }
+      expected = territory
+      expect(territory.reload).to eql expected
+    end
+  end
 end
