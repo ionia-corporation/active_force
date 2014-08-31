@@ -69,26 +69,11 @@ module ActiveForce
 
     alias_method :update, :update_attributes
 
-    def create!
-      return false unless valid?
-      self.id = sfdc_client.create! table_name, attributes_for_sfdb
-      changed_attributes.clear
-      self
-    end
-
-    def create
-      run_callbacks :create do
-        create!
-      end
-    rescue Faraday::Error::ClientError => error
-      logger_output __method__
-    end
-
-    def self.create args
+    def self.create args = {}
       new(args).save
     end
 
-    def self.create! args
+    def self.create! args = {}
       new(args).save!
     end
 
@@ -134,6 +119,25 @@ module ActiveForce
     end
 
     private
+
+    def create!
+      return false unless valid?
+      self.id = sfdc_client.create! table_name, attributes_for_sfdb
+      changed_attributes.clear
+      self
+    end
+    ###
+    # Provide each subclass with a default id field. Can be overridden
+    # in the subclass if needed
+    def self.inherited(subclass)
+      subclass.field :id, from: 'Id'
+    end
+
+    def create
+      run_callbacks :create do
+        create!
+      end
+    end
 
     def association_cache
       @association_cache ||= {}

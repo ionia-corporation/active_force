@@ -101,7 +101,7 @@ describe ActiveForce::SObject do
 
   end
 
-  describe '#create' do
+  describe '#save' do
 
     subject do
       Whizbang.new
@@ -112,11 +112,11 @@ describe ActiveForce::SObject do
     end
 
     it 'delegates to the Client with create!' do
-      subject.create
+      subject.save
     end
 
     it 'sets the id' do
-      subject.create
+      subject.save
       expect(subject.id).to eq('id')
     end
 
