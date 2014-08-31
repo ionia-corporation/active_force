@@ -12,6 +12,7 @@ module ActiveAttr
         super(name, options)
         define_method("#{name}=") do |value|
           send("#{name}_will_change!") unless value == read_attribute(name)
+          mappings[name.to_sym].value = value
           super(value)
         end
       end

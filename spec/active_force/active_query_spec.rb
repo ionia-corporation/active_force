@@ -9,7 +9,7 @@ describe ActiveForce::ActiveQuery do
       mappings: mappings
     })
   end
-  let(:mappings){ { field: "Field__c" } }
+  let(:mappings){ { field: ActiveForce::Attribute.new(:field) } }
   let(:client){ double("client") }
   let(:active_query){ ActiveForce::ActiveQuery.new(sobject) }
 
