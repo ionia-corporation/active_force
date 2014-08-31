@@ -25,13 +25,11 @@ describe ActiveForce::SObject do
 
   describe ".field" do
     it "add a mappings" do
-      expect(Whizbang.mappings).to include(
-        checkbox: 'Checkbox_Label',
-        text: 'Text_Label',
-        date: 'Date_Label',
-        datetime: 'DateTime_Label',
-        picklist_multiselect: 'Picklist_Multiselect_Label'
-      )
+      expect(Whizbang.mappings[:checkbox]).to be_a ActiveForce::Attribute
+      expect(Whizbang.mappings[:text]).to be_a ActiveForce::Attribute
+      expect(Whizbang.mappings[:date]).to be_a ActiveForce::Attribute
+      expect(Whizbang.mappings[:datetime]).to be_a ActiveForce::Attribute
+      expect(Whizbang.mappings[:picklist_multiselect]).to be_a ActiveForce::Attribute
     end
 
     it "set an attribute" do
@@ -41,18 +39,18 @@ describe ActiveForce::SObject do
     end
 
     it "uses Salesforce API naming conventions by default" do
-      expect(Whizbang.mappings[:estimated_close_date]).to eq 'Estimated_Close_Date__c'
+      expect(Whizbang.mappings[:estimated_close_date].from).to eq 'Estimated_Close_Date__c'
     end
 
     describe 'having an id' do
       it 'has one by default' do
         expect(Territory.new).to respond_to(:id)
-        expect(Territory.mappings[:id]).to eq 'Id'
+        expect(Territory.mappings[:id].from).to eq 'Id'
       end
 
       it 'can be overridden' do
         expect(Quota.new).to respond_to(:id)
-        expect(Quota.mappings[:id]).to eq 'Bar_Id__c'
+        expect(Quota.mappings[:id].from).to eq 'Bar_Id__c'
       end
     end
 

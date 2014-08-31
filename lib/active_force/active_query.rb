@@ -93,7 +93,7 @@ module ActiveForce
 
     def build_conditions_from_hash(hash)
       hash.map do |key, value|
-        "#{mappings[key]} = #{enclose_value value}"
+        "#{mappings[key].from} = #{enclose_value value}"
       end
     end
 
