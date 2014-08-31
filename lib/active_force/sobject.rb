@@ -86,7 +86,7 @@ module ActiveForce
     def update_attributes! attributes = {}
       assign_attributes attributes
       return false unless valid?
-      sfdc_client.update! table_name, attributes_for_sfdb_update
+      sfdc_client.update! table_name, attributes_for_sfdb
       changed_attributes.clear
       self
     end
@@ -103,7 +103,7 @@ module ActiveForce
 
     def create!
       return false unless valid?
-      self.id = sfdc_client.create! table_name, attributes_for_sfdb_create
+      self.id = sfdc_client.create! table_name, attributes_for_sfdb
       changed_attributes.clear
       self
     end
@@ -180,20 +180,13 @@ module ActiveForce
       false
     end
 
-    def attributes_for_sfdb_create
+    def attributes_for_sfdb
       attrs = mappings.map do |attr, sf_field|
         value = read_value(attr)
         [sf_field, value] if value
       end
+      attrs << ['Id', id] if persisted?
       Hash[attrs.compact]
-    end
-
-
-    def attributes_for_sfdb_update
-      attrs = changed_mappings.map do |attr, sf_field|
-        [sf_field, read_value(attr)]
-      end
-      Hash[attrs].merge('Id' => id)
     end
 
     def changed_mappings

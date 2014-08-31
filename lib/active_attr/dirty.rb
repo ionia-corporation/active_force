@@ -17,10 +17,5 @@ module ActiveAttr
       end
     end
 
-    def initialize(attributes = nil, options = {})
-      super(attributes, options)
-      changed_attributes.clear
-    end
-
   end
 end
