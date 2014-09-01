@@ -39,6 +39,11 @@ module ActiveForce
       self
     end
 
+    def select *fields
+      fields.map! { |field| mappings[field] }
+      super *fields
+    end
+
     def find_by conditions
       where(conditions).limit 1
     end

@@ -2,6 +2,7 @@
 
 ## Not released
 
+* Add select statement functionality. ([Pablo Oldani][], [#33][])
 * Add callback functionality ([Pablo Oldani][], [#20][])
 * Support bind parameters. ([Dan Olson][], [#29][])
 * Fix when passing nil value in a :where condition. ([Armando Andini][])
