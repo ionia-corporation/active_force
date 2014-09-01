@@ -2,6 +2,8 @@
 
 ## Not released
 
+## 0.6.0
+
 * Add select statement functionality. ([Pablo Oldani][], [#33][])
 * Add callback functionality ([Pablo Oldani][], [#20][])
 * Support bind parameters. ([Dan Olson][], [#29][])
