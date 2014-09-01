@@ -6,10 +6,11 @@ describe ActiveForce::ActiveQuery do
     double("sobject", {
       table_name: "table_name",
       fields: [],
-      mappings: mappings
+      mappings: mappings,
+      primary_key: :id
     })
   end
-  let(:mappings){ { field: "Field__c", other_field: "Other_Field" } }
+  let(:mappings){ { id: "Id", field: "Field__c", other_field: "Other_Field", pk: "PrimaryKey__c" } }
   let(:client){ double("client") }
   let(:active_query){ ActiveForce::ActiveQuery.new(sobject) }
 
@@ -121,6 +122,15 @@ describe ActiveForce::ActiveQuery do
       expect(client).to receive :query
       active_query.find_by field: 123
       expect(active_query.to_s).to eq "SELECT Id FROM table_name WHERE Field__c = 123 LIMIT 1"
+    end
+  end
+
+  describe "find" do
+    it 'should use the primary key' do
+      allow(sobject).to receive(:primary_key).and_return(:pk)
+      expect(client).to receive :query
+      active_query.find("123")
+      expect(active_query.to_s).to eq "SELECT PrimaryKey__c FROM table_name WHERE PrimaryKey__c = 123 LIMIT 1"
     end
   end
 
