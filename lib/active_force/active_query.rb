@@ -39,8 +39,9 @@ module ActiveForce
       self
     end
 
-    def select args
-      super mappings.values
+    def select *fields
+      fields.map! { |field| mappings[field] }
+      super *fields
     end
 
     def find_by conditions
