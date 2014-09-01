@@ -21,17 +21,15 @@ module ActiveForce
     end
 
     def sfdc_columns
-      begin
-        @columns ||= ActiveForce::SObject.sfdc_client.describe(@table_name).fields.map do |field|
-          field.name
-        end
-      rescue Faraday::Error::ResourceNotFound
-        puts "The specified table name is not found. Be sure to append __c if it's custom"
+      @columns ||= ActiveForce::SObject.sfdc_client.describe(@table_name).fields.map do |field|
+        field.name
       end
     end
 
     def table_exists?
       !! sfdc_columns
+      rescue Faraday::Error::ResourceNotFound
+        puts "The specified table name is not found. Be sure to append __c if it's custom"
     end
 
     def column_to_field column
@@ -39,7 +37,7 @@ module ActiveForce
     end
 
     def attribute_line attribute
-      "field :#{ attribute.field },#{ space_justify attribute.field } from: #{ attribute.column }"
+      "field :#{ attribute.field },#{ space_justify attribute.field }  from: '#{ attribute.column }'"
     end
 
     def space_justify field_name
