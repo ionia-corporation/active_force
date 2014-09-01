@@ -22,8 +22,12 @@ module ActiveForce
     end
 
     def sfdc_field_names 
-      ActiveForce::SObject.sfdc_client.describe(@table_name).fields.map do |field|
-        field.name
+      begin
+        ActiveForce::SObject.sfdc_client.describe(@table_name).fields.map do |field|
+          field.name
+        end
+      rescue 
+        puts "The specified table name is not found. Be sure to append __c if it's custom"
       end
     end
 
