@@ -3,7 +3,7 @@
 [![Code Climate](http://img.shields.io/codeclimate/github/ionia-corporation/active_force.svg)](https://codeclimate.com/github/ionia-corporation/active_force)
 [![Dependency Status](http://img.shields.io/gemnasium/ionia-corporation/active_force.svg)](https://gemnasium.com/ionia-corporation/active_force)
 [![Test Coverage](https://codeclimate.com/github/ionia-corporation/active_force/badges/coverage.svg)](https://codeclimate.com/github/ionia-corporation/active_force)
-
+[![Chat](http://img.shields.io/badge/chat-gitter-brightgreen.svg)](https://gitter.im/ionia-corporation/active_force)
 
 # ActiveForce
 
@@ -137,6 +137,6 @@ end
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request so we can talk about it.
+5. Create new pull request so we can talk about it.
 6. Once accepted, please add an entry in the CHANGELOG and rebase your changes
    to squash typos or corrections.

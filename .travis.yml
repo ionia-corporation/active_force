@@ -7,4 +7,8 @@ matrix:
     - rvm: rbx-2
   fast_finish: true
 env:
-  - CODECLIMATE_REPO_TOKEN=1c5ed259429e0bfc5412974d69cfba2780962a87ca8c543d684e33fea37f7e71 
+  - CODECLIMATE_REPO_TOKEN=1c5ed259429e0bfc5412974d69cfba2780962a87ca8c543d684e33fea37f7e71
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/a790a8fc07d033f05e00
