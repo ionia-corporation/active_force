@@ -8,7 +8,7 @@ module ActiveForce
     end
 
     def name
-      @sf_table ||= pick_table_name
+      @name ||= pick_table_name
     end
 
     def custom_table_name?
