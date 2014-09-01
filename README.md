@@ -37,89 +37,33 @@ Restforce.log = true if Rails.env.development?
 
 ## Usage
 
-### Define a class
-
 ```ruby
-class Page < ActiveForce::SObject
+class Medication < ActiveForce::SObject
 
-end
-```
+  field :name,             from: 'Name'
 
-### Add Attributes
-
-```ruby
-class Page < ActiveForce::SObject
-  #field, :attribute_name, from: 'Name_In_Salesforce_Database'
-  field :id,                from: 'Id'
-  field :name,              from: 'Medication__c'
-  #set SalesForce table name.
-  self.table_name = 'Patient_Medication__c'
-end
-```
-
-### Validations
-
-You can use any validation that active record has (except for validates_associated), just by adding them to your class:
-
-```ruby
-validates :name, :login, :email, presence: true
-validates :text, length: { minimum: 2 }
-validates :text, format: { with: /\A[a-zA-Z]+\z/, message: "only allows letters" }
-validates :size, inclusion: { in: %w(small medium large),
-    message: "%{value} is not a valid size" }
-```
-
-### Relationships
-
-#### Has Many
-
-```ruby
-class Account < ActiveForce::SObject
-  has_many :pages
-end
-
-class Page < ActiveForce::SObject
-  field :account_id,           from: 'Account__c'
-end
-```
-
-you could send a option parameter in the declaration.
-
-```ruby
-class Account < ActiveForce::SObject
-  has_many :medications,
-    where: "(Date_Discontinued__c > #{ Date.today.strftime("%Y-%m-%d") } or Date_Discontinued__c = NULL)"
-
-  has_many :today_log_entrys,
-    model: DailyLogEntry,
-    where: "Date__c = #{ Time.now.in_time_zone.strftime("%Y-%m-%d") }"
-
-  has_many :labs,
-    where: "Category__c = 'EMR' And Date__c <> NULL",
-    order: 'Date__c DESC'
-end
-```
-
-#### Belongs to
-
-```ruby
-class Account < ActiveForce::SObject
-end
-
-class Page < ActiveForce::SObject
-  field :account_id,           from: 'Account__c'
-  belongs_to :account
-end
-```
-
-#### Callbacks
-
-```ruby
-class Whizbang
-
+  field :max_dossage  # from defaults to "Max_Dossage__c" 
   field :updated_from
 
-  # use ActiveModel callbacks
+  ##
+  # Table name is infered from class name.
+  #
+  # self.table_name = 'Medication__c' # default one.
+
+  ##
+  # Validations
+  #
+  validates :name, :login, :email, presence: true
+
+  # Use any validation from active record.
+  # validates :text, length: { minimum: 2 }
+  # validates :text, format: { with: /\A[a-zA-Z]+\z/, message: "only allows letters" }
+  # validates :size, inclusion: { in: %w(small medium large),
+  #   message: "%{value} is not a valid size" }
+
+  ##
+  # Callbacks
+  #
   before_save :set_as_updated_from_rails
 
   private
@@ -128,6 +72,45 @@ class Whizbang
     self.updated_from = 'Rails'
   end
 
+end
+```
+
+Altenative you can try the generator. (requires setting up the connection)
+
+    rails generate active_force_model Medication__c
+
+### Relationships
+
+#### Has Many
+
+```ruby
+class Account < ActiveForce::SObject
+  has_many :pages
+
+  # Use option parameters in the declaration.
+
+  has_many :medications,
+    where: "Discontinued__c > #{ Date.today.strftime("%Y-%m-%d") }" \
+           "OR Discontinued__c = NULL"
+
+  has_many :today_log_entries,
+    model: DailyLogEntry,
+    where: { date: Time.now.in_time_zone.strftime("%Y-%m-%d") }
+
+  has_many :labs,
+    where: "Category__c = 'EMR' AND Date__c <> NULL",
+    order: 'Date__c DESC'
+
+end
+```
+
+#### Belongs to
+
+```ruby
+class Page < ActiveForce::SObject
+  field :account_id,           from: 'Account__c'
+
+  belongs_to :account
 end
 ```
 
