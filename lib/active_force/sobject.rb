@@ -51,7 +51,7 @@ module ActiveForce
     end
 
     def self.table
-      @table ||= ActiveForce::Table.new self
+      @table ||= ActiveForce::Table.new name
     end
 
     def self.fields
