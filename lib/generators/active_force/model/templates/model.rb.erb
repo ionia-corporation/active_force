@@ -2,6 +2,6 @@ require 'active_force/sobject'
 
 class <%= @class_name %> < ActiveForce::SObject
 <% attributes.each do |attribute| -%>
-    field :<%= attribute.field %>, from: '<%= attribute.column %>'
+  <%= attribute_line attribute %>
 <% end -%>
 end

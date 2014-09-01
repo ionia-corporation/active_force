@@ -35,10 +35,19 @@ module ActiveForce
     end
 
     def column_to_field column
-      sf_name = sf_name.underscore
-      sf_name = sf_name[0..-4] if sf_name.include? "__c"
-      sf_name.to_sym
+      column.underscore.gsub("__c", "").to_sym
     end
+
+    def attribute_line attribute
+      "field :#{ attribute.field },#{ space_justify attribute.field } from: #{ attribute.column }"
+    end
+
+    def space_justify field_name
+      longest_field = attributes.map { |attr| attr.field.length } .max
+      justify_count = longest_field - field_name.length
+      " " * justify_count
+    end
+
 
     class String
       def underscore
