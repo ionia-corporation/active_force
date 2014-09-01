@@ -3,10 +3,10 @@ require 'active_attr'
 require 'active_attr/dirty'
 require 'active_force/active_query'
 require 'active_force/association'
+require 'active_force/table'
 require 'yaml'
 require 'forwardable'
 require 'logger'
-require 'active_force/standard_types'
 
 module ActiveForce
   class SObject
@@ -22,10 +22,7 @@ module ActiveForce
     class << self
       extend Forwardable
       def_delegators :query, :where, :first, :last, :all, :find, :find_by, :count
-
-      def custom_table_name?
-        !StandardTypes::STANDARD_TYPES.include?(name_without_namespace)
-      end
+      def_delegators :table, :custom_table_name?
 
       private
 
@@ -39,18 +36,6 @@ module ActiveForce
         String(attribute).split('_').map(&:capitalize).join('_') << '__c'
       end
 
-      def pick_table_name
-        if custom_table_name?
-          "#{name_without_namespace}__c"
-        else
-          name_without_namespace
-        end
-      end
-
-      def name_without_namespace
-        name.split('::').last
-      end
-
       ###
       # Provide each subclass with a default id field. Can be overridden
       # in the subclass if needed
@@ -62,7 +47,11 @@ module ActiveForce
     # The table name to used to make queries.
     # It is derived from the class name adding the "__c" when needed.
     def self.table_name
-      @table_name ||= pick_table_name
+      table.name
+    end
+
+    def self.table
+      @table ||= ActiveForce::Table.new name
     end
 
     def self.fields
