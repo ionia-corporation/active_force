@@ -6,6 +6,7 @@
 * Add callback functionality ([Pablo Oldani][], [#20][])
 * Support bind parameters. ([Dan Olson][], [#29][])
 * Fix when passing nil value in a :where condition. ([Armando Andini][])
+* Model generator ([Armando Andini][], [#54][])
 
 ## 0.5.0
 
