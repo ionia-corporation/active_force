@@ -169,8 +169,7 @@ describe ActiveForce::SObject do
       soql = "SELECT Bar_Id__c FROM Quota__c WHERE Bar_Id__c = '1' LIMIT 1"
       expect(client).to receive(:query).twice.with soql
       allow(Territory).to receive(:find){ territory }
-      territory.quota
-      territory.quota
+      2.times { territory.quota }
       territory.reload
       territory.quota
     end
@@ -188,6 +187,16 @@ describe ActiveForce::SObject do
       allow(Territory).to receive(:find){ Territory.new }
       expected = territory
       expect(territory.reload).to eql expected
+    end
+  end
+
+  describe "primary key" do
+    it "has a default primary key" do
+      expect(Territory.primary_key).to eq :id
+    end
+
+    it "allows specifying a primary key" do
+      expect(Quota.primary_key).to eq :bar_id
     end
   end
 end
