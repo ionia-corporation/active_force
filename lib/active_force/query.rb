@@ -2,10 +2,10 @@ module ActiveForce
   class Query
     attr_reader :table
 
-    def initialize table
+    def initialize table, table_id = 'Id'
       @table = table
+      @table_id = table_id
       @conditions = []
-      @table_id = 'Id'
       @query_fields = [@table_id]
     end
 
@@ -63,17 +63,12 @@ module ActiveForce
       @offset
     end
 
-    def find id
-      where "#{ @table_id } = '#{ id }'"
-      limit 1
-    end
-
     def first
       limit 1
     end
 
     def last
-      order("Id DESC").limit(1)
+      order("#{ @table_id } DESC").limit(1)
     end
 
     def join object_query
@@ -82,7 +77,7 @@ module ActiveForce
     end
 
     def count
-      @query_fields = ["count(Id)"]
+      @query_fields = ["count(#{ @table_id })"]
       self
     end
 
