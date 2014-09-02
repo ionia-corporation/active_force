@@ -17,12 +17,20 @@ module ActiveForce
 
     define_model_callbacks :save, :create, :update
 
-    class_attribute :mappings, :table_name
+    class_attribute :mappings, :table_name, :primary_key
 
     class << self
       extend Forwardable
       def_delegators :query, :where, :first, :last, :all, :find, :find_by, :count
       def_delegators :table, :custom_table_name?
+
+      def primary_key
+        @primary_key || :id
+      end
+
+      def primary_key_column
+        mappings[primary_key]
+      end
 
       private
 
@@ -137,6 +145,10 @@ module ActiveForce
       id?
     end
 
+    def primary_key_value
+      send self.class.primary_key
+    end
+
     def self.field field_name, args = {}
       args[:from] ||= default_api_name(field_name)
       args[:as]   ||= :string
@@ -174,7 +186,7 @@ module ActiveForce
         value = read_value(attr)
         [sf_field, value] if value
       end
-      attrs << ['Id', id] if persisted?
+      attrs << [self.class.primary_key_column, primary_key_value] if persisted?
       Hash[attrs.compact]
     end
 
