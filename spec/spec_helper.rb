@@ -10,5 +10,5 @@ require 'pry'
 class Territory < ActiveForce::SObject; end
 class Quota < ActiveForce::SObject
   field :bar_id, from: 'Bar_Id__c'
-  self.primary_key = :bar_id
+  primary_key :bar_id
 end

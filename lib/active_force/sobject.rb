@@ -17,15 +17,17 @@ module ActiveForce
 
     define_model_callbacks :save, :create, :update
 
-    class_attribute :mappings, :table_name, :primary_key
+    class_attribute :mappings, :table_name
 
     class << self
       extend Forwardable
       def_delegators :query, :where, :first, :last, :all, :find, :find_by, :count
       def_delegators :table, :custom_table_name?
 
-      def primary_key
-        @primary_key || :id
+      def primary_key field = nil
+        @primary_key = field || @primary_key || :id
+        delete_field :id if specified_primary_key?
+        @primary_key
       end
 
       def primary_key_column
@@ -49,6 +51,15 @@ module ActiveForce
       # in the subclass if needed
       def inherited(subclass)
         subclass.field :id, from: 'Id'
+      end
+
+      def specified_primary_key?
+        @primary_key != :id
+      end
+
+      def delete_field attr
+        attributes.delete attr.to_s
+        mappings.delete attr
       end
     end
 
