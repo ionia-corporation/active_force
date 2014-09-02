@@ -24,6 +24,16 @@ module ActiveForce
       def_delegators :query, :where, :first, :last, :all, :find, :find_by, :count
       def_delegators :table, :custom_table_name?
 
+      def primary_key field = nil
+        @primary_key = field || @primary_key || :id
+        delete_field :id if specified_primary_key?
+        @primary_key
+      end
+
+      def primary_key_column
+        mappings[primary_key]
+      end
+
       private
 
       ###
@@ -41,6 +51,15 @@ module ActiveForce
       # in the subclass if needed
       def inherited(subclass)
         subclass.field :id, from: 'Id'
+      end
+
+      def specified_primary_key?
+        @primary_key != :id
+      end
+
+      def delete_field attr
+        attributes.delete attr.to_s
+        mappings.delete attr
       end
     end
 
@@ -137,6 +156,10 @@ module ActiveForce
       id?
     end
 
+    def primary_key_value
+      send self.class.primary_key
+    end
+
     def self.field field_name, args = {}
       args[:from] ||= default_api_name(field_name)
       args[:as]   ||= :string
@@ -174,7 +197,7 @@ module ActiveForce
         value = read_value(attr)
         [sf_field, value] if value
       end
-      attrs << ['Id', id] if persisted?
+      attrs << [self.class.primary_key_column, primary_key_value] if persisted?
       Hash[attrs.compact]
     end
 

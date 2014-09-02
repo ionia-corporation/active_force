@@ -6,16 +6,17 @@ describe ActiveForce::ActiveQuery do
     double("sobject", {
       table_name: "table_name",
       fields: [],
-      mappings: mappings
+      mappings: { id: "Id", field: "Field__c", pk: "PrimaryKey__c" },
+      primary_key: :id,
+      sfdc_client: client,
+      build: Object.new
     })
   end
-  let(:mappings){ { field: "Field__c", other_field: "Other_Field" } }
-  let(:client){ double("client") }
-  let(:active_query){ ActiveForce::ActiveQuery.new(sobject) }
 
-  before do
-    allow(active_query).to receive(:sfdc_client).and_return client
-    allow(active_query).to receive(:build).and_return Object.new
+  let(:client){ double("client", {query: nil}) }
+
+  let(:active_query) do
+    ActiveForce::ActiveQuery.new(sobject) 
   end
 
   describe "to_a" do
@@ -118,9 +119,16 @@ describe ActiveForce::ActiveQuery do
 
   describe "#find_by" do
     it "should query the client, with the SFDC field names and correctly enclosed values" do
-      expect(client).to receive :query
       active_query.find_by field: 123
       expect(active_query.to_s).to eq "SELECT Id FROM table_name WHERE Field__c = 123 LIMIT 1"
+    end
+  end
+
+  describe "find" do
+    it 'should use the primary key' do
+      allow(sobject).to receive(:primary_key).and_return(:pk)
+      active_query.find("123")
+      expect(active_query.to_s).to eq "SELECT PrimaryKey__c FROM table_name WHERE PrimaryKey__c = '123' LIMIT 1"
     end
   end
 

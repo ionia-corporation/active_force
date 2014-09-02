@@ -8,12 +8,12 @@ module ActiveForce
 
     attr_reader :sobject
 
-    def_delegators :sobject, :sfdc_client, :build, :table_name, :mappings
+    def_delegators :sobject, :sfdc_client, :build, :table_name, :mappings, :primary_key
     def_delegators :to_a, :each, :map, :inspect
 
     def initialize sobject
       @sobject = sobject
-      super table_name
+      super table_name, mappings[primary_key]
       fields sobject.fields
     end
 
@@ -48,6 +48,10 @@ module ActiveForce
       where(conditions).limit 1
     end
 
+    def find key
+      find_by primary_key => key
+    end
+    
     private
 
     def build_condition(args, other=[])

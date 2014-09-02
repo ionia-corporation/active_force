@@ -78,12 +78,6 @@ describe ActiveForce::Query do
     end
   end
 
-  describe ".find.to_s" do
-    it "should return a query for 1 record" do
-      expect(@query.find(2).to_s).to eq "SELECT Id, name, etc FROM table_name WHERE Id = '2' LIMIT 1"
-    end
-  end
-
   describe ".order" do
     it "should add a order condition in the statment" do
       expect(@query.order("name desc").to_s).to eq "SELECT Id, name, etc FROM table_name ORDER BY name desc"
