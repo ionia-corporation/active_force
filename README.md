@@ -77,7 +77,19 @@ end
 
 Altenative you can try the generator. (requires setting up the connection)
 
-    rails generate active_force_model Medication__c
+    rails generate active_force:model Medication__c
+
+### Primary keys
+#### Default
+Each subclass of SObject gets the field 'id' mapped to 'Id' as a default primary key
+#### Specific
+```ruby
+class Quota < ActiveForce::SObject
+  field :bar_id, from: 'Bar_Id__c'
+
+  primary_key :bar_id
+end
+```
 
 ### Relationships
 
