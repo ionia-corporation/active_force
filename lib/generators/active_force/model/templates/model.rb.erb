@@ -1,0 +1,7 @@
+require 'active_force/sobject'
+
+class <%= @class_name %> < ActiveForce::SObject
+<% attributes.each do |attribute| -%>
+  <%= attribute_line attribute %>
+<% end -%>
+end

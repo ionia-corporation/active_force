@@ -9,7 +9,7 @@ describe ActiveForce::ActiveQuery do
       mappings: mappings
     })
   end
-  let(:mappings){ { field: "Field__c" } }
+  let(:mappings){ { field: "Field__c", other_field: "Other_Field" } }
   let(:client){ double("client") }
   let(:active_query){ ActiveForce::ActiveQuery.new(sobject) }
 
@@ -31,6 +31,13 @@ describe ActiveForce::ActiveQuery do
     it "should allow to chain query methods" do
       result = active_query.where("Text_Label = 'foo'").where("Checkbox_Label = true").to_a
       expect(result).to be_a Array
+    end
+  end
+
+  describe "select only some field using mappings" do
+    it "should return a query only with selected field" do
+      active_query.select(:field)
+      expect(active_query.to_s).to eq("SELECT Field__c FROM table_name")
     end
   end
 
