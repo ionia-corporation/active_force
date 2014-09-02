@@ -13,6 +13,7 @@ module ActiveForce
     include ActiveAttr::Model
     include ActiveAttr::Dirty
     include ActiveForce::Association
+    include ActiveForce::Association::Reflection
     extend ActiveModel::Callbacks
 
     define_model_callbacks :save, :create, :update
