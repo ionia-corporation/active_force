@@ -1,14 +1,15 @@
 module ActiveForce
   module Association
     module Reflection
-      extend ActiveSupport::Concern
-
-      included do
-        class_attribute :_reflections
-        self._reflections = {}
-      end
-
       class << self
+        def included(base)
+          base.class_eval do
+            class_attribute :reflections
+            self.reflections = {}
+          end
+          base.extend ClassMethods
+        end
+
         def create(macro, relation_name, sobject, options={})
           klass = case macro
           when :belongs_to; BelongsToReflection
@@ -22,13 +23,13 @@ module ActiveForce
         end
 
         def add_reflection(sobject, name, reflection)
-          sobject._reflections = sobject._reflections.merge(name => reflection)
+          sobject.reflections = sobject.reflections.merge(name => reflection)
         end
       end
 
       module ClassMethods
         def reflect_on_association(relation_name)
-          _reflections[relation_name]
+          reflections[relation_name]
         end
       end
 
