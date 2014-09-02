@@ -49,11 +49,6 @@ describe ActiveForce::SObject do
         expect(Territory.new).to respond_to(:id)
         expect(Territory.mappings[:id]).to eq 'Id'
       end
-
-      it 'can be overridden' do
-        expect(Quota.new).to respond_to(:id)
-        expect(Quota.mappings[:id]).to eq 'Bar_Id__c'
-      end
     end
 
     context 'as: :multi_picklist' do
@@ -171,7 +166,7 @@ describe ActiveForce::SObject do
     end
 
     it 'clears cached associations' do
-      soql = "SELECT Id, Bar_Id__c FROM Quota__c WHERE Id = '1' LIMIT 1"
+      soql = "SELECT Bar_Id__c FROM Quota__c WHERE Bar_Id__c = '1' LIMIT 1"
       expect(client).to receive(:query).twice.with soql
       allow(Territory).to receive(:find){ territory }
       territory.quota
