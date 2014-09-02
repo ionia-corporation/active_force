@@ -6,17 +6,17 @@ describe ActiveForce::ActiveQuery do
     double("sobject", {
       table_name: "table_name",
       fields: [],
-      mappings: mappings,
+      mappings: { id: "Id", field: "Field__c", pk: "PrimaryKey__c" },
       primary_key: :id,
       sfdc_client: client,
       build: Object.new
     })
   end
-  let(:mappings){ { id: "Id", field: "Field__c", other_field: "Other_Field", pk: "PrimaryKey__c" } }
+
   let(:client){ double("client", {query: nil}) }
 
-  def active_query
-    @query ||= ActiveForce::ActiveQuery.new(sobject) 
+  let(:active_query) do
+    ActiveForce::ActiveQuery.new(sobject) 
   end
 
   describe "to_a" do
