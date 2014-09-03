@@ -1,24 +1,15 @@
-require 'active_force/association/association'
-require 'active_force/association/has_many_association'
-require 'active_force/association/belongs_to_association'
+require 'active_force/association/reflection'
 
 module ActiveForce
   module Association
-    module ClassMethods
-
-      def has_many relation_name, options = {}
-        HasManyAssociation.new(self, relation_name, options)
-      end
-
-      def belongs_to relation_name, options = {}
-        BelongsToAssociation.new(self, relation_name, options)
-      end
-
+    def has_many relation_name, options = {}
+      reflection = Reflection.create :has_many, relation_name, self, options
+      Reflection.add_reflection self, relation_name, reflection
     end
 
-    def self.included mod
-      mod.extend ClassMethods
+    def belongs_to relation_name, options = {}
+      reflection = Reflection.create :belongs_to, relation_name, self, options
+      Reflection.add_reflection self, relation_name, reflection
     end
-
   end
 end

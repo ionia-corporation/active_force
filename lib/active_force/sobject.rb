@@ -13,8 +13,9 @@ module ActiveForce
   class SObject
     include ActiveAttr::Model
     include ActiveAttr::Dirty
-    include ActiveForce::Association
-    extend ActiveModel::Callbacks
+    extend  ActiveForce::Association
+    include ActiveForce::Association::Reflection
+    extend  ActiveModel::Callbacks
 
     define_model_callbacks :save, :create, :update
 
