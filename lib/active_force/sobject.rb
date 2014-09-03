@@ -170,11 +170,18 @@ module ActiveForce
     end
 
     def attributes_for_sfdb
-      attrs = mappings.map do |attr, sf_field|
-        value = read_value(attr)
-        [sf_field, value] if value
+      if persisted?
+        attrs = changed_mappings.map do |attr, sf_field|
+          value = read_value(attr)
+          [sf_field, value]
+        end
+        attrs << ['Id', id]
+      else
+        attrs = mappings.map do |attr, sf_field|
+          value = read_value(attr)
+          [sf_field, value] unless value.nil?
+        end
       end
-      attrs << ['Id', id] if persisted?
       Hash[attrs.compact]
     end
 
