@@ -107,7 +107,7 @@ module ActiveForce
     end
 
     def destroy
-      sfdc_client.destroy! id
+      sfdc_client.destroy! self.class.table_name, id
     end
 
     def self.create args

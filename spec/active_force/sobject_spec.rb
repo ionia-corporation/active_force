@@ -119,7 +119,7 @@ describe ActiveForce::SObject do
 
     describe "#destroy" do
       it "should send client :destroy! with its id" do
-        expect(client).to receive(:destroy!).with '1'
+        expect(client).to receive(:destroy!).with 'Whizbang__c', '1'
         subject.destroy
       end
     end
