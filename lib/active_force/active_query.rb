@@ -98,8 +98,25 @@ module ActiveForce
 
     def build_conditions_from_hash(hash)
       hash.map do |key, value|
-        "#{mappings[key]} = #{enclose_value value}"
+        applicable_predicate mappings[key], value
       end
+    end
+
+    def applicable_predicate(attribute, value)
+      if value.is_a? Array
+        in_predicate attribute, value
+      else
+        eq_predicate attribute, value
+      end
+    end
+
+    def in_predicate(attribute, values)
+      escaped_values = values.map &method(:enclose_value)
+      "#{attribute} IN (#{escaped_values.join(',')})"
+    end
+
+    def eq_predicate(attribute, value)
+      "#{attribute} = #{enclose_value value}"
     end
 
     def enclose_value value

@@ -47,6 +47,11 @@ describe ActiveForce::ActiveQuery do
       expect(active_query.to_s).to eq("SELECT Id FROM table_name WHERE Field__c = 123")
     end
 
+    it 'transforms an array to a WHERE/IN clause' do
+      active_query.where(field: ['foo', 'bar'])
+      expect(active_query.to_s).to eq("SELECT Id FROM table_name WHERE Field__c IN ('foo','bar')")
+    end
+
     it "encloses the value in quotes if it's a string" do
       active_query.where field: "hello"
       expect(active_query.to_s).to end_with("Field__c = 'hello'")
