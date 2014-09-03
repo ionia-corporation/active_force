@@ -83,57 +83,56 @@ describe ActiveForce::SObject do
     end
   end
 
-  describe '#update' do
-
+  describe "CRUD" do
     subject do
       Whizbang.new(id: '1')
     end
 
-    before do
-      expected_args = [
-        Whizbang.table_name,
-        {'Text_Label' => 'some text', 'Boolean_Label' => false, 'Id' => '1'}
-      ]
-      expect(client).to receive(:update!).with(*expected_args).and_return('id')
+    describe '#update' do
+      before do
+        expected_args = [
+          Whizbang.table_name,
+          {'Text_Label' => 'some text', 'Boolean_Label' => false, 'Id' => '1'}
+        ]
+        expect(client).to receive(:update!).with(*expected_args).and_return('id')
+      end
+
+      it 'delegates to the Client with create!' do
+        expect(subject.update({ text: 'some text', boolean: false })).to be_a Whizbang
+      end
     end
 
-    it 'delegates to the Client with create!' do
-      expect(subject.update({ text: 'some text', boolean: false })).to be_a Whizbang
+    describe '#create' do
+      before do
+        expect(client).to receive(:create!).and_return('id')
+      end
+
+      it 'delegates to the Client with create!' do
+        subject.create
+      end
+
+      it 'sets the id' do
+        subject.create
+        expect(subject.id).to eq('id')
+      end
     end
 
-  end
-
-  describe '#create' do
-
-    subject do
-      Whizbang.new
+    describe "#destroy" do
+      it "should send client :destroy! with its id" do
+        expect(client).to receive(:destroy!).with '1'
+        subject.destroy
+      end
     end
 
-    before do
-      expect(client).to receive(:create!).and_return('id')
+    describe 'self.create' do
+      before do
+        expect(client).to receive(:create!).with(Whizbang.table_name, 'Text_Label' => 'some text').and_return('id')
+      end
+
+      it 'should create a new instance' do
+        expect(Whizbang.create({ text: 'some text' })).to be_a Whizbang
+      end
     end
-
-    it 'delegates to the Client with create!' do
-      subject.create
-    end
-
-    it 'sets the id' do
-      subject.create
-      expect(subject.id).to eq('id')
-    end
-
-  end
-
-  describe 'self.create' do
-
-    before do
-      expect(client).to receive(:create!).with(Whizbang.table_name, 'Text_Label' => 'some text').and_return('id')
-    end
-
-    it 'should create a new instance' do
-      expect(Whizbang.create({ text: 'some text' })).to be_a Whizbang
-    end
-
   end
 
   describe "#count" do
