@@ -7,6 +7,7 @@ require 'active_force/table'
 require 'yaml'
 require 'forwardable'
 require 'logger'
+require 'restforce'
 
 module ActiveForce
   class SObject
