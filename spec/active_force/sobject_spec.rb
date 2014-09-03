@@ -92,13 +92,13 @@ describe ActiveForce::SObject do
     before do
       expected_args = [
         Whizbang.table_name,
-        {'Text_Label' => 'some text', 'Id' => '1'}
+        {'Text_Label' => 'some text', 'Boolean_Label' => false, 'Id' => '1'}
       ]
       expect(client).to receive(:update!).with(*expected_args).and_return('id')
     end
 
     it 'delegates to the Client with create!' do
-      expect(subject.update({ text: 'some text' })).to be_a Whizbang
+      expect(subject.update({ text: 'some text', boolean: false })).to be_a Whizbang
     end
 
   end
