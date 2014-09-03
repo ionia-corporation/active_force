@@ -48,7 +48,20 @@ module ActiveForce
       where(conditions).limit 1
     end
 
+    def includes(relation)
+      reflection = sobject.reflect_on_association relation
+      fields build_eager_load_projections reflection
+      self
+    end
+
     private
+
+    def build_eager_load_projections(reflection)
+      related_model_fields = reflection.relation_model.fields
+      related_model_fields.map do |field|
+        reflection.salesforce_relationship_name + '.' + field
+      end
+    end
 
     def build_condition(args, other=[])
       case args

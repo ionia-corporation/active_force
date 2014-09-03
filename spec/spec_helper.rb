@@ -11,3 +11,8 @@ class Territory < ActiveForce::SObject; end
 class Quota < ActiveForce::SObject
   field :id, from: 'Bar_Id__c'
 end
+
+ActiveSupport::Inflector.inflections do |inflect|
+  inflect.plural 'quota', 'quotas'
+  inflect.singular 'quota', 'quota'
+end
