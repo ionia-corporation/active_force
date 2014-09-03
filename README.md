@@ -34,6 +34,23 @@ If you want restforce logging on a rails app:
 Restforce.log = true if Rails.env.development?
 ```
 
+###Set your environment variables 
+####Example with dotenv-rails
+
+Add dotenv-rails to gemfile
+
+```ruby
+gem 'dotenv-rails'
+```
+Create .env file on your application root:
+
+    SALESFORCE_USERNAME       = your-email@gmail.com
+    SALESFORCE_PASSWORD       = your-sfdc-password
+    SALESFORCE_SECURITY_TOKEN = security-token
+    SALESFORCE_CLIENT_ID      = your-client-id
+    SALESFORCE_CLIENT_SECRET  = your-client-secret
+
+
 ## Usage
 
 ```ruby
