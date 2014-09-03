@@ -2,6 +2,10 @@
 
 ## Not released
 
+## 0.6.1
+
+* Fix missing require of 'restforce'. Now clients don't need to add an initializer.
+
 ## 0.6.0
 
 * Add select statement functionality. ([Pablo Oldani][], [#33][])
