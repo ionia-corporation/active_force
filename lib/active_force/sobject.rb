@@ -134,7 +134,7 @@ module ActiveForce
     end
 
     def persisted?
-      id?
+      !!id
     end
 
     def self.field field_name, args = {}

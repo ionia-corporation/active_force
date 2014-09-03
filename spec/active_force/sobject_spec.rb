@@ -195,4 +195,22 @@ describe ActiveForce::SObject do
       expect(territory.reload).to eql expected
     end
   end
+
+  describe '#persisted?' do
+    context 'with an id' do
+      let(:instance){ Territory.new(id: '00QV0000004jeqNMAT') }
+
+      it 'returns true' do
+        expect(instance).to be_persisted
+      end
+    end
+
+    context 'without an id' do
+      let(:instance){ Territory.new }
+
+      it 'returns false' do
+        expect(instance).to_not be_persisted
+      end
+    end
+  end
 end
