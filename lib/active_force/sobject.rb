@@ -42,6 +42,12 @@ module ActiveForce
       def inherited(subclass)
         subclass.field :id, from: 'Id'
       end
+
+    end
+
+    def self.primary_key key
+      field :id,       from: mappings[key]
+      alias_method key, :id
     end
 
     # The table name to used to make queries.
@@ -174,7 +180,7 @@ module ActiveForce
         value = read_value(attr)
         [sf_field, value] if value
       end
-      attrs << ['Id', id] if persisted?
+      attrs << [mappings[:id], id] if persisted?
       Hash[attrs.compact]
     end
 

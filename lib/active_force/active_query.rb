@@ -13,7 +13,7 @@ module ActiveForce
 
     def initialize sobject
       @sobject = sobject
-      super table_name
+      super table_name, sobject.mappings[:id]
       fields sobject.fields
     end
 

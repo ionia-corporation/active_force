@@ -54,6 +54,12 @@ describe ActiveForce::SObject do
         expect(Quota.new).to respond_to(:id)
         expect(Quota.mappings[:id]).to eq 'Bar_Id__c'
       end
+
+      it 'can choose a different pk' do
+        expect(Page.new).to respond_to(:other_id)
+        expect(Page.mappings[:id]).to eq "Other_Id__c"
+        expect(Page.mappings[:other_id]).to eq "Other_Id__c"
+      end
     end
 
     context 'as: :multi_picklist' do
@@ -171,7 +177,7 @@ describe ActiveForce::SObject do
     end
 
     it 'clears cached associations' do
-      soql = "SELECT Id, Bar_Id__c FROM Quota__c WHERE Id = '1' LIMIT 1"
+      soql = "SELECT Bar_Id__c FROM Quota__c WHERE Bar_Id__c = '1' LIMIT 1"
       expect(client).to receive(:query).twice.with soql
       allow(Territory).to receive(:find){ territory }
       territory.quota

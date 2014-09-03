@@ -116,6 +116,13 @@ describe ActiveForce::ActiveQuery do
     end
   end
 
+  describe "where" do
+    it 'should use the primary key' do
+      query = Page.where(other_id: 123).to_s
+      expect(query.to_s).to eq "SELECT Other_Id__c FROM Page__c WHERE Other_Id__c = 123"
+    end
+  end
+
   describe "#find_by" do
     it "should query the client, with the SFDC field names and correctly enclosed values" do
       expect(client).to receive :query

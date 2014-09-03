@@ -11,3 +11,11 @@ class Territory < ActiveForce::SObject; end
 class Quota < ActiveForce::SObject
   field :id, from: 'Bar_Id__c'
 end
+
+class Page < ActiveForce::SObject
+
+  field :other_id,       from: 'Other_Id__c'
+
+  primary_key :other_id
+
+end
