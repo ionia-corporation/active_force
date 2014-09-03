@@ -49,18 +49,22 @@ module ActiveForce
     end
 
     def includes(relation)
-      reflection = sobject.reflect_on_association relation
-      fields build_eager_load_projections reflection
+      association = sobject.associations[relation]
+      fields build_eager_load_projections association
       self
     end
 
     private
 
-    def build_eager_load_projections(reflection)
-      related_model_fields = reflection.relation_model.fields
+    def build_eager_load_projections(association)
+      related_model_fields = association.relation_model.fields
       related_model_fields.map do |field|
-        reflection.salesforce_relationship_name + '.' + field
+        "#{ applicable_model_name(association.relation_model) }__r.#{ field }"
       end
+    end
+
+    def applicable_model_name(model)
+      model.custom_table_name? ? model.name : model.table_name
     end
 
     def build_condition(args, other=[])
