@@ -113,6 +113,12 @@ class Page < ActiveForce::SObject
 end
 ```
 
+### Model generator
+
+When using rails, you can generate a model with all the fields you have on your SFDC table by running:
+
+    rails g active_force:model <table name>
+
 ## Contributing
 
 1. Fork it
