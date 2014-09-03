@@ -106,6 +106,10 @@ module ActiveForce
       logger_output __method__
     end
 
+    def destroy
+      sfdc_client.destroy! self.class.table_name, id
+    end
+
     def self.create args
       new(args).save
     end
