@@ -174,7 +174,7 @@ module ActiveForce
         value = read_value(attr)
         [sf_field, value] if value
       end
-      attrs << ['Id', id] if persisted?
+      attrs << [mappings[:id], id] if persisted?
       Hash[attrs.compact]
     end
 
