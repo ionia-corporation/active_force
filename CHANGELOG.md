@@ -1,6 +1,7 @@
 # Changelog
 
 ## Not released
+* SObject#destroy method.
 
 ## 0.6.1
 
