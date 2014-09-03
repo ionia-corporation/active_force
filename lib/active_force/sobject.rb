@@ -42,6 +42,12 @@ module ActiveForce
       def inherited(subclass)
         subclass.field :id, from: 'Id'
       end
+
+    end
+
+    def self.primary_key key
+      field :id,       from: mappings[key]
+      alias_method key, :id
     end
 
     # The table name to used to make queries.
