@@ -1,6 +1,8 @@
 # Changelog
 
 ## Not released
+
+* Add `#includes` query method to eager load belongs_to association. ([#65][])
 * SObject#destroy method.
 
 ## 0.6.1
@@ -72,11 +74,15 @@
 [#14]: https://github.com/ionia-corporation/active_force/issues/14
 [#15]: https://github.com/ionia-corporation/active_force/issues/15
 [#19]: https://github.com/ionia-corporation/active_force/issues/19
+[#20]: https://github.com/ionia-corporation/active_force/issues/20
 [#21]: https://github.com/ionia-corporation/active_force/issues/21
 [#24]: https://github.com/ionia-corporation/active_force/issues/24
 [#26]: https://github.com/ionia-corporation/active_force/issues/26
 [#28]: https://github.com/ionia-corporation/active_force/issues/28
+[#29]: https://github.com/ionia-corporation/active_force/issues/29
 [#30]: https://github.com/ionia-corporation/active_force/issues/30
+[#33]: https://github.com/ionia-corporation/active_force/issues/33
+[#65]: https://github.com/ionia-corporation/active_force/issues/65
 [Pablo Oldani]: https://github.com/olvap
 [Armando Andini]: https://github.com/antico5
 [José Piccioni]: https://github.com/lmhsjackson
