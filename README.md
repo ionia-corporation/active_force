@@ -10,9 +10,6 @@
 A ruby gem to interact with [SalesForce][1] as if it were Active Record. It
 uses [Restforce][2] to interact with the API, so it is fast and stable.
 
- [1]: http://www.salesforce.com
- [2]: https://github.com/ejholmes/restforce
-
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -27,22 +24,10 @@ Or install it yourself as:
 
     $ gem install active_force
 
-If you want restforce logging on a rails app:
+## Setup credentials
 
-```ruby
-#Add this to initializers/restforce.rb
-Restforce.log = true if Rails.env.development?
-```
-
-###Set your environment variables 
-####Example with dotenv-rails
-
-Add dotenv-rails to gemfile
-
-```ruby
-gem 'dotenv-rails'
-```
-Create .env file on your application root:
+[Restforce][2] is used to interact with the API, so you will need to setup
+environment variables to set up credentials.
 
     SALESFORCE_USERNAME       = your-email@gmail.com
     SALESFORCE_PASSWORD       = your-sfdc-password
@@ -50,6 +35,7 @@ Create .env file on your application root:
     SALESFORCE_CLIENT_ID      = your-client-id
     SALESFORCE_CLIENT_SECRET  = your-client-secret
 
+You might be interested in [dotenv-rails][3] to set up those in development.
 
 ## Usage
 
@@ -145,3 +131,8 @@ When using rails, you can generate a model with all the fields you have on your 
 5. Create new pull request so we can talk about it.
 6. Once accepted, please add an entry in the CHANGELOG and rebase your changes
    to squash typos or corrections.
+
+ [1]: http://www.salesforce.com
+ [2]: https://github.com/ejholmes/restforce
+ [3]: https://github.com/bkeepers/dotenv
+
