@@ -81,7 +81,7 @@ Altenative you can try the generator. (requires setting up the connection)
 
     rails generate active_force_model Medication__c
 
-### Relationships
+### Associations
 
 #### Has Many
 
@@ -114,6 +114,25 @@ class Page < ActiveForce::SObject
 
   belongs_to :account
 end
+```
+
+### Querying
+
+You can retrieve SObject from the database using chained conditions to build
+the query.
+
+```ruby
+Account.where(web_enable: 1, contact_by: ['web', 'email']).limit(2)
+#=> this will query "SELECT Id, Name, WebEnable__c
+#                    FROM Account
+#                    WHERE WebEnable__C = 1 AND ContactBy__c IN ('web','email')
+#                    LIMIT 2
+```
+
+This is also possible to eager load belongs_to associations.
+
+```ruby
+Comment.includes(:post)
 ```
 
 ### Model generator
