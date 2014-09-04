@@ -3,6 +3,12 @@ module ActiveForce
 
     class BelongsToAssociation < Association
 
+      def sfdc_association_field
+        sfdc_field = relation_model.name
+        sfdc_field += "__r" if relation_model.custom_table?
+        sfdc_field
+      end
+
       private
 
       def default_foreign_key
