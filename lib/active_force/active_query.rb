@@ -139,12 +139,17 @@ module ActiveForce
     def enclose_value value
       case value
       when String
-        "'#{value}'"
+        "'#{quote_string(value)}'"
       when NilClass
         'NULL'
       else
         value.to_s
       end
+    end
+
+    def quote_string(s)
+      # From activerecord/lib/active_record/connection_adapters/abstract/quoting.rb, version 4.1.5, line 82
+      s.gsub(/\\/, '\&\&').gsub(/'/, "''")
     end
 
     def result
