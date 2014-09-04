@@ -2,7 +2,7 @@ module ActiveForce
   module Association
     class Association
 
-      attr_accessor :options
+      attr_accessor :options, :relation_name
 
       def initialize parent, relation_name, options
         @parent = parent
