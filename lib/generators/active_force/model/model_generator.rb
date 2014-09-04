@@ -18,6 +18,7 @@ module ActiveForce
       @attributes ||= sfdc_columns.map do |column|
         Attribute.new column_to_field(column), column
       end
+      @attributes - [:id]
     end
 
     def sfdc_columns
