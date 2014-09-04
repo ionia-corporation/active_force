@@ -13,7 +13,7 @@ module ActiveForce
   class SObject
     include ActiveAttr::Model
     include ActiveAttr::Dirty
-    include ActiveForce::Association
+    extend ActiveForce::Association
     extend ActiveModel::Callbacks
 
     define_model_callbacks :save, :create, :update
@@ -22,7 +22,7 @@ module ActiveForce
 
     class << self
       extend Forwardable
-      def_delegators :query, :where, :first, :last, :all, :find, :find_by, :count
+      def_delegators :query, :where, :first, :last, :all, :find, :find_by, :count, :includes
       def_delegators :table, :custom_table_name?
 
       private
