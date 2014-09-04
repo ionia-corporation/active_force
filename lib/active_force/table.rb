@@ -11,14 +11,14 @@ module ActiveForce
       @name ||= pick_table_name
     end
 
-    def custom_table_name?
+    def custom_table?
       !StandardTypes::STANDARD_TYPES.include?(name_without_namespace)
     end
 
     private
 
     def pick_table_name
-      if custom_table_name?
+      if custom_table?
         "#{ name_without_namespace }__c"
       else
         name_without_namespace

@@ -64,7 +64,7 @@ module ActiveForce
     end
 
     def applicable_model_name(model)
-      model.custom_table_name? ? model.name : model.table_name
+      model.custom_table? ? model.name : model.table_name
     end
 
     def build_condition(args, other=[])
