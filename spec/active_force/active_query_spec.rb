@@ -142,4 +142,27 @@ describe ActiveForce::ActiveQuery do
       active_query.map {}
     end
   end
+
+  describe "prevent SOQL injection attacks" do
+    let(:mappings){ { quote_field: "QuoteField", backslash_field: "Backslash_Field__c", number_field: "NumberField" } }
+    let(:quote_input){ "' OR Id!=NULL OR Id='" }
+    let(:backslash_input){ "\\" }
+    let(:number_input){ 123 }
+    let(:expected_query){ "SELECT Id FROM table_name WHERE Backslash_Field__c = '\\\\' AND NumberField = 123 AND QuoteField = ''' OR Id!=NULL OR Id='''" }
+
+    it 'escapes quotes and backslashes in bind parameters' do
+      active_query.where('Backslash_Field__c = :backslash_field AND NumberField = :number_field AND QuoteField = :quote_field', number_field: number_input, backslash_field: backslash_input, quote_field: quote_input)
+      expect(active_query.to_s).to eq(expected_query)
+    end
+
+    it 'escapes quotes and backslashes in named bind parameters' do
+      active_query.where('Backslash_Field__c = ? AND NumberField = ? AND QuoteField = ?', backslash_input, number_input, quote_input)
+      expect(active_query.to_s).to eq(expected_query)
+    end
+
+    it 'escapes quotes and backslashes in hash conditions' do
+      active_query.where(backslash_field: backslash_input, number_field: number_input, quote_field: quote_input)
+      expect(active_query.to_s).to eq(expected_query)
+    end
+  end
 end
