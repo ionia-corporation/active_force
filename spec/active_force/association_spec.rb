@@ -141,12 +141,24 @@ describe ActiveForce::SObject do
       comment.post
     end
 
-    it 'accepts assignment of an existing object as an association' do
-      expect(client).to_not receive(:query)
-      other_post = Post.new(id: "2")
-      comment.post = other_post
-      expect(comment.post_id).to eq other_post.id
-      expect(comment.post).to eq other_post
+    describe "assignments" do
+      before do
+        expect(client).to_not receive(:query)
+      end
+      
+      it 'accepts assignment of an existing object as an association' do
+        expect(client).to_not receive(:query)
+        other_post = Post.new(id: "2")
+        comment.post = other_post
+        expect(comment.post_id).to eq other_post.id
+        expect(comment.post).to eq other_post
+      end
+
+      it 'can desassociate an object by setting it as nil' do
+        comment.post = nil
+        expect(comment.post_id).to eq nil
+        expect(comment.post).to eq nil
+      end
     end
 
     context 'when the SObject is namespaced' do
