@@ -12,7 +12,7 @@ describe ActiveForce::SObject do
   end
 
   let :client do
-    double("sfdc_client", query: [Restforce::Mash.new(id: 1)])
+    double("sfdc_client", query: [Restforce::Mash.new("Id" => 1)])
   end
 
   before do
