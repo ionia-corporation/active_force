@@ -27,6 +27,14 @@ module ActiveForce
       @table ||= ActiveForce::Table.new @model
     end
 
+    def translate_to_sf attributes
+      attrs = attributes.map do |attribute, value|
+        attr = fields[attribute.to_sym]
+        [attr.sfdc_name, attr.value_for_hash(value)]
+      end
+      Hash[attrs]
+    end
+
     private
 
     def fields
