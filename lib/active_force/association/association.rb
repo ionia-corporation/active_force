@@ -2,7 +2,7 @@ module ActiveForce
   module Association
     class Association
 
-      attr_accessor :options
+      attr_accessor :options, :relation_name
 
       def initialize parent, relation_name, options
         @parent = parent
@@ -26,7 +26,7 @@ module ActiveForce
       end
 
       def infer_foreign_key_from_model(model)
-        name = model.custom_table_name? ? model.name : model.table_name
+        name = model.custom_table? ? model.name : model.table_name
         "#{name.downcase}_id".to_sym
       end
     end

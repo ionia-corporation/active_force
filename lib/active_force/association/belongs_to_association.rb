@@ -3,6 +3,12 @@ module ActiveForce
 
     class BelongsToAssociation < Association
 
+      def sfdc_association_field
+        sfdc_field = relation_model.name
+        sfdc_field += "__r" if relation_model.custom_table?
+        sfdc_field
+      end
+
       private
 
       def default_foreign_key
@@ -19,7 +25,7 @@ module ActiveForce
         end
 
         @parent.send :define_method, "#{_method}=" do |other|
-          send "#{ association.foreign_key }=", other.id
+          send "#{ association.foreign_key }=", other.nil? ? nil : other.id
           association_cache[_method] = other
         end
       end

@@ -23,7 +23,7 @@ module ActiveForce
     class << self
       extend Forwardable
       def_delegators :query, :where, :first, :last, :all, :find, :find_by, :count, :includes
-      def_delegators :table, :custom_table_name?
+      def_delegators :table, :custom_table?
 
       private
 
@@ -63,11 +63,11 @@ module ActiveForce
       ActiveForce::ActiveQuery.new self
     end
 
-    def self.build sf_table_description
-      return unless sf_table_description
+    def self.build mash
+      return unless mash
       sobject = new
-      mappings.each do |attr, sf_field|
-        sobject[attr] = sf_table_description[sf_field]
+      mash.each do |column, sf_value|
+        sobject.write_value column, sf_value
       end
       sobject.changed_attributes.clear
       sobject
@@ -161,7 +161,28 @@ module ActiveForce
       self
     end
 
-    private
+    #TODO: read_value and write_value should have more descriptive names.
+    def read_value field
+      case sf_field_type field
+      when :multi_picklist
+        attribute(field.to_s).reject(&:empty?).join(';')
+      else
+        attribute(field.to_s)
+      end
+    end
+
+    def write_value column, value
+      if value.is_a? Hash and self.class.find_association column
+        association = self.class.find_association column
+        field = association.relation_name
+        value = association.relation_model.build value
+      else
+        field = mappings.invert[column]
+      end
+      send "#{field}=", value if field
+    end
+
+   private
 
     def association_cache
       @association_cache ||= {}
@@ -192,15 +213,6 @@ module ActiveForce
 
     def changed_mappings
       mappings.select { |attr, sf_field| changed.include? attr.to_s}
-    end
-
-    def read_value field
-      case sf_field_type field
-      when :multi_picklist
-        attribute(field.to_s).reject(&:empty?).join(';')
-      else
-        attribute(field.to_s)
-      end
     end
 
     def sf_field_type field

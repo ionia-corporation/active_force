@@ -9,6 +9,14 @@ module ActiveForce
       @associations ||= {}
     end
 
+    # i.e name = 'Quota__r'
+    def find_association name
+      name = name.gsub "__r", ""
+      associations.values.detect do |association|
+        association.relation_model.name == name
+      end
+    end
+
     def has_many relation_name, options = {}
       associations[relation_name] = HasManyAssociation.new(self, relation_name, options)
     end
