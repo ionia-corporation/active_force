@@ -23,7 +23,7 @@ module ActiveForce
     class << self
       extend Forwardable
       def_delegators :query, :where, :first, :last, :all, :find, :find_by, :count, :includes
-      def_delegators :table, :custom_table?
+      def_delegators :mapping, :table, :table_name, :custom_table?
 
       private
 
@@ -45,14 +45,8 @@ module ActiveForce
       end
     end
 
-    # The table name to used to make queries.
-    # It is derived from the class name adding the "__c" when needed.
-    def self.table_name
-      table.name
-    end
-
-    def self.table
-      @table ||= ActiveForce::Table.new name
+    def self.mapping
+      @mapping ||= ActiveForce::Mapping.new name
     end
 
     def self.fields

@@ -5,7 +5,7 @@ module ActiveForce
   class Mapping
     extend Forwardable
 
-    def_delegators :table, :custom_table_name?, :table_name
+    def_delegators :table, :custom_table?, :table_name
 
     def initialize model
       @model = model
