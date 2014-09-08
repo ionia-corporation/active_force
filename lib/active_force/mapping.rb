@@ -1,4 +1,5 @@
 require 'active_force/attribute'
+require 'active_force/table'
 require 'forwardable'
 
 module ActiveForce
