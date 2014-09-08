@@ -17,5 +17,8 @@ module ActiveAttr
       end
     end
 
+    def attributes_and_changes
+      attributes.select{ |attr, key| changed.include? attr }
+    end
   end
 end

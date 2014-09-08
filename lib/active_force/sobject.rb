@@ -3,7 +3,7 @@ require 'active_attr'
 require 'active_attr/dirty'
 require 'active_force/active_query'
 require 'active_force/association'
-require 'active_force/table'
+require 'active_force/mapping'
 require 'yaml'
 require 'forwardable'
 require 'logger'
@@ -23,19 +23,9 @@ module ActiveForce
     class << self
       extend Forwardable
       def_delegators :query, :where, :first, :last, :all, :find, :find_by, :count, :includes
-      def_delegators :table, :custom_table?
+      def_delegators :mapping, :table, :table_name, :custom_table?, :mappings
 
       private
-
-      ###
-      # Transforms +attribute+ to the conventional Salesforce API name.
-      #
-      # Example:
-      #   > default_api_name :some_attribute
-      #   => "Some_Attribute__c"
-      def default_api_name(attribute)
-        String(attribute).split('_').map(&:capitalize).join('_') << '__c'
-      end
 
       ###
       # Provide each subclass with a default id field. Can be overridden
@@ -45,18 +35,12 @@ module ActiveForce
       end
     end
 
-    # The table name to used to make queries.
-    # It is derived from the class name adding the "__c" when needed.
-    def self.table_name
-      table.name
-    end
-
-    def self.table
-      @table ||= ActiveForce::Table.new name
+    def self.mapping
+      @mapping ||= ActiveForce::Mapping.new name
     end
 
     def self.fields
-      mappings.values
+      mapping.sfdc_names
     end
 
     def self.query
@@ -143,14 +127,8 @@ module ActiveForce
     end
 
     def self.field field_name, args = {}
-      args[:from] ||= default_api_name(field_name)
-      args[:as]   ||= :string
-      mappings[field_name] = args[:from]
-      attribute field_name, sf_type: args[:as]
-    end
-
-    def self.mappings
-      @mappings ||= {}
+      mapping.field field_name, args
+      attribute field_name
     end
 
     def reload
@@ -159,16 +137,6 @@ module ActiveForce
       self.attributes = reloaded.attributes
       changed_attributes.clear
       self
-    end
-
-    #TODO: read_value and write_value should have more descriptive names.
-    def read_value field
-      case sf_field_type field
-      when :multi_picklist
-        attribute(field.to_s).reject(&:empty?).join(';')
-      else
-        attribute(field.to_s)
-      end
     end
 
     def write_value column, value
@@ -196,27 +164,9 @@ module ActiveForce
     end
 
     def attributes_for_sfdb
-      if persisted?
-        attrs = changed_mappings.map do |attr, sf_field|
-          value = read_value(attr)
-          [sf_field, value]
-        end
-        attrs << ['Id', id]
-      else
-        attrs = mappings.map do |attr, sf_field|
-          value = read_value(attr)
-          [sf_field, value] unless value.nil?
-        end
-      end
-      Hash[attrs.compact]
-    end
-
-    def changed_mappings
-      mappings.select { |attr, sf_field| changed.include? attr.to_s}
-    end
-
-    def sf_field_type field
-      self.class.attributes[field][:sf_type]
+      attrs = self.class.mapping.translate_to_sf(attributes_and_changes)
+      attrs.merge({'Id' => id }) if persisted?
+      attrs
     end
 
     def self.picklist field

@@ -7,6 +7,10 @@ module ActiveForce
       @klass = klass.to_s
     end
 
+    def table_name name = nil
+      @name = name || @name || pick_table_name
+    end
+
     def name
       @name ||= pick_table_name
     end
