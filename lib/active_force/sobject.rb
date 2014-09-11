@@ -70,7 +70,7 @@ module ActiveForce
         update_attributes! attributes
       end
     rescue Faraday::Error::ClientError => error
-      logger_output __method__
+      logger_output __method__, error, attributes
     end
 
     alias_method :update, :update_attributes
@@ -87,7 +87,7 @@ module ActiveForce
         create!
       end
     rescue Faraday::Error::ClientError => error
-      logger_output __method__
+      logger_output __method__, error, attributes_for_sfdb
     end
 
     def destroy
@@ -115,7 +115,8 @@ module ActiveForce
     def save!
       save
     rescue Faraday::Error::ClientError => error
-      logger_output __method__
+      puts 'rescuing save!'
+      logger_output __method__, error, attributes_for_sfdb
     end
 
     def to_param
@@ -156,10 +157,10 @@ module ActiveForce
       @association_cache ||= {}
     end
 
-    def logger_output action
+    def logger_output action, exception, params = {}
       logger = Logger.new(STDOUT)
-      logger.info("[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while #{ action }, params: #{hash}, error: #{error.inspect}")
-      errors[:base] << error.message
+      logger.info("[SFDC] [#{self.class.model_name}] [#{self.class.table_name}] Error while #{ action }, params: #{params}, error: #{exception.inspect}")
+      errors[:base] << exception.message
       false
     end
 
