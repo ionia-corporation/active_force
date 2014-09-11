@@ -17,7 +17,6 @@ describe ActiveForce::SObject do
   end
 
   describe ".build" do
-
     it "build a valid sobject from a JSON" do
       expect(Whizbang.build sobject_hash).to be_an_instance_of Whizbang
     end
@@ -210,6 +209,19 @@ describe ActiveForce::SObject do
       it 'returns false' do
         expect(instance).to_not be_persisted
       end
+    end
+  end
+
+  describe 'logger output' do
+    let(:instance){ Whizbang.new }
+
+    before do
+      allow(instance).to receive(:create!).and_raise(Faraday::Error::ClientError.new(double))
+    end
+
+    it 'catches and logs the error' do
+      expect(instance).to receive(:logger_output).and_return(false)
+      instance.save
     end
   end
 end
