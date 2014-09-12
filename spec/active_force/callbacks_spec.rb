@@ -11,27 +11,7 @@ describe ActiveForce::SObject do
   describe "save" do
 
     it 'call action callback when save a record' do
-      class Whizbanged < ActiveForce::SObject
-
-        field :updated_from
-        field :dirty_attribute
-
-        before_save :set_as_updated_from_rails
-        after_save :mark_dirty
-
-        private
-
-        def set_as_updated_from_rails
-          self.updated_from = 'Rails'
-        end
-
-        def mark_dirty
-          self.dirty_attribute = true
-        end
-
-      end
-
-      whizbanged = Whizbanged.new
+      whizbanged = Whizbang.new
       whizbanged.save
       expect(whizbanged.updated_from).to eq 'Rails'
       expect(whizbanged.dirty_attribute).to eq true

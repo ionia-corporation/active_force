@@ -6,6 +6,12 @@ module ActiveForce
   class Mapping
     extend Forwardable
 
+    STRINGLIKE_TYPES = [
+      nil, :string, :base64, :byte, :ID, :reference, :currency, :textarea,
+      :phone, :url, :email, :combobox, :picklist, :multipicklist, :anyType,
+      :location
+    ]
+
     def_delegators :table, :custom_table?, :table_name
 
     def initialize model
@@ -36,11 +42,37 @@ module ActiveForce
       Hash[attrs]
     end
 
+    def translate_value value, field_name
+      return value unless !!field_name
+      typecast_value value.to_s, fields[field_name].as
+    end
+
+
     private
 
     def fields
       @fields ||= {}
     end
 
+    # Handles Salesforce FieldTypes as described here:
+    # http://www.salesforce.com/us/developer/docs/api/Content/sforce_api_calls_describesobjects_describesobjectresult.htm#i1427700
+    def typecast_value value, type
+      case type
+      when *STRINGLIKE_TYPES
+        value
+      when :boolean
+        !['false','0','f'].include? value.downcase
+      when :int
+        value.to_i
+      when :double, :percent
+        value.to_f
+      when :date
+        Date.parse value
+      when :datetime
+        DateTime.parse value
+      else
+        value
+      end
+    end
   end
 end

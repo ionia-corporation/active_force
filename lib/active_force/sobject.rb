@@ -147,6 +147,7 @@ module ActiveForce
         value = association.relation_model.build value
       else
         field = mappings.invert[column]
+        value = self.class.mapping.translate_value value, field unless value.nil?
       end
       send "#{field}=", value if field
     end
