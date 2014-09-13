@@ -17,8 +17,20 @@ describe ActiveForce::SObject do
   end
 
   describe ".build" do
+    let(:sobject){ Whizbang.build sobject_hash }
+
     it "build a valid sobject from a JSON" do
-      expect(Whizbang.build sobject_hash).to be_an_instance_of Whizbang
+      expect(sobject).to be_an_instance_of Whizbang
+    end
+
+    it "sets the values' types from the sf_type" do
+      expect(sobject.boolean).to be_an_instance_of TrueClass
+      expect(sobject.checkbox).to be_an_instance_of FalseClass
+      expect(sobject.date).to be_an_instance_of Date
+      expect(sobject.datetime).to be_an_instance_of DateTime
+      expect(sobject.percent).to be_an_instance_of Float
+      expect(sobject.text).to be_an_instance_of String
+      expect(sobject.picklist_multiselect).to be_an_instance_of String
     end
   end
 
@@ -125,7 +137,7 @@ describe ActiveForce::SObject do
 
     describe 'self.create' do
       before do
-        expect(client).to receive(:create!).with(Whizbang.table_name, 'Text_Label' => 'some text').and_return('id')
+        expect(client).to receive(:create!).with(Whizbang.table_name, 'Text_Label' => 'some text', 'Updated_From__c'=>'Rails').and_return('id')
       end
 
       it 'should create a new instance' do
