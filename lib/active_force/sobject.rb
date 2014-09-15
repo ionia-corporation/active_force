@@ -167,7 +167,7 @@ module ActiveForce
 
     def attributes_for_sfdb
       attrs = self.class.mapping.translate_to_sf(attributes_and_changes)
-      attrs.merge({'Id' => id }) if persisted?
+      attrs.merge!({'Id' => id }) if persisted?
       attrs
     end
 
