@@ -1,12 +1,12 @@
 module ActiveForce
   module Association
-
     class BelongsToAssociation < Association
-
       def sfdc_association_field
-        sfdc_field = relation_model.name
-        sfdc_field += "__r" if relation_model.custom_table?
-        sfdc_field
+        if relation_model.custom_table?
+          relation_model.table_name.gsub(/__c\z/, '__r')
+        else
+          relation_model.name
+        end
       end
 
       private
@@ -30,6 +30,5 @@ module ActiveForce
         end
       end
     end
-
   end
 end

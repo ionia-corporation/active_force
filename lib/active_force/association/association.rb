@@ -19,6 +19,15 @@ module ActiveForce
         @options[:foreign_key] || default_foreign_key
       end
 
+      ###
+      # Does this association's relation_model represent
+      # +sfdc_table_name+? Examples of +sfdc_table_name+
+      # could be 'Quota__r' or 'Account'.
+      def represents_sfdc_table?(sfdc_table_name)
+        name = sfdc_table_name.sub /__r\z/, ''
+        relation_model.table_name.sub(/__c\z/, '') == name
+      end
+
       private
 
       def build
