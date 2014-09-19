@@ -115,7 +115,6 @@ module ActiveForce
     def save!
       save
     rescue Faraday::Error::ClientError => error
-      puts 'rescuing save!'
       logger_output __method__, error, attributes_for_sfdb
     end
 
