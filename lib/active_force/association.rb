@@ -4,16 +4,14 @@ require 'active_force/association/belongs_to_association'
 
 module ActiveForce
   module Association
-
     def associations
       @associations ||= {}
     end
 
     # i.e name = 'Quota__r'
     def find_association name
-      name = name.gsub "__r", ""
       associations.values.detect do |association|
-        association.relation_model.name == name
+        association.represents_sfdc_table? name
       end
     end
 
@@ -24,6 +22,5 @@ module ActiveForce
     def belongs_to relation_name, options = {}
       associations[relation_name] = BelongsToAssociation.new(self, relation_name, options)
     end
-
   end
 end

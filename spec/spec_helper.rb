@@ -23,3 +23,17 @@ class Quota < ActiveForce::SObject
   has_many :territories
 end
 
+module Salesforce
+  class Quota < ActiveForce::SObject
+  end
+  class Widget < ActiveForce::SObject
+    self.table_name = 'Tegdiw__c'
+  end
+  class Territory < ActiveForce::SObject
+    field :quota_id, from: "QuotaId"
+    field :widget_id, from: 'WidgetId'
+    belongs_to :quota, model: Salesforce::Quota, foreign_key: :quota_id
+    belongs_to :widget, model: Salesforce::Widget, foreign_key: :widget_id
+  end
+end
+
