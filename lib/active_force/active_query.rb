@@ -48,9 +48,11 @@ module ActiveForce
       where(conditions).limit 1
     end
 
-    def includes(relation)
-      association = sobject.associations[relation]
-      fields build_eager_load_projections association
+    def includes(*relations)
+      relations.each do |relation|
+        association = sobject.associations[relation]
+        fields build_eager_load_projections association
+      end
       self
     end
 

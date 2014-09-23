@@ -9,10 +9,26 @@ module ActiveForce
     end
 
     describe '.includes' do
-      context 'child to parent (belongs_to)' do
-        it 'queries the API for the associated record' do
-          soql = Territory.includes(:quota).where(id: '123').to_s
-          expect(soql).to eq "SELECT Id, Quota__c, Quota__r.Bar_Id__c FROM Territory WHERE Id = '123'"
+      context 'belongs_to' do
+        context 'child to parent' do
+          it 'queries the API for the associated record' do
+            soql = Territory.includes(:quota).where(id: '123').to_s
+            expect(soql).to eq "SELECT Id, Quota__c, Quota__r.Bar_Id__c FROM Territory WHERE Id = '123'"
+          end
+
+          it "queries the API once to retrieve the object and its related one" do
+            response = [{
+              "Id"       => "123",
+              "Quota__c" => "321",
+              "Quota__r" => {
+                "Bar_Id__c" => "321"
+              }
+            }]
+            allow(client).to receive(:query).once.and_return response
+            territory = Territory.includes(:quota).find "123"
+            expect(territory.quota).to be_a Quota
+            expect(territory.quota.id).to eq "321"
+          end
         end
 
         it "queries the API once to retrieve the object and its related one" do
@@ -71,6 +87,33 @@ module ActiveForce
               expected = expected_soql + ' LIMIT 1'
               allow(client).to receive(:query).once.with(expected).and_return response
               territory = Salesforce::Territory.includes(:widget).find "123"
+              expect(territory.widget).to be_a Salesforce::Widget
+              expect(territory.widget.id).to eq "321"
+            end
+          end
+
+          context 'child to several parents' do
+            it 'queries the API for associated records' do
+              soql = Salesforce::Territory.includes(:quota, :widget).where(id: '123').to_s
+              expect(soql).to eq "SELECT Id, QuotaId, WidgetId, Quota__r.Id, Tegdiw__r.Id FROM Territory WHERE Id = '123'"
+            end
+
+            it "queries the API once to retrieve the object and its assocations" do
+              response = [{
+                "Id"       => "123",
+                "QuotaId"  => "321",
+                "WidgetId" => "321",
+                "Quota__r" => {
+                  "Id" => "321"
+                },
+                "Tegdiw__r" => {
+                  "Id" => "321"
+                }
+              }]
+              allow(client).to receive(:query).once.and_return response
+              territory = Salesforce::Territory.includes(:quota, :widget).find "123"
+              expect(territory.quota).to be_a Salesforce::Quota
+              expect(territory.quota.id).to eq "321"
               expect(territory.widget).to be_a Salesforce::Widget
               expect(territory.widget.id).to eq "321"
             end
