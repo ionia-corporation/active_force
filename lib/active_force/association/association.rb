@@ -24,8 +24,16 @@ module ActiveForce
       # +sfdc_table_name+? Examples of +sfdc_table_name+
       # could be 'Quota__r' or 'Account'.
       def represents_sfdc_table?(sfdc_table_name)
-        name = sfdc_table_name.sub /__r\z/, ''
+        name = sfdc_table_name.sub(/__r\z/, '').singularize
         relation_model.table_name.sub(/__c\z/, '') == name
+      end
+
+      def sfdc_association_field
+        if relation_model.custom_table?
+          relation_model.table_name.gsub(/__c\z/, '__r')
+        else
+          relation_model.name
+        end
       end
 
       private

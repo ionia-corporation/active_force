@@ -51,19 +51,12 @@ module ActiveForce
     def includes(*relations)
       relations.each do |relation|
         association = sobject.associations[relation]
-        fields build_eager_load_projections association
+        fields association.eager_load_projections
       end
       self
     end
 
     private
-
-    def build_eager_load_projections(association)
-      related_model_fields = association.relation_model.fields
-      related_model_fields.map do |field|
-        "#{ association.sfdc_association_field }.#{ field }"
-      end
-    end
 
     def build_condition(args, other=[])
       case args
