@@ -1,19 +1,6 @@
 module ActiveForce
   module Association
     class HasManyAssociation < Association
-      ###
-      # Use ActiveForce::Query to build a subquery for the SFDC
-      # relationship name. Per SFDC convention, the name needs
-      # to be pluralized
-      def eager_load_projections
-        match = sfdc_association_field.match /__r\z/
-        # pluralize the table name, and append '__r' if it was there to begin with
-        relationship_name = sfdc_association_field.sub(match.to_s, '').pluralize + match.to_s
-        query = Query.new relationship_name
-        query.fields relation_model.fields
-        ["(#{query.to_s})"]
-      end
-
       private
 
       def default_foreign_key

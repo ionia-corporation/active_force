@@ -1,4 +1,5 @@
 require 'active_force/association/association'
+require 'active_force/association/eager_load_projection_builder'
 require 'active_force/association/has_many_association'
 require 'active_force/association/belongs_to_association'
 

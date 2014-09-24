@@ -1,12 +1,6 @@
 module ActiveForce
   module Association
     class BelongsToAssociation < Association
-      def eager_load_projections
-        relation_model.fields.map do |field|
-          "#{ sfdc_association_field }.#{ field }"
-        end
-      end
-
       private
 
       def default_foreign_key

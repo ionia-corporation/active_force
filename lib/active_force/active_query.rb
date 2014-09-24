@@ -51,7 +51,7 @@ module ActiveForce
     def includes(*relations)
       relations.each do |relation|
         association = sobject.associations[relation]
-        fields association.eager_load_projections
+        fields Association::EagerLoadProjectionBuilder.build association
       end
       self
     end
