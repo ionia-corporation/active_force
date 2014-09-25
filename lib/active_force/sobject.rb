@@ -145,6 +145,7 @@ module ActiveForce
         value = case value
         when Hash; association.relation_model.build value
         when Array; value.map { |mash| association.relation_model.build mash }
+        when NilClass; []
         end
       else
         field = mappings.invert[column]

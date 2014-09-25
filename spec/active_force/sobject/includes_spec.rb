@@ -218,8 +218,8 @@ module ActiveForce
             }]
             allow(client).to receive(:query).once.and_return response
             account = Account.includes(:opportunities).find '123'
-            expect(account.opportunities).to be_nil
-            expect(account.opportunities).to be_nil
+            expect(account.opportunities).to eq []
+            expect(account.opportunities).to eq []
           end
         end
       end
