@@ -64,6 +64,28 @@ module ActiveForce
             expect(territory.quota.id).to eq "321"
           end
 
+          context 'when the relationship table name is different from the actual table name' do
+            it 'formulates the correct SOQL' do
+              soql = Salesforce::Opportunity.includes(:owner).where(id: '123').to_s
+              expect(soql).to eq "SELECT Id, OwnerId, AccountId, Owner.Id FROM Opportunity WHERE Id = '123'"
+            end
+
+            it "queries the API once to retrieve the object and its related one" do
+              response = [{
+                "Id"       => "123",
+                "OwnerId"  => "321",
+                "AccountId"  => "432",
+                "Owner" => {
+                  "Id" => "321"
+                }
+              }]
+              allow(client).to receive(:query).once.and_return response
+              opportunity = Salesforce::Opportunity.includes(:owner).find "123"
+              expect(opportunity.owner).to be_a Salesforce::User
+              expect(opportunity.owner.id).to eq "321"
+            end
+          end
+
           context 'when the class name does not match the SFDC entity name' do
             let(:expected_soql) do
               "SELECT Id, QuotaId, WidgetId, Tegdiw__r.Id FROM Territory WHERE Id = '123'"
