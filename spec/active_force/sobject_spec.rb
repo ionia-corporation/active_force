@@ -174,8 +174,6 @@ describe ActiveForce::SObject do
     let(:territory){ Territory.new(id: '1', quota_id: '1') }
 
     before do
-      Territory.belongs_to :quota, model: Quota
-      Territory.field :quota_id, from: 'Quota_Id'
       allow(ActiveForce::SObject).to receive(:sfdc_client).and_return client
     end
 
@@ -190,7 +188,6 @@ describe ActiveForce::SObject do
     end
 
     it "refreshes the object's attributes" do
-      Territory.field :name, from: 'Name'
       territory.name = 'Walter'
       expect(territory.name).to eq 'Walter'
       territory.reload

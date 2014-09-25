@@ -12,3 +12,7 @@ ActiveSupport::Inflector.inflections do |inflect|
   inflect.singular 'quota', 'quota'
   inflect.singular 'Quota', 'Quota'
 end
+
+RSpec.configure do |config|
+  config.order = :random
+end

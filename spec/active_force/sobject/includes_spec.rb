@@ -12,7 +12,7 @@ module ActiveForce
       context 'belongs_to' do
         it 'queries the API for the associated record' do
           soql = Territory.includes(:quota).where(id: '123').to_s
-          expect(soql).to eq "SELECT Id, Quota__c, Quota__r.Bar_Id__c FROM Territory WHERE Id = '123'"
+          expect(soql).to eq "SELECT Id, Quota__c, Name, Quota__r.Bar_Id__c FROM Territory WHERE Id = '123'"
         end
 
         it "queries the API once to retrieve the object and its related one" do
@@ -165,7 +165,7 @@ module ActiveForce
         context 'mixing standard and custom objects' do
           it 'formulates the correct SOQL query' do
             soql = Quota.includes(:territories, :prez_clubs).where(id: '123').to_s
-            expect(soql).to eq "SELECT Id, Bar_Id__c, (SELECT Id, Quota__c FROM Territories), (SELECT Id, QuotaId FROM PrezClubs__r) FROM Quota__c WHERE Bar_Id__c = '123'"
+            expect(soql).to eq "SELECT Id, Bar_Id__c, (SELECT Id, Quota__c, Name FROM Territories), (SELECT Id, QuotaId FROM PrezClubs__r) FROM Quota__c WHERE Bar_Id__c = '123'"
           end
 
           it 'builds the associated objects and caches them' do

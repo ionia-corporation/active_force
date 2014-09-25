@@ -15,6 +15,7 @@ class Post < ActiveForce::SObject
 end
 class Territory < ActiveForce::SObject
   field :quota_id, from: "Quota__c"
+  field :name, from: 'Name'
   belongs_to :quota
 end
 class PrezClub < ActiveForce::SObject
