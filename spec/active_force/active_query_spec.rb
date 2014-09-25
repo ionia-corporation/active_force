@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'active_force/active_query'
 
 describe ActiveForce::ActiveQuery do
   let(:sobject) do

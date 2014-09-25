@@ -1,9 +1,7 @@
 require 'spec_helper'
-require 'active_force/table'
 
 describe ActiveForce::Table do
   describe '#table_name' do
-
     let(:table) { ActiveForce::Table }
 
     it 'Use the class name adding "__c"' do
@@ -23,6 +21,5 @@ describe ActiveForce::Table do
         expect(table.new('Foo::Account').name).to eq('Account')
       end
     end
-
   end
 end

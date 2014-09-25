@@ -9,11 +9,9 @@ describe ActiveForce::SObject do
   end
 
   describe ".new" do
-
     it 'should assigns values when are passed by parameters' do
       expect(Whizbang.new({ text: 'some text' }).text).to eq 'some text'
     end
-
   end
 
   describe ".build" do
