@@ -140,7 +140,7 @@ module ActiveForce
     end
 
     def write_value column, value
-      if [Hash, Array].include?(value.class) and association = self.class.find_association(column)
+      if [Hash, Array, NilClass].include?(value.class) and association = self.class.find_association(column)
         field = association.relation_name
         value = case value
         when Hash; association.relation_model.build value

@@ -209,6 +209,19 @@ module ActiveForce
             expect(account.prez_clubs.all? { |o| o.is_a? Salesforce::PrezClub }).to eq true
           end
         end
+
+        context 'when there are no associated records returned by the query' do
+          it 'caches the response' do
+            response = [{
+              'Id' => '123',
+              'Opportunities' => nil
+            }]
+            allow(client).to receive(:query).once.and_return response
+            account = Account.includes(:opportunities).find '123'
+            expect(account.opportunities).to be_nil
+            expect(account.opportunities).to be_nil
+          end
+        end
       end
 
       describe 'mixing belongs_to and has_many' do
