@@ -35,5 +35,11 @@ module Salesforce
     belongs_to :quota, model: Salesforce::Quota, foreign_key: :quota_id
     belongs_to :widget, model: Salesforce::Widget, foreign_key: :widget_id
   end
+  class Account < ActiveForce::SObject
+  end
+  class Opportunity < ActiveForce::SObject
+    field :account_id, from: 'AccountId'
+    belongs_to :account, model: Account
+  end
 end
 

@@ -2,11 +2,7 @@ module ActiveForce
   module Association
     class BelongsToAssociation < Association
       def sfdc_association_field
-        if relation_model.custom_table?
-          relation_model.table_name.gsub(/__c\z/, '__r')
-        else
-          relation_model.name
-        end
+        relation_model.table_name.gsub /__c\z/, '__r'
       end
 
       private
