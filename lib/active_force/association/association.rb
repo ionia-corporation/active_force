@@ -5,18 +5,22 @@ module ActiveForce
       attr_accessor :options, :relation_name
 
       def initialize parent, relation_name, options
-        @parent = parent
+        @parent        = parent
         @relation_name = relation_name
-        @options = options
+        @options       = options
         build
       end
 
       def relation_model
-        @options[:model] || @relation_name.to_s.singularize.camelcase.constantize
+        options[:model] || relation_name.to_s.singularize.camelcase.constantize
       end
 
       def foreign_key
-        @options[:foreign_key] || default_foreign_key
+        options[:foreign_key] || default_foreign_key
+      end
+
+      def relationship_name
+        options[:relationship_name] || relation_model.table_name
       end
 
       ###
@@ -25,15 +29,11 @@ module ActiveForce
       # could be 'Quota__r' or 'Account'.
       def represents_sfdc_table?(sfdc_table_name)
         name = sfdc_table_name.sub(/__r\z/, '').singularize
-        relation_model.table_name.sub(/__c\z/, '') == name
+        relationship_name.sub(/__c\z/, '') == name
       end
 
       def sfdc_association_field
-        if relation_model.custom_table?
-          relation_model.table_name.gsub(/__c\z/, '__r')
-        else
-          relation_model.name
-        end
+        relationship_name.gsub /__c\z/, '__r'
       end
 
       private
