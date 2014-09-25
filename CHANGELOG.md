@@ -2,6 +2,7 @@
 
 ## Not released
 
+* Add `#includes` query method to eager load has_many association.  ([Dan Olson][])
 * Add `#includes` query method to eager load belongs_to association. ([#65][])
 * SObject#destroy method.
 
