@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'active_force/sobject'
 
 describe ActiveForce::SObject do
   let(:client) { double 'Client', create!: 'id' }
@@ -9,7 +8,6 @@ describe ActiveForce::SObject do
   end
 
   describe "save" do
-
     it 'call action callback when save a record' do
       whizbanged = Whizbang.new
       whizbanged.save
