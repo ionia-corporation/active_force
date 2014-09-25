@@ -94,7 +94,7 @@ module ActiveForce
 
     protected
       def build_select
-        @query_fields.uniq.join(', ')
+        @query_fields.compact.uniq.join(', ')
       end
 
       def build_where
