@@ -140,13 +140,9 @@ module ActiveForce
     end
 
     def write_value column, value
-      if [Hash, Array, NilClass].include?(value.class) and association = self.class.find_association(column)
+      if association = self.class.find_association(column)
         field = association.relation_name
-        value = case value
-        when Hash; association.relation_model.build value
-        when Array; value.map { |mash| association.relation_model.build mash }
-        when NilClass; []
-        end
+        value = Association::RelationModelBuilder.build(association, value)
       else
         field = mappings.invert[column]
         value = self.class.mapping.translate_value value, field unless value.nil?

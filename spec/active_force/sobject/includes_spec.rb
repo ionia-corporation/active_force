@@ -139,6 +139,20 @@ module ActiveForce
             end
           end
         end
+
+        context 'when there is no associated record' do
+          it "queries the API once to retrieve the object and its related one" do
+            response = [{
+              "Id"       => "123",
+              "Quota__c" => "321",
+              "Quota__r" => nil
+            }]
+            allow(client).to receive(:query).once.and_return response
+            territory = Territory.includes(:quota).find "123"
+            expect(territory.quota).to be_nil
+            expect(territory.quota).to be_nil
+          end
+        end
       end
 
       context 'has_many' do

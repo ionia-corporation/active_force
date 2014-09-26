@@ -1,14 +1,16 @@
 module ActiveForce
   module Association
     class Association
+      extend Forwardable
+      def_delegators :relation_model, :build
 
       attr_accessor :options, :relation_name
 
-      def initialize parent, relation_name, options
+      def initialize parent, relation_name, options = {}
         @parent        = parent
         @relation_name = relation_name
         @options       = options
-        build
+        define_relation_method
       end
 
       def relation_model
@@ -29,7 +31,7 @@ module ActiveForce
       # could be 'Quota__r' or 'Account'.
       def represents_sfdc_table?(sfdc_table_name)
         name = sfdc_table_name.sub(/__r\z/, '').singularize
-        relationship_name.sub(/__c\z/, '') == name
+        relationship_name.sub(/__c\z|__r\z/, '') == name
       end
 
       def sfdc_association_field
@@ -37,10 +39,6 @@ module ActiveForce
       end
 
       private
-
-      def build
-        define_relation_method
-      end
 
       def infer_foreign_key_from_model(model)
         name = model.custom_table? ? model.name : model.table_name
