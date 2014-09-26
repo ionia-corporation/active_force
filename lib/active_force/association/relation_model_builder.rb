@@ -9,7 +9,13 @@ module ActiveForce
 
       def initialize(association, value)
         @association = association
-        @value = value.respond_to?(:to_hash) ? value.to_hash : value
+        @value = if value.respond_to?(:to_hash) # Handles conversion of Restforce::SObject
+          value.to_hash
+        elsif value.is_a?(Restforce::Collection)
+          value.to_a
+        else
+          value
+        end
       end
 
       def build_relation_model
