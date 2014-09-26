@@ -9,12 +9,20 @@ module ActiveForce
 
       def initialize(association, value)
         @association = association
-        @value = value
+        @value = value.respond_to?(:to_hash) ? value.to_hash : value
       end
 
       def build_relation_model
-        klass = ActiveForce::Association.const_get "BuildFrom#{@value.class.name}"
+        klass = resolve_class
         klass.new(@association, @value).call
+      end
+
+      private
+
+      def resolve_class
+        ActiveForce::Association.const_get "BuildFrom#{@value.class.name}"
+      rescue NameError
+        raise "Don't know how to build relation from #{@value.class.name}"
       end
     end
 

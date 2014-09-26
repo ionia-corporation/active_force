@@ -12,8 +12,8 @@ module ActiveForce
           context 'with values' do
             let(:value) do
               [
-                {'Id' => '213', 'PostId' => '123'},
-                {'Id' => '214', 'PostId' => '123'}
+                Restforce::SObject.new({'Id' => '213', 'PostId' => '123'}),
+                Restforce::SObject.new({'Id' => '214', 'PostId' => '123'})
               ]
             end
 
@@ -40,7 +40,7 @@ module ActiveForce
 
           context 'with a value' do
             let(:value) do
-              {'Id' => '213'}
+              Restforce::SObject.new({'Id' => '213'})
             end
 
             it 'returns a post' do
