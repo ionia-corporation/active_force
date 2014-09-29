@@ -13,7 +13,13 @@ module ActiveForce
         @parent.send :define_method, _method do
           association_cache.fetch _method do
             query = association.relation_model.query
-            query.options association.options
+            if scope = association.options[:scoped_as]
+              if scope.arity > 0
+                query.instance_exec self, &scope
+              else
+                query.instance_exec &scope
+              end
+            end
             association_cache[_method] = query.where association.foreign_key => self.id
           end
         end

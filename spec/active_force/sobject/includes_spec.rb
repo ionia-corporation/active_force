@@ -67,7 +67,7 @@ module ActiveForce
           context 'when the relationship table name is different from the actual table name' do
             it 'formulates the correct SOQL' do
               soql = Salesforce::Opportunity.includes(:owner).where(id: '123').to_s
-              expect(soql).to eq "SELECT Id, OwnerId, AccountId, Owner.Id FROM Opportunity WHERE Id = '123'"
+              expect(soql).to eq "SELECT Id, OwnerId, AccountId, Business_Partner__c, Owner.Id FROM Opportunity WHERE Id = '123'"
             end
 
             it "queries the API once to retrieve the object and its related one" do

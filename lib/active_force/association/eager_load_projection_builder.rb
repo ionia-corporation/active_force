@@ -17,6 +17,8 @@ module ActiveForce
         klass = association.class.name.split('::').last
         builder_class = ActiveForce::Association.const_get "#{klass}ProjectionBuilder"
         builder_class.new(association).projections
+      rescue NameError
+        raise "Don't know how to build projections for #{klass}"
       end
     end
 
