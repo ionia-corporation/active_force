@@ -16,13 +16,13 @@ module ActiveForce
         end
 
         it "queries the API once to retrieve the object and its related one" do
-          response = [{
+          response = [build_restforce_sobject({
             "Id"       => "123",
             "Quota__c" => "321",
             "Quota__r" => {
               "Bar_Id__c" => "321"
             }
-          }]
+          })]
           allow(client).to receive(:query).once.and_return response
           territory = Territory.includes(:quota).find "123"
           expect(territory.quota).to be_a Quota
@@ -30,13 +30,13 @@ module ActiveForce
         end
 
         it "queries the API once to retrieve the object and its related one" do
-          response = [{
+          response = [build_restforce_sobject({
             "Id"       => "123",
             "Quota__c" => "321",
             "Quota__r" => {
               "Bar_Id__c" => "321"
             }
-          }]
+          })]
           allow(client).to receive(:query).once.and_return response
           territory = Territory.includes(:quota).find "123"
           expect(territory.quota).to be_a Quota
@@ -50,14 +50,14 @@ module ActiveForce
           end
 
           it "queries the API once to retrieve the object and its related one" do
-            response = [{
+            response = [build_restforce_sobject({
               "Id"       => "123",
               "QuotaId"  => "321",
               "WidgetId" => "321",
               "Quota__r" => {
                 "Id" => "321"
               }
-            }]
+            })]
             allow(client).to receive(:query).once.and_return response
             territory = Salesforce::Territory.includes(:quota).find "123"
             expect(territory.quota).to be_a Salesforce::Quota
@@ -71,14 +71,14 @@ module ActiveForce
             end
 
             it "queries the API once to retrieve the object and its related one" do
-              response = [{
+              response = [build_restforce_sobject({
                 "Id"       => "123",
                 "OwnerId"  => "321",
                 "AccountId"  => "432",
                 "Owner" => {
                   "Id" => "321"
                 }
-              }]
+              })]
               allow(client).to receive(:query).once.and_return response
               opportunity = Salesforce::Opportunity.includes(:owner).find "123"
               expect(opportunity.owner).to be_a Salesforce::User
@@ -97,13 +97,13 @@ module ActiveForce
             end
 
             it "queries the API once to retrieve the object and its related one" do
-              response = [{
+              response = [build_restforce_sobject({
                 "Id"        => "123",
                 "WidgetId"  => "321",
                 "Tegdiw__r" => {
                   "Id" => "321"
                 }
-              }]
+              })]
               expected = expected_soql + ' LIMIT 1'
               allow(client).to receive(:query).once.with(expected).and_return response
               territory = Salesforce::Territory.includes(:widget).find "123"
@@ -119,7 +119,7 @@ module ActiveForce
             end
 
             it "queries the API once to retrieve the object and its assocations" do
-              response = [{
+              response = [build_restforce_sobject({
                 "Id"       => "123",
                 "QuotaId"  => "321",
                 "WidgetId" => "321",
@@ -129,7 +129,7 @@ module ActiveForce
                 "Tegdiw__r" => {
                   "Id" => "321"
                 }
-              }]
+              })]
               allow(client).to receive(:query).once.and_return response
               territory = Salesforce::Territory.includes(:quota, :widget).find "123"
               expect(territory.quota).to be_a Salesforce::Quota
@@ -142,11 +142,11 @@ module ActiveForce
 
         context 'when there is no associated record' do
           it "queries the API once to retrieve the object and its related one" do
-            response = [{
+            response = [build_restforce_sobject({
               "Id"       => "123",
               "Quota__c" => "321",
               "Quota__r" => nil
-            }]
+            })]
             allow(client).to receive(:query).once.and_return response
             territory = Territory.includes(:quota).find "123"
             expect(territory.quota).to be_nil
@@ -163,13 +163,13 @@ module ActiveForce
           end
 
           it 'builds the associated objects and caches them' do
-            response = [{
+            response = [build_restforce_sobject({
               'Id' => '123',
-              'Opportunities' => [
+              'Opportunities' => build_restforce_collection([
                 {'Id' => '213', 'AccountId' => '123'},
                 {'Id' => '214', 'AccountId' => '123'}
-              ]
-            }]
+              ])
+            })]
             allow(client).to receive(:query).once.and_return response
             account = Account.includes(:opportunities).find '123'
             expect(account.opportunities).to be_an Array
@@ -184,13 +184,13 @@ module ActiveForce
           end
 
           it 'builds the associated objects and caches them' do
-            response = [{
+            response = [build_restforce_sobject({
               'Id' => '123',
-              'PrezClubs__r' => [
+              'PrezClubs__r' => build_restforce_collection([
                 {'Id' => '213', 'QuotaId' => '123'},
                 {'Id' => '214', 'QuotaId' => '123'}
-              ]
-            }]
+              ])
+            })]
             allow(client).to receive(:query).once.and_return response
             account = Quota.includes(:prez_clubs).find '123'
             expect(account.prez_clubs).to be_an Array
@@ -205,17 +205,17 @@ module ActiveForce
           end
 
           it 'builds the associated objects and caches them' do
-            response = [{
+            response = [build_restforce_sobject({
               'Id' => '123',
-              'PrezClubs__r' => [
+              'PrezClubs__r' => build_restforce_collection([
                 {'Id' => '213', 'QuotaId' => '123'},
                 {'Id' => '214', 'QuotaId' => '123'}
-              ],
-              'Territories' => [
+              ]),
+              'Territories' => build_restforce_collection([
                 {'Id' => '213', 'Quota__c' => '123'},
                 {'Id' => '214', 'Quota__c' => '123'}
-              ]
-            }]
+              ])
+            })]
             allow(client).to receive(:query).once.and_return response
             account = Quota.includes(:territories, :prez_clubs).find '123'
             expect(account.prez_clubs).to be_an Array
@@ -232,13 +232,13 @@ module ActiveForce
           end
 
           it 'builds the associated objects and caches them' do
-            response = [{
+            response = [build_restforce_sobject({
               'Id' => '123',
-              'PrezClubs__r' => [
+              'PrezClubs__r' => build_restforce_collection([
                 {'Id' => '213', 'QuotaId' => '123'},
                 {'Id' => '214', 'QuotaId' => '123'}
-              ]
-            }]
+              ])
+            })]
             allow(client).to receive(:query).once.and_return response
             account = Salesforce::Quota.includes(:prez_clubs).find '123'
             expect(account.prez_clubs).to be_an Array
@@ -248,10 +248,10 @@ module ActiveForce
 
         context 'when there are no associated records returned by the query' do
           it 'caches the response' do
-            response = [{
+            response = [build_restforce_sobject({
               'Id' => '123',
               'Opportunities' => nil
-            }]
+            })]
             allow(client).to receive(:query).once.and_return response
             account = Account.includes(:opportunities).find '123'
             expect(account.opportunities).to eq []
@@ -267,16 +267,16 @@ module ActiveForce
         end
 
         it 'builds the associated objects and caches them' do
-          response = [{
+          response = [build_restforce_sobject({
             'Id' => '123',
-            'Opportunities' => [
+            'Opportunities' => build_restforce_collection([
               {'Id' => '213', 'AccountId' => '123'},
               {'Id' => '214', 'AccountId' => '123'}
-            ],
+            ]),
             'Owner__r' => {
               'Id' => '321'
             }
-          }]
+          })]
           allow(client).to receive(:query).once.and_return response
           account = Account.includes(:opportunities).find '123'
           expect(account.opportunities).to be_an Array

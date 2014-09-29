@@ -11,10 +11,10 @@ module ActiveForce
 
           context 'with values' do
             let(:value) do
-              Restforce::Collection.new({ 'records' => [
+              build_restforce_collection([
                 Restforce::SObject.new({'Id' => '213', 'PostId' => '123'}),
                 Restforce::SObject.new({'Id' => '214', 'PostId' => '123'})
-              ]}, nil)
+              ])
             end
 
             it 'returns an array of Comments' do
@@ -40,7 +40,7 @@ module ActiveForce
 
           context 'with a value' do
             let(:value) do
-              Restforce::SObject.new({'Id' => '213'})
+              build_restforce_sobject 'Id' => '213'
             end
 
             it 'returns a post' do

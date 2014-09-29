@@ -15,4 +15,5 @@ end
 
 RSpec.configure do |config|
   config.order = :random
+  config.include RestforceFactories
 end

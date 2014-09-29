@@ -9,13 +9,7 @@ module ActiveForce
 
       def initialize(association, value)
         @association = association
-        @value = if value.respond_to?(:to_hash) # Handles conversion of Restforce::SObject
-          value.to_hash
-        elsif value.is_a?(Restforce::Collection)
-          value.to_a
-        else
-          value
-        end
+        @value = value
       end
 
       def build_relation_model
@@ -26,7 +20,8 @@ module ActiveForce
       private
 
       def resolve_class
-        ActiveForce::Association.const_get "BuildFrom#{@value.class.name}"
+        association_builder = @value.class.name.gsub('::', '_')
+        ActiveForce::Association.const_get "BuildFrom#{association_builder}"
       rescue NameError
         raise "Don't know how to build relation from #{@value.class.name}"
       end
@@ -61,6 +56,15 @@ module ActiveForce
       def call
         association.is_a?(BelongsToAssociation) ? nil : []
       end
+    end
+
+    class BuildFromRestforce_SObject < BuildFromHash
+    end
+
+    class BuildFromRestforce_Mash < BuildFromHash
+    end
+
+    class BuildFromRestforce_Collection < BuildFromArray
     end
   end
 end
