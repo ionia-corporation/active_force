@@ -40,11 +40,11 @@ describe ActiveForce::Query do
 
   describe ".where" do
     it "should add a where condition to a query" do
-      expect(query.where("name like '%a%'").to_s).to eq "SELECT Id, name, etc FROM table_name WHERE name like '%a%'"
+      expect(query.where("name like '%a%'").to_s).to eq "SELECT Id, name, etc FROM table_name WHERE (name like '%a%')"
     end
 
-    it "should add multiples conditions to a query" do
-      expect(query.where("condition1 = 1").where("condition2 = 2").to_s).to eq "SELECT Id, name, etc FROM table_name WHERE condition1 = 1 AND condition2 = 2"
+    it "should add multiples conditions to a query with parentheses" do
+      expect(query.where("condition1 = 1").where("condition2 = 2 OR condition3 = 3").to_s).to eq "SELECT Id, name, etc FROM table_name WHERE (condition1 = 1) AND (condition2 = 2 OR condition3 = 3)"
     end
   end
 
@@ -76,7 +76,7 @@ describe ActiveForce::Query do
 
   describe ".find.to_s" do
     it "should return a query for 1 record" do
-      expect(query.find(2).to_s).to eq "SELECT Id, name, etc FROM table_name WHERE Id = '2' LIMIT 1"
+      expect(query.find(2).to_s).to eq "SELECT Id, name, etc FROM table_name WHERE (Id = '2') LIMIT 1"
     end
   end
 
@@ -86,7 +86,7 @@ describe ActiveForce::Query do
     end
 
     it "should add a order condition in the statment with WHERE and LIMIT" do
-      expect(query.where("condition1 = 1").order("name desc").limit(1).to_s).to eq "SELECT Id, name, etc FROM table_name WHERE condition1 = 1 ORDER BY name desc LIMIT 1"
+      expect(query.where("condition1 = 1").order("name desc").limit(1).to_s).to eq "SELECT Id, name, etc FROM table_name WHERE (condition1 = 1) ORDER BY name desc LIMIT 1"
     end
   end
 
@@ -120,13 +120,13 @@ describe ActiveForce::Query do
     end
 
     it "should work with a condition" do
-      expect(query.where("name = 'cool'").count.to_s).to eq "SELECT count(Id) FROM table_name WHERE name = 'cool'"
+      expect(query.where("name = 'cool'").count.to_s).to eq "SELECT count(Id) FROM table_name WHERE (name = 'cool')"
     end
   end
 
   describe '.options' do
     it 'should add a where if the option has a where condition' do
-      expect(query.options(where: 'var = 1').to_s).to eq "SELECT Id, name, etc FROM table_name WHERE var = 1"
+      expect(query.options(where: 'var = 1').to_s).to eq "SELECT Id, name, etc FROM table_name WHERE (var = 1)"
     end
 
     it 'should add a limit if the option has a limit condition' do
@@ -138,7 +138,7 @@ describe ActiveForce::Query do
     end
 
     it 'should work with multiples options' do
-      expect(query.options(where: 'var = 1', order: 'name desc', limit: 1).to_s).to eq "SELECT Id, name, etc FROM table_name WHERE var = 1 ORDER BY name desc LIMIT 1"
+      expect(query.options(where: 'var = 1', order: 'name desc', limit: 1).to_s).to eq "SELECT Id, name, etc FROM table_name WHERE (var = 1) ORDER BY name desc LIMIT 1"
     end
   end
 end

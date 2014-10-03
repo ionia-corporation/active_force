@@ -98,7 +98,7 @@ module ActiveForce
       end
 
       def build_where
-        "WHERE #{ @conditions.join(' AND ') }" unless @conditions.empty?
+        "WHERE (#{ @conditions.join(') AND (') })" unless @conditions.empty?
       end
 
       def build_limit

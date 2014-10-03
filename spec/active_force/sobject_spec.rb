@@ -161,7 +161,7 @@ describe ActiveForce::SObject do
 
   describe "#find_by" do
     it "should query the client, with the SFDC field names and correctly enclosed values" do
-      expect(client).to receive(:query).with("SELECT #{Whizbang.fields.join ', '} FROM Whizbang__c WHERE Id = 123 AND Text_Label = 'foo' LIMIT 1")
+      expect(client).to receive(:query).with("SELECT #{Whizbang.fields.join ', '} FROM Whizbang__c WHERE (Id = 123) AND (Text_Label = 'foo') LIMIT 1")
       Whizbang.find_by id: 123, text: "foo"
     end
   end
@@ -178,7 +178,7 @@ describe ActiveForce::SObject do
     end
 
     it 'clears cached associations' do
-      soql = "SELECT Id, Bar_Id__c FROM Quota__c WHERE Id = '1' LIMIT 1"
+      soql = "SELECT Id, Bar_Id__c FROM Quota__c WHERE (Id = '1') LIMIT 1"
       expect(client).to receive(:query).twice.with soql
       allow(Territory).to receive(:find){ territory }
       territory.quota

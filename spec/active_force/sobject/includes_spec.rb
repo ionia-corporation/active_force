@@ -12,7 +12,7 @@ module ActiveForce
       context 'belongs_to' do
         it 'queries the API for the associated record' do
           soql = Territory.includes(:quota).where(id: '123').to_s
-          expect(soql).to eq "SELECT Id, Quota__c, Name, Quota__r.Bar_Id__c FROM Territory WHERE Id = '123'"
+          expect(soql).to eq "SELECT Id, Quota__c, Name, Quota__r.Bar_Id__c FROM Territory WHERE (Id = '123')"
         end
 
         it "queries the API once to retrieve the object and its related one" do
@@ -46,7 +46,7 @@ module ActiveForce
         context 'with namespaced SObjects' do
           it 'queries the API for the associated record' do
             soql = Salesforce::Territory.includes(:quota).where(id: '123').to_s
-            expect(soql).to eq "SELECT Id, QuotaId, WidgetId, Quota__r.Id FROM Territory WHERE Id = '123'"
+            expect(soql).to eq "SELECT Id, QuotaId, WidgetId, Quota__r.Id FROM Territory WHERE (Id = '123')"
           end
 
           it "queries the API once to retrieve the object and its related one" do
@@ -67,7 +67,7 @@ module ActiveForce
           context 'when the relationship table name is different from the actual table name' do
             it 'formulates the correct SOQL' do
               soql = Salesforce::Opportunity.includes(:owner).where(id: '123').to_s
-              expect(soql).to eq "SELECT Id, OwnerId, AccountId, Owner.Id FROM Opportunity WHERE Id = '123'"
+              expect(soql).to eq "SELECT Id, OwnerId, AccountId, Owner.Id FROM Opportunity WHERE (Id = '123')"
             end
 
             it "queries the API once to retrieve the object and its related one" do
@@ -88,7 +88,7 @@ module ActiveForce
 
           context 'when the class name does not match the SFDC entity name' do
             let(:expected_soql) do
-              "SELECT Id, QuotaId, WidgetId, Tegdiw__r.Id FROM Territory WHERE Id = '123'"
+              "SELECT Id, QuotaId, WidgetId, Tegdiw__r.Id FROM Territory WHERE (Id = '123')"
             end
 
             it 'queries the API for the associated record' do
@@ -115,7 +115,7 @@ module ActiveForce
           context 'child to several parents' do
             it 'queries the API for associated records' do
               soql = Salesforce::Territory.includes(:quota, :widget).where(id: '123').to_s
-              expect(soql).to eq "SELECT Id, QuotaId, WidgetId, Quota__r.Id, Tegdiw__r.Id FROM Territory WHERE Id = '123'"
+              expect(soql).to eq "SELECT Id, QuotaId, WidgetId, Quota__r.Id, Tegdiw__r.Id FROM Territory WHERE (Id = '123')"
             end
 
             it "queries the API once to retrieve the object and its assocations" do
@@ -159,7 +159,7 @@ module ActiveForce
         context 'with standard objects' do
           it 'formulates the correct SOQL query' do
             soql = Account.includes(:opportunities).where(id: '123').to_s
-            expect(soql).to eq "SELECT Id, OwnerId, (SELECT Id, AccountId FROM Opportunities) FROM Account WHERE Id = '123'"
+            expect(soql).to eq "SELECT Id, OwnerId, (SELECT Id, AccountId FROM Opportunities) FROM Account WHERE (Id = '123')"
           end
 
           it 'builds the associated objects and caches them' do
@@ -180,7 +180,7 @@ module ActiveForce
         context 'with custom objects' do
           it 'formulates the correct SOQL query' do
             soql = Quota.includes(:prez_clubs).where(id: '123').to_s
-            expect(soql).to eq "SELECT Id, Bar_Id__c, (SELECT Id, QuotaId FROM PrezClubs__r) FROM Quota__c WHERE Bar_Id__c = '123'"
+            expect(soql).to eq "SELECT Id, Bar_Id__c, (SELECT Id, QuotaId FROM PrezClubs__r) FROM Quota__c WHERE (Bar_Id__c = '123')"
           end
 
           it 'builds the associated objects and caches them' do
@@ -201,7 +201,7 @@ module ActiveForce
         context 'mixing standard and custom objects' do
           it 'formulates the correct SOQL query' do
             soql = Quota.includes(:territories, :prez_clubs).where(id: '123').to_s
-            expect(soql).to eq "SELECT Id, Bar_Id__c, (SELECT Id, Quota__c, Name FROM Territories), (SELECT Id, QuotaId FROM PrezClubs__r) FROM Quota__c WHERE Bar_Id__c = '123'"
+            expect(soql).to eq "SELECT Id, Bar_Id__c, (SELECT Id, Quota__c, Name FROM Territories), (SELECT Id, QuotaId FROM PrezClubs__r) FROM Quota__c WHERE (Bar_Id__c = '123')"
           end
 
           it 'builds the associated objects and caches them' do
@@ -228,7 +228,7 @@ module ActiveForce
         context 'with namespaced SObjects' do
           it 'formulates the correct SOQL query' do
             soql = Salesforce::Quota.includes(:prez_clubs).where(id: '123').to_s
-            expect(soql).to eq "SELECT Id, (SELECT Id, QuotaId FROM PrezClubs__r) FROM Quota__c WHERE Id = '123'"
+            expect(soql).to eq "SELECT Id, (SELECT Id, QuotaId FROM PrezClubs__r) FROM Quota__c WHERE (Id = '123')"
           end
 
           it 'builds the associated objects and caches them' do
@@ -263,7 +263,7 @@ module ActiveForce
       describe 'mixing belongs_to and has_many' do
         it 'formulates the correct SOQL query' do
           soql = Account.includes(:opportunities, :owner).where(id: '123').to_s
-          expect(soql).to eq "SELECT Id, OwnerId, (SELECT Id, AccountId FROM Opportunities), Owner__r.Id FROM Account WHERE Id = '123'"
+          expect(soql).to eq "SELECT Id, OwnerId, (SELECT Id, AccountId FROM Opportunities), Owner__r.Id FROM Account WHERE (Id = '123')"
         end
 
         it 'builds the associated objects and caches them' do
