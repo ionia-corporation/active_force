@@ -10,6 +10,8 @@ require 'logger'
 require 'restforce'
 
 module ActiveForce
+  class RecordInvalid < StandardError;end
+
   class SObject
     include ActiveAttr::Model
     include ActiveAttr::Dirty
@@ -59,35 +61,37 @@ module ActiveForce
 
     def update_attributes! attributes = {}
       assign_attributes attributes
-      return false unless valid?
+      validate!
       sfdc_client.update! table_name, attributes_for_sfdb
       changed_attributes.clear
-      self
+      true
     end
+
+    alias_method :update!, :update_attributes!
 
     def update_attributes attributes = {}
       run_callbacks :update do
         update_attributes! attributes
       end
-    rescue Faraday::Error::ClientError => error
-      logger_output __method__, error, attributes
+    rescue Faraday::Error::ClientError, RecordInvalid => error
+      handle_save_error error
     end
 
     alias_method :update, :update_attributes
 
     def create!
-      return false unless valid?
+      validate!
       self.id = sfdc_client.create! table_name, attributes_for_sfdb
       changed_attributes.clear
-      self
+      true
     end
 
     def create
       run_callbacks :create do
         create!
       end
-    rescue Faraday::Error::ClientError => error
-      logger_output __method__, error, attributes_for_sfdb
+    rescue Faraday::Error::ClientError, RecordInvalid => error
+      handle_save_error error
     end
 
     def destroy
@@ -102,20 +106,20 @@ module ActiveForce
       new(args).save!
     end
 
-    def save
+    def save!
       run_callbacks :save do
         if persisted?
-          update
+          update!
         else
-          create
+          create!
         end
       end
     end
 
-    def save!
-      save
-    rescue Faraday::Error::ClientError => error
-      logger_output __method__, error, attributes_for_sfdb
+    def save
+      save!
+    rescue Faraday::Error::ClientError, RecordInvalid => error
+      handle_save_error error
     end
 
     def to_param
@@ -151,6 +155,19 @@ module ActiveForce
     end
 
    private
+
+    def validate!
+      unless valid?
+        raise RecordInvalid.new(
+          "Validation failed: #{errors.full_messages.join(', ')}"
+        )
+      end
+    end
+
+    def handle_save_error error
+      return false if error.class == RecordInvalid
+      logger_output __method__, error, attributes
+    end
 
     def association_cache
       @association_cache ||= {}
