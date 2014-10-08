@@ -94,43 +94,133 @@ describe ActiveForce::SObject do
   end
 
   describe "CRUD" do
-    subject do
-      Whizbang.new(id: '1')
-    end
+    let(:instance){ Whizbang.new(id: '1') }
 
     describe '#update' do
-      before do
-        expected_args = [
-          Whizbang.table_name,
-          {'Text_Label' => 'some text', 'Boolean_Label' => false, 'Id' => '1'}
-        ]
-        expect(client).to receive(:update!).with(*expected_args).and_return('id')
+
+      context 'with valid attributes' do
+        before do
+          expected_args = [
+            Whizbang.table_name,
+            {'Text_Label' => 'some text', 'Boolean_Label' => false, 'Id' => '1', "Updated_From__c"=>"Rails"}
+          ]
+          expect(client).to receive(:update!).with(*expected_args).and_return('id')
+        end
+
+        it 'delegates to the Client with create! and sets the id' do
+          expect(instance.update( text: 'some text', boolean: false )).to eq(true)
+          expect(instance.text).to eq('some text')
+        end
       end
 
-      it 'delegates to the Client with create!' do
-        expect(subject.update({ text: 'some text', boolean: false })).to be_a Whizbang
+      context 'with invalid attributes' do
+        it 'sets the error on the instance' do
+          expect(instance.update( boolean: true )).to eq(false)
+          expect(instance.errors).to be_present
+          expect(instance.errors.full_messages.count).to eq(1)
+          expect(instance.errors.full_messages[0]).to eq("Percent can't be blank")
+        end
+      end
+    end
+
+    describe ".update!" do
+      context 'with valid attributes' do
+        describe 'and without a ClientError' do
+          before do
+            expected_args = [
+              Whizbang.table_name,
+              {'Text_Label' => 'some text', 'Boolean_Label' => false, 'Id' => '1', "Updated_From__c"=>"Rails"}
+            ]
+            expect(client).to receive(:update!).with(*expected_args).and_return('id')
+          end
+          it 'saves successfully' do
+            expect(instance.update!( text: 'some text', boolean: false )).to eq(true)
+            expect(instance.text).to eq('some text')
+          end
+        end
+
+        describe 'and with a ClientError' do
+          let(:faraday_error){ Faraday::Error::ClientError.new('Some String') }
+
+          before{ expect(client).to receive(:update!).and_raise(faraday_error) }
+
+          it 'raises an error' do
+            expect{ instance.update!( text: 'some text', boolean: false ) }.to raise_error(Faraday::Error::ClientError)
+          end
+        end
+      end
+
+      context 'with invalid attributes' do
+        let(:instance){ Whizbang.new boolean: true }
+
+        it 'raises an error' do
+          expect{ instance.update!( text: 'some text', boolean: true ) }.to raise_error(ActiveForce::RecordInvalid)
+        end
       end
     end
 
     describe '#create' do
-      before do
-        expect(client).to receive(:create!).and_return('id')
+      context 'with valid attributes' do
+        before do
+          expect(client).to receive(:create!).and_return('id')
+        end
+
+        it 'delegates to the Client with create! and sets the id' do
+          expect(instance.create).to be_instance_of(Whizbang)
+          expect(instance.id).to eq('id')
+        end
       end
 
-      it 'delegates to the Client with create!' do
-        subject.create
+
+      context 'with invalid attributes' do
+        let(:instance){ Whizbang.new boolean: true }
+
+        it 'sets the error on the instance' do
+          expect(instance.create).to be_instance_of(Whizbang)
+          expect(instance.id).to eq(nil)
+          expect(instance.errors).to be_present
+          expect(instance.errors.full_messages.count).to eq(1)
+          expect(instance.errors.full_messages[0]).to eq("Percent can't be blank")
+        end
+      end
+    end
+
+    describe '#create!' do
+      context 'with valid attributes' do
+        describe 'and without a ClientError' do
+
+          before{ expect(client).to receive(:create!).and_return('id') }
+
+          it 'saves successfully' do
+            expect(instance.create!).to be_instance_of(Whizbang)
+            expect(instance.id).to eq('id')
+          end
+        end
+
+        describe 'and with a ClientError' do
+          let(:faraday_error){ Faraday::Error::ClientError.new('Some String') }
+
+          before{ expect(client).to receive(:create!).and_raise(faraday_error) }
+
+          it 'raises an error' do
+            expect{ instance.create! }.to raise_error(Faraday::Error::ClientError)
+          end
+        end
       end
 
-      it 'sets the id' do
-        subject.create
-        expect(subject.id).to eq('id')
+      context 'with invalid attributes' do
+        let(:instance){ Whizbang.new boolean: true }
+
+        it 'raises an error' do
+          expect{ instance.create! }.to raise_error(ActiveForce::RecordInvalid)
+        end
       end
     end
 
     describe "#destroy" do
       it "should send client :destroy! with its id" do
         expect(client).to receive(:destroy!).with 'Whizbang__c', '1'
-        subject.destroy
+        instance.destroy
       end
     end
 
@@ -140,7 +230,7 @@ describe ActiveForce::SObject do
       end
 
       it 'should create a new instance' do
-        expect(Whizbang.create({ text: 'some text' })).to be_a Whizbang
+        expect(Whizbang.create(text: 'some text')).to be_instance_of(Whizbang)
       end
     end
   end
@@ -230,6 +320,79 @@ describe ActiveForce::SObject do
     it 'catches and logs the error' do
       expect(instance).to receive(:logger_output).and_return(false)
       instance.save
+    end
+  end
+
+  describe ".save!" do
+    let(:instance){ Whizbang.new }
+
+    context 'with valid attributes' do
+      describe 'and without a ClientError' do
+        before{ expect(client).to receive(:create!).and_return('id') }
+        it 'saves successfully' do
+          expect(instance.save!).to eq(true)
+        end
+      end
+
+      describe 'and with a ClientError' do
+        let(:faraday_error){ Faraday::Error::ClientError.new('Some String') }
+
+        before{ expect(client).to receive(:create!).and_raise(faraday_error) }
+
+        it 'raises an error' do
+          expect{ instance.save! }.to raise_error(Faraday::Error::ClientError)
+        end
+      end
+    end
+
+    context 'with invalid attributes' do
+      let(:instance){ Whizbang.new boolean: true }
+
+      it 'raises an error' do
+        expect{ instance.save! }.to raise_error(ActiveForce::RecordInvalid)
+      end
+    end
+  end
+
+  describe ".save" do
+    let(:instance){ Whizbang.new }
+
+    context 'with valid attributes' do
+      describe 'and without a ClientError' do
+        before{ expect(client).to receive(:create!).and_return('id') }
+        it 'saves successfully' do
+          expect(instance.save).to eq(true)
+        end
+      end
+
+      describe 'and with a ClientError' do
+        let(:faraday_error){ Faraday::Error::ClientError.new('Some String') }
+        before{ expect(client).to receive(:create!).and_raise(faraday_error) }
+        it 'returns false' do
+          expect(instance.save).to eq(false)
+        end
+        it 'sets the error on the instance' do
+          instance.save
+          expect(instance.errors).to be_present
+          expect(instance.errors.full_messages.count).to eq(1)
+          expect(instance.errors.full_messages[0]).to eq('Some String')
+        end
+      end
+    end
+
+    context 'with invalid attributes' do
+      let(:instance){ Whizbang.new boolean: true }
+
+      it 'does not save' do
+        expect(instance.save).to eq(false)
+      end
+
+      it 'sets the error on the instance' do
+        instance.save
+        expect(instance.errors).to be_present
+        expect(instance.errors.full_messages.count).to eq(1)
+        expect(instance.errors.full_messages[0]).to eq("Percent can't be blank")
+      end
     end
   end
 end

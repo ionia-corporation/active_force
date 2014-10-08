@@ -45,11 +45,11 @@ class Medication < ActiveForce::SObject
 
   field :name,             from: 'Name'
 
-  field :max_dossage  # from defaults to "Max_Dossage__c" 
+  field :max_dossage  # defaults to "Max_Dossage__c"
   field :updated_from
 
   ##
-  # Table name is infered from class name.
+  # Table name is inferred from class name.
   #
   # self.table_name = 'Medication__c' # default one.
 
@@ -90,19 +90,17 @@ Altenative you can try the generator. (requires setting up the connection)
 class Account < ActiveForce::SObject
   has_many :pages
 
-  # Use option parameters in the declaration.
+  # Use optional parameters in the declaration.
 
   has_many :medications,
-    where: "Discontinued__c > #{ Date.today.strftime("%Y-%m-%d") }" \
-           "OR Discontinued__c = NULL"
+    scoped_as: ->{ where("Discontinued__c > ? OR Discontinued__c = ?", Date.today.strftime("%Y-%m-%d"), nil) }
 
   has_many :today_log_entries,
     model: DailyLogEntry,
-    where: { date: Time.now.in_time_zone.strftime("%Y-%m-%d") }
+    scoped_as: ->{ where(date: Time.now.in_time_zone.strftime("%Y-%m-%d") }
 
   has_many :labs,
-    where: "Category__c = 'EMR' AND Date__c <> NULL",
-    order: 'Date__c DESC'
+    scoped_as: ->{ where("Category__c = 'EMR' AND Date__c <> NULL").order('Date__c DESC') }
 
 end
 ```
@@ -130,7 +128,7 @@ Account.where(web_enable: 1, contact_by: ['web', 'email']).limit(2)
 #                    LIMIT 2
 ```
 
-This is also possible to eager load belongs_to associations.
+It is also possible to eager load associations:
 
 ```ruby
 Comment.includes(:post)

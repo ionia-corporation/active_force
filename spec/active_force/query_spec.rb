@@ -123,22 +123,4 @@ describe ActiveForce::Query do
       expect(query.where("name = 'cool'").count.to_s).to eq "SELECT count(Id) FROM table_name WHERE (name = 'cool')"
     end
   end
-
-  describe '.options' do
-    it 'should add a where if the option has a where condition' do
-      expect(query.options(where: 'var = 1').to_s).to eq "SELECT Id, name, etc FROM table_name WHERE (var = 1)"
-    end
-
-    it 'should add a limit if the option has a limit condition' do
-      expect(query.options(limit: 1).to_s).to eq "SELECT Id, name, etc FROM table_name LIMIT 1"
-    end
-
-    it 'should add a order if the option has a order condition' do
-      expect(query.options(order: 'name desc').to_s).to eq "SELECT Id, name, etc FROM table_name ORDER BY name desc"
-    end
-
-    it 'should work with multiples options' do
-      expect(query.options(where: 'var = 1', order: 'name desc', limit: 1).to_s).to eq "SELECT Id, name, etc FROM table_name WHERE (var = 1) ORDER BY name desc LIMIT 1"
-    end
-  end
 end
