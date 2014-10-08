@@ -62,17 +62,19 @@ module ActiveForce
     def update_attributes! attributes = {}
       assign_attributes attributes
       validate!
-      sfdc_client.update! table_name, attributes_for_sfdb
-      changed_attributes.clear
+      run_callbacks :save do
+        run_callbacks :update do
+          sfdc_client.update! table_name, attributes_for_sfdb
+          changed_attributes.clear
+        end
+      end
       true
     end
 
     alias_method :update!, :update_attributes!
 
     def update_attributes attributes = {}
-      run_callbacks :update do
-        update_attributes! attributes
-      end
+      update_attributes! attributes
     rescue Faraday::Error::ClientError, RecordInvalid => error
       handle_save_error error
     end
@@ -81,17 +83,20 @@ module ActiveForce
 
     def create!
       validate!
-      self.id = sfdc_client.create! table_name, attributes_for_sfdb
-      changed_attributes.clear
-      true
+      run_callbacks :save do
+        run_callbacks :create do
+          self.id = sfdc_client.create! table_name, attributes_for_sfdb
+          changed_attributes.clear
+        end
+      end
+      self
     end
 
     def create
-      run_callbacks :create do
-        create!
-      end
+      create!
     rescue Faraday::Error::ClientError, RecordInvalid => error
       handle_save_error error
+      self
     end
 
     def destroy
@@ -99,19 +104,19 @@ module ActiveForce
     end
 
     def self.create args
-      new(args).save
+      new(args).create
     end
 
     def self.create! args
-      new(args).save!
+      new(args).create!
     end
 
     def save!
       run_callbacks :save do
         if persisted?
-          update!
+          !!update!
         else
-          create!
+          !!create!
         end
       end
     end

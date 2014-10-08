@@ -97,16 +97,29 @@ describe ActiveForce::SObject do
     let(:instance){ Whizbang.new(id: '1') }
 
     describe '#update' do
-      before do
-        expected_args = [
-          Whizbang.table_name,
-          {'Text_Label' => 'some text', 'Boolean_Label' => false, 'Id' => '1'}
-        ]
-        expect(client).to receive(:update!).with(*expected_args).and_return('id')
+
+      context 'with valid attributes' do
+        before do
+          expected_args = [
+            Whizbang.table_name,
+            {'Text_Label' => 'some text', 'Boolean_Label' => false, 'Id' => '1', "Updated_From__c"=>"Rails"}
+          ]
+          expect(client).to receive(:update!).with(*expected_args).and_return('id')
+        end
+
+        it 'delegates to the Client with create! and sets the id' do
+          expect(instance.update( text: 'some text', boolean: false )).to eq(true)
+          expect(instance.text).to eq('some text')
+        end
       end
 
-      it 'saves successfully' do
-        expect(instance.update!( text: 'some text', boolean: false )).to eq true
+      context 'with invalid attributes' do
+        it 'sets the error on the instance' do
+          expect(instance.update( boolean: true )).to eq(false)
+          expect(instance.errors).to be_present
+          expect(instance.errors.full_messages.count).to eq(1)
+          expect(instance.errors.full_messages[0]).to eq("Percent can't be blank")
+        end
       end
     end
 
@@ -116,12 +129,13 @@ describe ActiveForce::SObject do
           before do
             expected_args = [
               Whizbang.table_name,
-              {'Text_Label' => 'some text', 'Boolean_Label' => false, 'Id' => '1'}
+              {'Text_Label' => 'some text', 'Boolean_Label' => false, 'Id' => '1', "Updated_From__c"=>"Rails"}
             ]
             expect(client).to receive(:update!).with(*expected_args).and_return('id')
           end
           it 'saves successfully' do
-            expect(instance.update!( text: 'some text', boolean: false )).to eq true
+            expect(instance.update!( text: 'some text', boolean: false )).to eq(true)
+            expect(instance.text).to eq('some text')
           end
         end
 
@@ -146,17 +160,28 @@ describe ActiveForce::SObject do
     end
 
     describe '#create' do
-      before do
-        expect(client).to receive(:create!).and_return('id')
+      context 'with valid attributes' do
+        before do
+          expect(client).to receive(:create!).and_return('id')
+        end
+
+        it 'delegates to the Client with create! and sets the id' do
+          expect(instance.create).to be_instance_of(Whizbang)
+          expect(instance.id).to eq('id')
+        end
       end
 
-      it 'delegates to the Client with create!' do
-        instance.create
-      end
 
-      it 'sets the id' do
-        instance.create
-        expect(instance.id).to eq('id')
+      context 'with invalid attributes' do
+        let(:instance){ Whizbang.new boolean: true }
+
+        it 'sets the error on the instance' do
+          expect(instance.create).to be_instance_of(Whizbang)
+          expect(instance.id).to eq(nil)
+          expect(instance.errors).to be_present
+          expect(instance.errors.full_messages.count).to eq(1)
+          expect(instance.errors.full_messages[0]).to eq("Percent can't be blank")
+        end
       end
     end
 
@@ -167,11 +192,7 @@ describe ActiveForce::SObject do
           before{ expect(client).to receive(:create!).and_return('id') }
 
           it 'saves successfully' do
-            expect(instance.create!).to eq(true)
-          end
-
-          it 'sets the id' do
-            instance.create!
+            expect(instance.create!).to be_instance_of(Whizbang)
             expect(instance.id).to eq('id')
           end
         end
@@ -209,7 +230,7 @@ describe ActiveForce::SObject do
       end
 
       it 'should create a new instance' do
-        expect(Whizbang.create({ text: 'some text' })).to eq true
+        expect(Whizbang.create(text: 'some text')).to be_instance_of(Whizbang)
       end
     end
   end
