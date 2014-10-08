@@ -15,6 +15,7 @@ class Whizbang < ActiveForce::SObject
   before_save :set_as_updated_from_rails
   after_save :mark_dirty
 
+  validates :percent, presence: true, if: :boolean
 
   private
 
