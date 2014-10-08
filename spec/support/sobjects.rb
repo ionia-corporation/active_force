@@ -4,12 +4,15 @@ class Comment < ActiveForce::SObject
   field :post_id, from: "PostId"
   field :poster_id, from: 'PosterId__c'
   field :fancy_post_id, from: 'FancyPostId'
+  field :body
   belongs_to :post
 end
 class Post < ActiveForce::SObject
   self.table_name = "Post__c"
+  field :title
   has_many :comments
-  has_many :impossible_comments, { where: '1 = 0', model: Comment }
+  has_many :impossible_comments, model: Comment, scoped_as: ->{ where('1 = 0') }
+  has_many :reply_comments, model: Comment, scoped_as: ->(post){ where(body: "RE: #{post.title}").order('CreationDate DESC') }
   has_many :ugly_comments, { model: Comment }
   has_many :poster_comments, { foreign_key: :poster_id, model: Comment }
 end
@@ -79,16 +82,16 @@ module Salesforce
     belongs_to :quota, model: Salesforce::Quota, foreign_key: :quota_id
     belongs_to :widget, model: Salesforce::Widget, foreign_key: :widget_id
   end
-  class Account < ActiveForce::SObject
-  end
-  class Opportunity < ActiveForce::SObject
-  end
   class User < ActiveForce::SObject
   end
   class Opportunity < ActiveForce::SObject
     field :owner_id, from: 'OwnerId'
     field :account_id, from: 'AccountId'
-    belongs_to :owner, model: User, foreign_key: :owner_id, relationship_name: 'Owner'
-    belongs_to :account, model: Account
+    field :business_partner
+    belongs_to :owner, model: Salesforce::User, foreign_key: :owner_id, relationship_name: 'Owner'
+  end
+  class Account < ActiveForce::SObject
+    field :business_partner
+    has_many :partner_opportunities, model: Opportunity, scoped_as: ->(account){ where(business_partner: account.business_partner).includes(:owner) }
   end
 end
