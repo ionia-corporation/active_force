@@ -34,7 +34,7 @@ describe ActiveForce::SObject do
 
     describe 'to_s' do
       it "should return a SOQL statment" do
-        soql = "SELECT Id, PostId, PosterId__c, FancyPostId, Body__c FROM Comment__c WHERE PostId = '1'"
+        soql = "SELECT Id, PostId, PosterId__c, FancyPostId, Body__c FROM Comment__c WHERE (PostId = '1')"
         expect(post.comments.to_s).to eq soql
       end
     end
@@ -43,12 +43,12 @@ describe ActiveForce::SObject do
       let(:account){ Foo::Account.new(id: '1') }
 
       it 'correctly infers the foreign key and forms the correct query' do
-        soql = "SELECT Id, AccountId, Partner_Account_Id__c FROM Opportunity WHERE AccountId = '1'"
+        soql = "SELECT Id, AccountId, Partner_Account_Id__c FROM Opportunity WHERE (AccountId = '1')"
         expect(account.opportunities.to_s).to eq soql
       end
 
       it 'uses an explicit foreign key if it is supplied' do
-        soql = "SELECT Id, AccountId, Partner_Account_Id__c FROM Opportunity WHERE Partner_Account_Id__c = '1'"
+        soql = "SELECT Id, AccountId, Partner_Account_Id__c FROM Opportunity WHERE (Partner_Account_Id__c = '1')"
         expect(account.partner_opportunities.to_s).to eq soql
       end
     end
@@ -56,36 +56,35 @@ describe ActiveForce::SObject do
 
   describe 'has_many(options)' do
     it 'should allow to send a different query table name' do
-      soql = "SELECT Id, PostId, PosterId__c, FancyPostId, Body__c FROM Comment__c WHERE PostId = '1'"
+      soql = "SELECT Id, PostId, PosterId__c, FancyPostId, Body__c FROM Comment__c WHERE (PostId = '1')"
       expect(post.ugly_comments.to_s).to eq soql
     end
 
     it 'should allow to change the foreign key' do
-      soql = "SELECT Id, PostId, PosterId__c, FancyPostId, Body__c FROM Comment__c WHERE PosterId__c = '1'"
+      soql = "SELECT Id, PostId, PosterId__c, FancyPostId, Body__c FROM Comment__c WHERE (PosterId__c = '1')"
       expect(post.poster_comments.to_s).to eq soql
     end
 
     it 'should allow to add a where condition' do
-      soql = "SELECT Id, PostId, PosterId__c, FancyPostId, Body__c FROM Comment__c WHERE 1 = 0 AND PostId = '1'"
+      soql = "SELECT Id, PostId, PosterId__c, FancyPostId, Body__c FROM Comment__c WHERE (1 = 0) AND (PostId = '1')"
       expect(post.impossible_comments.to_s).to eq soql
     end
 
     it 'accepts custom scoping' do
-      soql = "SELECT Id, PostId, PosterId__c, FancyPostId, Body__c FROM Comment__c WHERE Body__c = 'RE: Ham' AND PostId = '1' ORDER BY CreationDate DESC"
+      soql = "SELECT Id, PostId, PosterId__c, FancyPostId, Body__c FROM Comment__c WHERE (Body__c = 'RE: Ham') AND (PostId = '1') ORDER BY CreationDate DESC"
       expect(post.reply_comments.to_s).to eq soql
     end
 
     it 'accepts custom scoping that preloads associations of the association' do
       account = Salesforce::Account.new id: '1', business_partner: 'qwerty'
-      soql = "SELECT Id, OwnerId, AccountId, Business_Partner__c, Owner.Id FROM Opportunity WHERE Business_Partner__c = 'qwerty' AND AccountId = '1'"
+      soql = "SELECT Id, OwnerId, AccountId, Business_Partner__c, Owner.Id FROM Opportunity WHERE (Business_Partner__c = 'qwerty') AND (AccountId = '1')"
       expect(account.partner_opportunities.to_s).to eq soql
     end
 
     it 'should use a convention name for the foreign key' do
-      soql = "SELECT Id, PostId, PosterId__c, FancyPostId, Body__c FROM Comment__c WHERE PostId = '1'"
+      soql = "SELECT Id, PostId, PosterId__c, FancyPostId, Body__c FROM Comment__c WHERE (PostId = '1')"
       expect(post.comments.to_s).to eq soql
     end
-
   end
 
   describe "belongs_to" do
@@ -96,7 +95,7 @@ describe ActiveForce::SObject do
     it "should allow to pass a foreign key as options" do
       Comment.belongs_to :post, foreign_key: :fancy_post_id
       allow(comment).to receive(:fancy_post_id).and_return "2"
-      expect(client).to receive(:query).with("SELECT Id, Title__c FROM Post__c WHERE Id = '2' LIMIT 1")
+      expect(client).to receive(:query).with("SELECT Id, Title__c FROM Post__c WHERE (Id = '2') LIMIT 1")
       comment.post
       Comment.belongs_to :post # reset association to original value
     end
@@ -137,7 +136,7 @@ describe ActiveForce::SObject do
       let(:attachment){ Foo::Attachment.new(id: '1', lead_id: '2') }
 
       it 'generates the correct query' do
-        expect(client).to receive(:query).with("SELECT Id FROM Lead WHERE Id = '2' LIMIT 1")
+        expect(client).to receive(:query).with("SELECT Id FROM Lead WHERE (Id = '2') LIMIT 1")
         attachment.lead
       end
 
@@ -149,7 +148,7 @@ describe ActiveForce::SObject do
         let(:attachment){ Foo::Attachment.new(id: '1', fancy_lead_id: '2') }
 
         it 'generates the correct query' do
-          expect(client).to receive(:query).with("SELECT Id FROM Lead WHERE Id = '2' LIMIT 1")
+          expect(client).to receive(:query).with("SELECT Id FROM Lead WHERE (Id = '2') LIMIT 1")
           attachment.fancy_lead
         end
       end
