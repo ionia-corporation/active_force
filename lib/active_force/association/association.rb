@@ -42,7 +42,7 @@ module ActiveForce
 
       def infer_foreign_key_from_model(model)
         name = model.custom_table? ? model.name : model.table_name
-        "#{name.downcase}_id".to_sym
+        name.foreign_key.to_sym
       end
     end
 
