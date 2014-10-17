@@ -38,6 +38,19 @@ environment variables to set up credentials.
 
 You might be interested in [dotenv-rails][3] to set up those in development.
 
+Also, you may specify your client as a configuration option, which is useful
+when having to reauthenticate utilizing oauth.
+
+```ruby
+ActiveForce.configuration.sfdc_client = Restforce.new(
+  oauth_token:         current_user.oauth_token,
+  refresh_token:       current_user.refresh_token,
+  instance_url:        current_user.instance_url,
+  client_id:           SALESFORCE_CLIENT_ID,
+  client_secret:       SALESFORCE_CLIENT_SECRET
+)
+```
+
 ## Usage
 
 ```ruby
