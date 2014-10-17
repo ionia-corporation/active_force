@@ -97,7 +97,7 @@ class Account < ActiveForce::SObject
 
   has_many :today_log_entries,
     model: DailyLogEntry,
-    scoped_as: ->{ where(date: Time.now.in_time_zone.strftime("%Y-%m-%d") }
+    scoped_as: ->{ where(date: Time.now.in_time_zone.strftime("%Y-%m-%d")) }
 
   has_many :labs,
     scoped_as: ->{ where("Category__c = 'EMR' AND Date__c <> NULL").order('Date__c DESC') }
