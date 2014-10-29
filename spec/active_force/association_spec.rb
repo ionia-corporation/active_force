@@ -14,7 +14,7 @@ describe ActiveForce::SObject do
   end
 
   before do
-    allow(ActiveForce::SObject).to receive(:sfdc_client).and_return client
+    ActiveForce.sfdc_client = client
   end
 
   describe "has_many_query" do

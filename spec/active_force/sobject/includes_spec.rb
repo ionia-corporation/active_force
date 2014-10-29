@@ -5,7 +5,7 @@ module ActiveForce
     let(:client){ double "client" }
 
     before do
-      allow(ActiveForce::SObject).to receive(:sfdc_client).and_return client
+      ActiveForce.sfdc_client = client
     end
 
     describe '.includes' do

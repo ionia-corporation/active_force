@@ -5,7 +5,7 @@ describe ActiveForce::SObject do
   let(:client) { double 'Client' }
 
   before do
-    allow(ActiveForce::SObject).to receive(:sfdc_client).and_return client
+    ActiveForce.sfdc_client = client
   end
 
   describe ".new" do
@@ -264,7 +264,7 @@ describe ActiveForce::SObject do
     let(:territory){ Territory.new(id: '1', quota_id: '1') }
 
     before do
-      allow(ActiveForce::SObject).to receive(:sfdc_client).and_return client
+      ActiveForce.sfdc_client = client
     end
 
     it 'clears cached associations' do
