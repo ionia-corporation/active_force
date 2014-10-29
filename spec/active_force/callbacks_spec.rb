@@ -4,7 +4,7 @@ describe ActiveForce::SObject do
   let(:client) { double 'Client', create!: 'id' }
 
   before do
-    ActiveForce.configuration.sfdc_client = client
+    ActiveForce.sfdc_client = client
   end
 
   describe "save" do

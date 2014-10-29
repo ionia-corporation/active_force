@@ -199,7 +199,7 @@ module ActiveForce
     end
 
     def self.sfdc_client
-      ActiveForce.configuration.sfdc_client
+      ActiveForce.sfdc_client
     end
 
     def sfdc_client

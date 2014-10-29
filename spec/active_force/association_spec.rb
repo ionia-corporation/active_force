@@ -14,7 +14,7 @@ describe ActiveForce::SObject do
   end
 
   before do
-    ActiveForce.configuration.sfdc_client = client
+    ActiveForce.sfdc_client = client
   end
 
   describe "has_many_query" do
