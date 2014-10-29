@@ -1,6 +1,13 @@
 # Changelog
 
 ## Not released
+
+## 0.7.1
+
+* Allow sfdc_client to be set. ([#92][])
+
+## 0.7.0
+
 * Rails4-style conditional has_many associations  ([Dan Olson][])
 * Add `#includes` query method to eager load has_many association.  ([Dan Olson][])
 * Add `#includes` query method to eager load belongs_to association. ([#65][])
@@ -84,6 +91,7 @@
 [#30]: https://github.com/ionia-corporation/active_force/issues/30
 [#33]: https://github.com/ionia-corporation/active_force/issues/33
 [#65]: https://github.com/ionia-corporation/active_force/issues/65
+[#92]: https://github.com/ionia-corporation/active_force/issues/92
 [Pablo Oldani]: https://github.com/olvap
 [Armando Andini]: https://github.com/antico5
 [José Piccioni]: https://github.com/lmhsjackson
