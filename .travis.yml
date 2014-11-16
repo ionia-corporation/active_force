@@ -15,3 +15,5 @@ notifications:
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/a790a8fc07d033f05e00
+script:
+  - bundle exec rubocop

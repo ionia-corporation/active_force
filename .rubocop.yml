@@ -1,0 +1,11 @@
+inherit_from: .rubocop_todo.yml
+AllCops:
+  Exclude:
+    - 'db/**/*'
+    - 'config/**/*'
+
+Style/MethodDefParentheses:
+  EnforcedStyle: require_no_parentheses
+
+Style/SignalException:
+  EnforcedStyle: only_raise
