@@ -56,6 +56,11 @@ module ActiveForce
       self
     end
 
+    def none
+      @records = []
+      where(id: '1'*18).where(id: '0'*18)
+    end
+
     private
 
     def build_condition(args, other=[])

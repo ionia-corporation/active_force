@@ -8,7 +8,7 @@ describe ActiveForce::ActiveQuery do
       mappings: mappings
     })
   end
-  let(:mappings){ { field: "Field__c", other_field: "Other_Field" } }
+  let(:mappings){ { id: "Id", field: "Field__c", other_field: "Other_Field" } }
   let(:client){ double("client") }
   let(:active_query){ ActiveForce::ActiveQuery.new(sobject) }
 
@@ -162,6 +162,17 @@ describe ActiveForce::ActiveQuery do
     it 'escapes quotes and backslashes in hash conditions' do
       active_query.where(backslash_field: backslash_input, number_field: number_input, quote_field: quote_input)
       expect(active_query.to_s).to eq("SELECT Id FROM table_name WHERE (Backslash_Field__c = '\\\\') AND (NumberField = 123) AND (QuoteField = ''' OR Id!=NULL OR Id=''')")
+    end
+  end
+
+  describe '#none' do
+    it 'returns a query with a where clause that is impossible to satisfy' do
+      expect(active_query.none.to_s).to eq "SELECT Id FROM table_name WHERE (Id = '111111111111111111') AND (Id = '000000000000000000')"
+    end
+
+    it 'does not query the API' do
+      expect(client).to_not receive :query
+      active_query.none.to_a
     end
   end
 end
