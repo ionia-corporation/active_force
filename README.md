@@ -42,7 +42,7 @@ Also, you may specify which client to use as a configuration option, which is us
 when having to reauthenticate utilizing oauth.
 
 ```ruby
-ActiveForce.sfdc_client = Restforce.new()
+ActiveForce.sfdc_client = Restforce.new(
   oauth_token:         current_user.oauth_token,
   refresh_token:       current_user.refresh_token,
   instance_url:        current_user.instance_url,
