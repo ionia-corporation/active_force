@@ -61,7 +61,7 @@ module ActiveForce
       when *STRINGLIKE_TYPES
         value.to_s
       when :boolean
-        !['false','0','f'].include? value.downcase
+        !['false','0','f'].include? value.to_s.downcase
       when :int
         value.to_i
       when :double, :percent
