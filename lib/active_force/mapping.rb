@@ -44,7 +44,7 @@ module ActiveForce
 
     def translate_value value, field_name
       return value unless !!field_name
-      typecast_value value.to_s, fields[field_name].as
+      typecast_value value, fields[field_name].as
     end
 
 
@@ -59,9 +59,9 @@ module ActiveForce
     def typecast_value value, type
       case type
       when *STRINGLIKE_TYPES
-        value
+        value.to_s
       when :boolean
-        !['false','0','f'].include? value.downcase
+        !['false','0','f'].include? value.to_s.downcase
       when :int
         value.to_i
       when :double, :percent

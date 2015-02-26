@@ -60,14 +60,14 @@ class Medication < ActiveForce::SObject
 
   field :max_dossage  # defaults to "Max_Dossage__c"
   field :updated_from
- 
+
   ##
   # You can cast field value using `as`
   # field :address_primary_active, from: 's360a__AddressPrimaryActive__c', as: :boolean
-  # 
-  # Available options are :boolean, :int, :double, :percent, :date, :datetime, :string, :base64, 
-  # :byte, :ID, :reference, :currency, :textarea, :phone, :url, :email, :combobox, :picklist, 
-  # :multipicklist, :anyType, :location
+  #
+  # Available options are :boolean, :int, :double, :percent, :date, :datetime, :string, :base64,
+  # :byte, :ID, :reference, :currency, :textarea, :phone, :url, :email, :combobox, :picklist,
+  # :multipicklist, :anyType, :location, :compound
 
   ##
   # Table name is inferred from class name.
