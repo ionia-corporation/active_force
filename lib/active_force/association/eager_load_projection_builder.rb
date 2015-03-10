@@ -44,6 +44,13 @@ module ActiveForce
         # pluralize the table name, and append '__r' if it was there to begin with
         relationship_name = association.sfdc_association_field.sub(match.to_s, '').pluralize + match.to_s
         query = Query.new relationship_name
+        if scope = association.options[:scoped_as]
+          if scope.arity > 0
+            query.instance_exec association, &scope
+          else
+            query.instance_exec &scope
+          end
+        end
         query.fields association.relation_model.fields
         ["(#{query.to_s})"]
       end
