@@ -1,6 +1,18 @@
 module ActiveForce
   module Association
     class HasManyAssociation < Association
+
+      def apply_scope query
+        if scope = self.options[:scoped_as]
+          if scope.arity > 0
+            query.instance_exec self, &scope
+          else
+            query.instance_exec &scope
+          end
+        end
+        query
+      end
+
       private
 
       def default_foreign_key
@@ -13,13 +25,7 @@ module ActiveForce
         @parent.send :define_method, _method do
           association_cache.fetch _method do
             query = association.relation_model.query
-            if scope = association.options[:scoped_as]
-              if scope.arity > 0
-                query.instance_exec self, &scope
-              else
-                query.instance_exec &scope
-              end
-            end
+            apply_scope query
             association_cache[_method] = query.where association.foreign_key => self.id
           end
         end

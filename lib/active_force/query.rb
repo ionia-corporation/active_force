@@ -35,7 +35,9 @@ module ActiveForce
       self
     end
 
-    def where condition
+    def where args=nil, *rest
+      return self if args.nil?
+      condition = build_condition args, rest
       @conditions << condition if condition
       self
     end
@@ -106,5 +108,92 @@ module ActiveForce
       def build_offset
         "OFFSET #{ @offset }" if @offset
       end
+
+    private
+
+    def build_condition(args, other=[])
+      case args
+      when String, Array
+        build_condition_from_array other.empty? ? args : ([args] + other)
+      when Hash
+        build_conditions_from_hash args
+      else
+        args
+      end
+    end
+
+    def build_condition_from_array(ary)
+      statement, *bind_parameters = ary
+      return statement if bind_parameters.empty?
+      if bind_parameters.first.is_a? Hash
+        replace_named_bind_parameters statement, bind_parameters.first
+      else
+        replace_bind_parameters statement, bind_parameters
+      end
+    end
+
+    def replace_named_bind_parameters(statement, bind_parameters)
+      statement.gsub(/(:?):([a-zA-Z]\w*)/) do
+        key = $2.to_sym
+        if bind_parameters.has_key? key
+          enclose_value bind_parameters[key]
+        else
+          raise PreparedStatementInvalid, "missing value for :#{key} in #{statement}"
+        end
+      end
+    end
+
+    def replace_bind_parameters(statement, values)
+      raise_if_bind_arity_mismatch statement.count('?'), values.size
+      bound = values.dup
+      statement.gsub('?') do
+        enclose_value bound.shift
+      end
+    end
+
+    def raise_if_bind_arity_mismatch(expected_var_count, actual_var_count)
+      if expected_var_count != actual_var_count
+        raise PreparedStatementInvalid, "wrong number of bind variables (#{actual_var_count} for #{expected_var_count})"
+      end
+    end
+
+    def build_conditions_from_hash(hash)
+      hash.map do |key, value|
+        applicable_predicate mappings[key], value
+      end
+    end
+
+    def applicable_predicate(attribute, value)
+      if value.is_a? Array
+        in_predicate attribute, value
+      else
+        eq_predicate attribute, value
+      end
+    end
+
+    def in_predicate(attribute, values)
+      escaped_values = values.map &method(:enclose_value)
+      "#{attribute} IN (#{escaped_values.join(',')})"
+    end
+
+    def eq_predicate(attribute, value)
+      "#{attribute} = #{enclose_value value}"
+    end
+
+    def enclose_value value
+      case value
+      when String
+        "'#{quote_string(value)}'"
+      when NilClass
+        'NULL'
+      else
+        value.to_s
+      end
+    end
+
+    def quote_string(s)
+      # From activerecord/lib/active_record/connection_adapters/abstract/quoting.rb, version 4.1.5, line 82
+      s.gsub(/\\/, '\&\&').gsub(/'/, "''")
+    end
   end
 end

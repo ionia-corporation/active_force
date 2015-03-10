@@ -44,6 +44,7 @@ module ActiveForce
         # pluralize the table name, and append '__r' if it was there to begin with
         relationship_name = association.sfdc_association_field.sub(match.to_s, '').pluralize + match.to_s
         query = Query.new relationship_name
+        association.apply_scope query
         query.fields association.relation_model.fields
         ["(#{query.to_s})"]
       end
