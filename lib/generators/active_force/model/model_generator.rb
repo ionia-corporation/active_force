@@ -6,8 +6,8 @@ module ActiveForce
 
     def create_model_file
       @table_name = file_name.capitalize
-      @class_name = @table_name.gsub '__c', ''
-      template "model.rb.erb", "app/models/#{@class_name.downcase}.rb" if table_exists?
+      @class_name = class_name.gsub 'C', ''
+      template "model.rb.erb", "app/models/#{file_name.gsub('__c', '')}.rb" if table_exists?
     end
 
     protected
