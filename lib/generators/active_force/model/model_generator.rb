@@ -5,7 +5,7 @@ module ActiveForce
     source_root File.expand_path('../templates', __FILE__)
 
     def create_model_file
-      @table_name = file_name.capitalize
+      @table_name = file_name.underscore.capitalize
       @class_name = @table_name.gsub '__c', ''
       template "model.rb.erb", "app/models/#{@class_name.downcase}.rb" if table_exists?
     end
