@@ -140,6 +140,7 @@ module StandardTypes
     ForecastingItem
     ForecastingQuota
     ForecastShare
+    GoogleDoc
     Group
     GroupMember
     HashtagDefinition
