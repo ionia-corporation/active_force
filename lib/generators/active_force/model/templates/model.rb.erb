@@ -1,5 +1,5 @@
 class <%= @class_name %> < ActiveForce::SObject
-<% attributes.each do |attribute| -%>
-  <%= attribute_line attribute %>
+<% fields.each do |attribute| -%>
+  <%= field_line attribute %>
 <% end -%>
 end

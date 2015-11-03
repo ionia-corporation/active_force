@@ -12,13 +12,12 @@ module ActiveForce
 
     protected
 
-    Attribute = Struct.new :field, :column
+    Field = Struct.new :name, :column
 
-    def attributes 
-      @attributes ||= sfdc_columns.map do |column|
-        Attribute.new column_to_field(column), column
+    def fields 
+      @fields ||= sfdc_columns.map do |column|
+        Field.new column_to_field(column), column
       end
-      @attributes - [:id]
     end
 
     def sfdc_columns
@@ -29,33 +28,25 @@ module ActiveForce
 
     def table_exists?
       !! sfdc_columns
-      rescue Faraday::Error::ResourceNotFound
-        puts "The specified table name is not found. Be sure to append __c if it's custom"
+    rescue Faraday::Error::ResourceNotFound
+      puts "The specified table name is not found. Be sure to append __c if it's custom"
     end
 
     def column_to_field column
       column.underscore.gsub("__c", "").to_sym
     end
 
-    def attribute_line attribute
-      "field :#{ attribute.field },#{ space_justify attribute.field } from: '#{ attribute.column }'"
+    def field_line field
+      "field :#{ field.name },#{ space_justify field.name } from: '#{ field.column }'"
     end
 
     def space_justify field_name
-      longest_field = attributes.map { |attr| attr.field.length } .max
       justify_count = longest_field - field_name.length
       " " * justify_count
     end
 
-
-    class String
-      def underscore
-        self.gsub(/::/, '/').
-        gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
-        gsub(/([a-z\d])([A-Z])/,'\1_\2').
-        tr("-", "_").
-        downcase
-      end
+    def longest_field
+      @longest_field ||= fields.map { |attr| attr.name.length }.max
     end
 
   end
