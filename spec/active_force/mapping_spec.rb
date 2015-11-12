@@ -6,7 +6,7 @@ describe ActiveForce::Mapping do
   describe 'field' do
     it 'should add a new attribute to the instance' do
       mapping.field :id, from: 'Id'
-      expect(mapping.mappings).to eq({ id: 'Id' })
+      expect(mapping.mappings).to eq({ 'id' => 'Id' })
     end
 
     it 'sf_names should return all attributes names from salesforce' do
