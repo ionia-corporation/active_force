@@ -1,6 +1,7 @@
 require 'active_force/attribute'
 require 'active_force/table'
 require 'forwardable'
+require 'active_support/core_ext'
 
 module ActiveForce
   class Mapping
@@ -19,7 +20,7 @@ module ActiveForce
     end
 
     def mappings
-      Hash[fields.map { |field, attr| [field, attr.sfdc_name] }]
+      Hash[fields.map { |field, attr| [field, attr.sfdc_name] }].with_indifferent_access
     end
 
     def sfdc_names
@@ -39,7 +40,7 @@ module ActiveForce
         attr = fields[attribute.to_sym]
         [attr.sfdc_name, attr.value_for_hash(value)]
       end
-      Hash[attrs]
+      Hash[attrs].with_indifferent_access
     end
 
     def translate_value value, field_name
@@ -51,7 +52,7 @@ module ActiveForce
     private
 
     def fields
-      @fields ||= {}
+      @fields ||= {}.with_indifferent_access
     end
 
     # Handles Salesforce FieldTypes as described here:
