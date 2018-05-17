@@ -18,7 +18,11 @@ module ActiveForce
     end
 
     def to_a
-      @records ||= result.to_a.map { |mash| build mash }
+      @records ||= sobject.try(:decorate, records) || records
+    end
+
+    private def records
+      result.to_a.map { |mash| build mash }
     end
 
     alias_method :all, :to_a
