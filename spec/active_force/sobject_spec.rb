@@ -70,7 +70,7 @@ describe ActiveForce::SObject do
         class IceCream < ActiveForce::SObject
           field :flavors, as: :multi_picklist
         end
-        sundae.changed_attributes.clear
+        sundae.clear_changes_information
         sundae.flavors = %w(chocolate vanilla strawberry)
       end
 

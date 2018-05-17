@@ -1,7 +1,6 @@
 require 'active_model'
-require 'active_attr'
-require 'active_attr/dirty'
 require 'active_force/active_query'
+require 'active_force/attributable'
 require 'active_force/association'
 require 'active_force/mapping'
 require 'yaml'
@@ -13,14 +12,18 @@ module ActiveForce
   class RecordInvalid < StandardError;end
 
   class SObject
-    include ActiveAttr::Model
-    include ActiveAttr::Dirty
-    extend ActiveForce::Association
+    include ActiveModel::AttributeMethods
+    include ActiveModel::Model
+    include ActiveModel::Dirty
     extend ActiveModel::Callbacks
+    include ActiveForce::Attributable
+    extend ActiveForce::Association
 
-    define_model_callbacks :save, :create, :update
+    define_model_callbacks :build, :create, :update, :save, :destroy
 
     class_attribute :mappings, :table_name
+
+    attr_accessor :id, :title
 
     class << self
       extend Forwardable
@@ -52,10 +55,12 @@ module ActiveForce
     def self.build mash
       return unless mash
       sobject = new
-      mash.each do |column, sf_value|
-        sobject.write_value column, sf_value
+      sobject.run_callbacks(:build) do
+        mash.each do |column, sf_value|
+          sobject.write_value column, sf_value
+        end
       end
-      sobject.changed_attributes.clear
+      sobject.clear_changes_information
       sobject
     end
 
@@ -65,7 +70,7 @@ module ActiveForce
       run_callbacks :save do
         run_callbacks :update do
           sfdc_client.update! table_name, attributes_for_sfdb
-          changed_attributes.clear
+          clear_changes_information
         end
       end
       true
@@ -86,7 +91,7 @@ module ActiveForce
       run_callbacks :save do
         run_callbacks :create do
           self.id = sfdc_client.create! table_name, attributes_for_sfdb
-          changed_attributes.clear
+          clear_changes_information
         end
       end
       self
@@ -100,7 +105,9 @@ module ActiveForce
     end
 
     def destroy
-      sfdc_client.destroy! self.class.table_name, id
+      run_callbacks(:destroy) do
+        sfdc_client.destroy! self.class.table_name, id
+      end
     end
 
     def self.create args
@@ -137,14 +144,30 @@ module ActiveForce
 
     def self.field field_name, args = {}
       mapping.field field_name, args
-      attribute field_name
+      define_attribute_methods field_name
+      define_attribute_reader field_name
+      define_attribute_writer field_name
+    end
+
+    def attributes_and_changes
+      attributes.select{ |attr, key| changed.include? attr.to_s }
+    end
+
+    def self.attribute_names
+      mapping.mappings.keys.map(&:to_s)
+    end
+
+    def attributes
+      self.class.mapping.mappings.keys.each_with_object(Hash.new) do |field, hsh|
+        hsh[field.to_s] = self.send(field)
+      end
     end
 
     def reload
       association_cache.clear
       reloaded = self.class.find(id)
       self.attributes = reloaded.attributes
-      changed_attributes.clear
+      clear_changes_information
       self
     end
 
