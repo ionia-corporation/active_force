@@ -1,4 +1,4 @@
-require 'active_force/attribute'
+require 'active_force/field'
 require 'active_force/table'
 require 'forwardable'
 
@@ -27,7 +27,7 @@ module ActiveForce
     end
 
     def field name, options
-      fields.merge!({ name => ActiveForce::Attribute.new(name, options) })
+      fields.merge!({ name => ActiveForce::Field.new(name, options) })
     end
 
     def table

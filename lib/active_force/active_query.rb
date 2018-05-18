@@ -1,3 +1,4 @@
+require 'active_support/all'
 require 'active_force/query'
 require 'forwardable'
 
@@ -18,6 +19,10 @@ module ActiveForce
     end
 
     def to_a
+      @decorated_records ||= sobject.try(:decorate, records) || records
+    end
+
+    private def records
       @records ||= result.to_a.map { |mash| build mash }
     end
 

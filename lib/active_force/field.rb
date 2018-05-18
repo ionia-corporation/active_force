@@ -1,5 +1,5 @@
 module ActiveForce
-  class Attribute
+  class Field
 
     attr_accessor :local_name, :sfdc_name, :as
 
