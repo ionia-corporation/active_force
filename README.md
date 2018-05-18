@@ -9,7 +9,6 @@ This version is forked from the work done by
 https://github.com/ionia-corporation/active_force with upgrades for Rails 5, as
 well as additional functionality.
 
-
 ## Installation
 
 Add this line to your application's `Gemfile`:
@@ -86,7 +85,6 @@ class Medication < ActiveForce::SObject
   #
   before_save :set_as_updated_from_rails
 
-  #
   # Supported callbacks include :build, :create, :update, :save, :destroy
 
   private
@@ -94,7 +92,6 @@ class Medication < ActiveForce::SObject
   def set_as_updated_from_rails
     self.updated_from = 'Rails'
   end
-
 
 end
 ```
@@ -157,10 +154,10 @@ Comment.includes(:post)
 
 #### Decorator
 
-You can specify a `self.decorate(records)` method on the class, which will be called with
-the Restforce API results. This allows you to decorate the results in one pass
-through method, which is helpful if you bulk modify the returned API results and
-don't want to incur any N+1 penalties. You must return the altered array from
+You can specify a `self.decorate(records)` method on the class, which will be called once with
+the Restforce API results passed as the only argument. This allows you to decorate the results in one pass
+through method, which is helpful if you need to bulk modify the returned API results and
+don't want to incur any N+1 penalties. You must return the new altered array from
 the decorate method.
 
 ```ruby
@@ -170,16 +167,20 @@ class Account < ActiveForce::SObject
   # Decorator
   #
   def self.decorate account_records
-    other_things = OtherAPI.find_things(account_records.map{ |a| a["Id"] } )
+    # Perform other API call once for all account_records ids
+    other_things = OtherAPI.find_things_with_ids(account_records.map{ |a| a["Id"] } )
     account_records.map do |a| 
+      # Find other_thing that corresponds to the current account_record
       other_thing_for_account = other_things.detect{ |o| o["Id"] == a["Id"]}
+
+      # make updates to each record
       a.merge_in_other_stuff(other_thing_for_account) 
-    end
+    end # the mapped array will be returned
   end
 end
 
 accounts = Account.where(web_enabled: 1).limit(2)
-# This find the records from the RestForce API, and then decorate all results
+# This finds the records from the RestForce API, and then decorate all results
 with data from another API, and will only query the other API once.
 ```
 
