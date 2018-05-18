@@ -1,29 +1,25 @@
-[![Gem Version](http://img.shields.io/gem/v/active_force.svg)](http://badge.fury.io/rb/active_force)
-[![Build Status](http://img.shields.io/travis/ionia-corporation/active_force.svg)](https://travis-ci.org/ionia-corporation/active_force)
-[![Code Climate](http://img.shields.io/codeclimate/github/ionia-corporation/active_force.svg)](https://codeclimate.com/github/ionia-corporation/active_force)
-[![Dependency Status](http://img.shields.io/gemnasium/ionia-corporation/active_force.svg)](https://gemnasium.com/ionia-corporation/active_force)
-[![Test Coverage](https://codeclimate.com/github/ionia-corporation/active_force/badges/coverage.svg)](https://codeclimate.com/github/ionia-corporation/active_force)
-[![Inline docs](http://inch-ci.org/github/ionia-corporation/active_force.png?branch=master)](http://inch-ci.org/github/ionia-corporation/active_force)
-[![Chat](http://img.shields.io/badge/chat-gitter-brightgreen.svg)](https://gitter.im/ionia-corporation/active_force)
-
 # ActiveForce
 
 A ruby gem to interact with [SalesForce][1] as if it were Active Record. It
 uses [Restforce][2] to interact with the API, so it is fast and stable.
 
+### Heroku Fork
+
+This version is forked from the work done by
+https://github.com/ionia-corporation/active_force with upgrades for Rails 5, as
+well as additional functionality.
+
+
 ## Installation
 
-Add this line to your application's Gemfile:
+Add this line to your application's `Gemfile`:
 
-    gem 'active_force'
+    gem 'active_force', github: "heroku/active_force"
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
-
-    $ gem install active_force
 
 ## Setup credentials
 
@@ -90,11 +86,15 @@ class Medication < ActiveForce::SObject
   #
   before_save :set_as_updated_from_rails
 
+  #
+  # Supported callbacks include :build, :create, :update, :save, :destroy
+
   private
 
   def set_as_updated_from_rails
     self.updated_from = 'Rails'
   end
+
 
 end
 ```
@@ -153,6 +153,34 @@ It is also possible to eager load associations:
 
 ```ruby
 Comment.includes(:post)
+```
+
+#### Decorator
+
+You can specify a `self.decorate(records)` method on the class, which will be called with
+the Restforce API results. This allows you to decorate the results in one pass
+through method, which is helpful if you bulk modify the returned API results and
+don't want to incur any N+1 penalties. You must return the altered array from
+the decorate method.
+
+```ruby
+class Account < ActiveForce::SObject
+
+  ##
+  # Decorator
+  #
+  def self.decorate account_records
+    other_things = OtherAPI.find_things(account_records.map{ |a| a["Id"] } )
+    account_records.map do |a| 
+      other_thing_for_account = other_things.detect{ |o| o["Id"] == a["Id"]}
+      a.merge_in_other_stuff(other_thing_for_account) 
+    end
+  end
+end
+
+accounts = Account.where(web_enabled: 1).limit(2)
+# This find the records from the RestForce API, and then decorate all results
+with data from another API, and will only query the other API once.
 ```
 
 ### Model generator
