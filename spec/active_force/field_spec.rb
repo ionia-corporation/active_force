@@ -20,7 +20,7 @@ describe ActiveForce::Field do
 
   describe 'when the field is' do
     it 'a multipick should return all values as 1 string separated with ";"' do
-      names = field.new(:names, as: :multi_picklist)
+      names = field.new(:names, as: :multipicklist)
       expect(names.value_for_hash ['olvap', 'eloy']).to eq 'olvap;eloy'
     end
   end

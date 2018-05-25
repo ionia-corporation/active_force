@@ -11,8 +11,8 @@ module ActiveForce
 
     def value_for_hash value
       case as
-      when :multi_picklist
-        value.reject(&:empty?).join(';')
+      when :multipicklist
+        (value || Array.new).reject(&:empty?).join(';')
       else
         value
       end
