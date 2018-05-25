@@ -9,7 +9,7 @@ class Whizbang < ActiveForce::SObject
   field :boolean,              from: 'Boolean_Label',  as: :boolean
   field :percent,              from: 'Percent_Label',  as: :percent
   field :estimated_close_date, as: :datetime
-  field :updated_from,         as: :datetime
+  field :updated_from,         as: :string
   field :dirty_attribute,      as: :boolean
 
   before_save :set_as_updated_from_rails

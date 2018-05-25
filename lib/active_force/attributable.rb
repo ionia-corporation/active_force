@@ -17,12 +17,9 @@ module ActiveForce
       def define_attribute_writer(name, options = Hash.new)
         wrapper = Module.new do
           define_method "#{name}=" do |value|
-            # if cast_type.is_a?(Symbol)
-            #   cast_type = ActiveModel::Type.lookup(cast_type, **options.except(*SERVICE_ATTRIBUTES))
-            # end
-            # deserialized_value = cast_type.cast(val)
-            send(:"#{name}_will_change!") unless instance_variable_get("@#{name}") == value
-            instance_variable_set("@#{name}", value)
+            converted_value = ActiveModel::Type.lookup(options[:as] || :string).cast(value)
+            send(:"#{name}_will_change!") unless instance_variable_get("@#{name}") == converted_value
+            instance_variable_set("@#{name}", converted_value)
           end
         end
         include wrapper

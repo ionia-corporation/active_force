@@ -146,10 +146,10 @@ module ActiveForce
       mapping.field field_name, args
       define_attribute_methods field_name
       define_attribute_reader field_name
-      define_attribute_writer field_name
+      define_attribute_writer field_name, args
     end
 
-    def attributes_and_changes
+    def modified_attributes
       attributes.select{ |attr, key| changed.include? attr.to_s }
     end
 
@@ -176,8 +176,8 @@ module ActiveForce
         field = association.relation_name
         value = Association::RelationModelBuilder.build(association, value)
       else
-        field = mappings.invert[column]
-        value = self.class.mapping.translate_value value, field unless value.nil?
+         field = mappings.invert[column]
+         # value = self.class.mapping.translate_value value, field unless value.nil?
       end
       send "#{field}=", value if field
     end
@@ -209,7 +209,7 @@ module ActiveForce
     end
 
     def attributes_for_sfdb
-      attrs = self.class.mapping.translate_to_sf(attributes_and_changes)
+      attrs = self.class.mapping.translate_to_sf(modified_attributes)
       attrs.merge!({'Id' => id }) if persisted?
       attrs
     end

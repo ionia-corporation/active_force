@@ -6,7 +6,7 @@ Text_Label: 'Hi there!'
 Date_Label: '2010-01-01'
 DateTime_Label: '2011-07-07T00:37:00.000+0000'
 Picklist_Multiselect_Label: 'four;six'
-Percent_Label: 20
+Percent_Label: 21
 Boolean_Label: true
 
 ParentWhizbang__r:
