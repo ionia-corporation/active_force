@@ -52,12 +52,14 @@ module ActiveForce
       ActiveForce::ActiveQuery.new self
     end
 
+    attr_accessor :build_attributes
     def self.build mash
       return unless mash
       sobject = new
+      sobject.build_attributes = mash
       sobject.run_callbacks(:build) do
-        mash.each do |column, sf_value|
-          sobject.write_value column, sf_value
+        mash.each do |column, value|
+          sobject.write_value column, value
         end
       end
       sobject.clear_changes_information
@@ -158,7 +160,7 @@ module ActiveForce
     end
 
     def attributes
-      self.class.mapping.mappings.keys.each_with_object(Hash.new) do |field, hsh|
+      mappings.keys.each_with_object(Hash.new) do |field, hsh|
         hsh[field.to_s] = self.send(field)
       end
     end
@@ -171,15 +173,18 @@ module ActiveForce
       self
     end
 
-    def write_value column, value
-      if association = self.class.find_association(column)
+    def write_value key, value
+      if association = self.class.find_association(key.to_s)
         field = association.relation_name
         value = Association::RelationModelBuilder.build(association, value)
+      elsif key.to_sym.in?(mappings.keys)
+        # key is a field name
+        field = key
       else
-         field = mappings.invert[column]
-         # value = self.class.mapping.translate_value value, field unless value.nil?
+        # Assume key is an SFDC column
+        field = mappings.invert[key]
       end
-      send "#{field}=", value if field
+      send "#{field}=", value if field && respond_to?(field)
     end
 
    private
