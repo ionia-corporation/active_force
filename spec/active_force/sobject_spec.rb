@@ -25,10 +25,10 @@ describe ActiveForce::SObject do
       expect(sobject.boolean).to be_an_instance_of TrueClass
       expect(sobject.checkbox).to be_an_instance_of FalseClass
       expect(sobject.date).to be_an_instance_of Date
-      expect(sobject.datetime).to be_an_instance_of DateTime
+      expect(sobject.datetime).to be_an_instance_of Time
       expect(sobject.percent).to be_an_instance_of Float
       expect(sobject.text).to be_an_instance_of String
-      expect(sobject.picklist_multiselect).to be_an_instance_of String
+      expect(sobject.picklist_multiselect).to be_an_instance_of Array
     end
   end
 
@@ -65,12 +65,12 @@ describe ActiveForce::SObject do
       end
     end
 
-    context 'as: :multi_picklist' do
+    context 'as: :multipicklist' do
       before do
         class IceCream < ActiveForce::SObject
-          field :flavors, as: :multi_picklist
+          field :flavors, as: :multipicklist
         end
-        sundae.changed_attributes.clear
+        sundae.clear_changes_information
         sundae.flavors = %w(chocolate vanilla strawberry)
       end
 

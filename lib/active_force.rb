@@ -1,3 +1,5 @@
+require 'active_model/type/salesforce/multipicklist'
+require 'active_model/type/salesforce/percent'
 require 'active_force/version'
 require 'active_force/sobject'
 require 'active_force/query'

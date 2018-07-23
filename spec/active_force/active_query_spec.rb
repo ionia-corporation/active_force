@@ -19,8 +19,15 @@ describe ActiveForce::ActiveQuery do
 
   describe "to_a" do
     before do
-      expect(client).to receive(:query)
+      expect(client).to receive(:query).and_return(api_result)
     end
+
+    let(:api_result) {
+      [
+        {"Id" => "0000000000AAAAABBB"},
+        {"Id" => "0000000000CCCCCDDD"}
+      ]
+    }
 
     it "should return an array of objects" do
       result = active_query.where("Text_Label = 'foo'").to_a
@@ -30,6 +37,11 @@ describe ActiveForce::ActiveQuery do
     it "should allow to chain query methods" do
       result = active_query.where("Text_Label = 'foo'").where("Checkbox_Label = true").to_a
       expect(result).to be_a Array
+    end
+
+    it "should decorate the array of objects" do
+      expect(sobject).to receive(:decorate)
+      active_query.where("Text_Label = 'foo'").to_a
     end
   end
 
