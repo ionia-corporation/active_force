@@ -56,7 +56,7 @@ module ActiveForce
     def self.build mash
       return unless mash
       sobject = new
-      sobject.build_attributes = mash
+      sobject.build_attributes = mash[:build_attributes] || mash
       sobject.run_callbacks(:build) do
         mash.each do |column, value|
           sobject.write_value column, value
