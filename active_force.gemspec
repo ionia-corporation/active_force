@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 1.9.3'
 
   spec.add_dependency 'active_attr', '~> 0.10.2'
-  spec.add_dependency 'restforce',   '~> 2.5.3'
+  spec.add_dependency 'restforce',   '>= 3.0.0'
   spec.add_development_dependency 'bundler', '~> 1.15.4'
   spec.add_development_dependency 'rake', '>= 0'
   spec.add_development_dependency 'rspec', '>= 0'

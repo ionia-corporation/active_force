@@ -17,3 +17,6 @@ test/version_tmp
 tmp
 .ruby-version
 .ruby-gemset
+
+# Rubymine specific
+.idea
