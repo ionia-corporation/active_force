@@ -2,6 +2,10 @@
 
 ## Not released
 
+## 0.7.2
+
+* Updated restforce to v3.0.0 to patch https://nvd.nist.gov/vuln/detail/CVE-2018-3777
+
 ## 0.7.1
 
 * Allow sfdc_client to be set. ([#92][])
